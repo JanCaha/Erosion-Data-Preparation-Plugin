@@ -1,5 +1,10 @@
 class TextConstants:
 
+    # Layer names
+
+    layer_soil = "soils"
+    layer_landuse = "landuse"
+
     # TableWidgetLanduseAssignedCatalog
 
     tw_lc_sub_cats = "subcategories"
@@ -81,3 +86,16 @@ class TextConstants:
 
     message_statistics = "Found {count} records with range ({min}, {max}) and mean {round(mean, 2)}."
     message_statistics_no_records = "Found 0 records."
+
+    # Messages
+
+    msg_title = "Error in this step"
+
+    msg_select_layer = "Layer must be selected."
+
+    msg_validate_ka5_classes = "Provided column does not contain valid values.\n" \
+                               "Values `{missing_values}` are not found amongst KA5 classes in catalog."
+
+    msg_select_all_fields = "All fields must be selected."
+
+    mgs_select_landuse_field = "Landuse field must be selected."
