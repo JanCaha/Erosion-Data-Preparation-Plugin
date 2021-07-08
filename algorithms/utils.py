@@ -1,5 +1,5 @@
 from typing import Tuple, List, Any
-
+import inspect
 import unicodedata
 
 
@@ -11,6 +11,21 @@ from qgis.core import (QgsMessageLog,
 
 
 def eval_string_with_variables(input_string: str) -> str:
+
+    parent_frame = inspect.currentframe().f_back.f_locals
+
+    for key, value in parent_frame.items():
+        log(F"******* {key} = '{value}'")
+        if "__" not in key:
+            if isinstance(value, str):
+                exec(F"{key} = '{value}'")
+            elif isinstance(value, float) or \
+                    isinstance(value, int) or \
+                    isinstance(value, bool) or \
+                    isinstance(value, list) or \
+                    isinstance(value, dict):
+                exec(F"{key} = {value}")
+
     return eval(f'f"""{input_string}"""')
 
 
