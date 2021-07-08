@@ -1,8 +1,6 @@
 import abc
 from typing import Dict, Any, List, Optional, Tuple, NoReturn
 
-from pathlib import Path
-
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
 from PyQt5 import QtCore
 from PyQt5.QtCore import QRegExp
@@ -17,7 +15,7 @@ from ..classes.definition_landuse_values import LanduseValues
 from .widget_slider_values import QWidgetSliderValues
 from ..algorithms.utils import log
 from ..classes.catalog import E3dCatalog
-from ..algorithms.utils import (get_unique_fields_combinations)
+from ..algorithms.utils import (get_unique_fields_combinations, eval_string_with_variables)
 from ..algorithms.algorithms_layers import join_tables
 from ..algorithms.algs import delete_fields
 
@@ -50,7 +48,7 @@ class TableWidgetWithSlider(QTableWidget):
         for i in range(len(column_names)):
             self.setHorizontalHeaderItem(i, self.header_column(column_names[i]))
 
-            if column_names[i] == "KA5 Class":
+            if column_names[i] == TextConstants.col_ka5_code:
                 self.setColumnWidth(i, 100)
 
             else:
@@ -64,7 +62,7 @@ class TableWidgetWithSlider(QTableWidget):
 
                     self.horizontalHeader().setSectionResizeMode(i, QHeaderView.ResizeToContents)
 
-        self.setHorizontalHeaderItem(self.stat_col, self.header_column("Statistics"))
+        self.setHorizontalHeaderItem(self.stat_col, self.header_column(TextConstants.col_stats))
         self.horizontalHeader().setSectionResizeMode(self.stat_col, QHeaderView.ResizeToContents)
 
     def set_row_color(self, row: int,
@@ -123,9 +121,9 @@ class TableWidgetWithSlider(QTableWidget):
             min, max, mean, count = self.get_slider_values(value)
 
             if 0 < count:
-                statistics_str = f"Found {count} records with range ({min}, {max}) and mean {round(mean, 2)}."
+                statistics_str = eval_string_with_variables(TextConstants.message_statistics)
             else:
-                statistics_str = f"Found 0 records."
+                statistics_str = TextConstants.message_statistics_no_records
 
             self.setCellWidget(row_to_put, self.value_col, self.add_cell_item_number())
 
