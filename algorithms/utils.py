@@ -15,7 +15,6 @@ def eval_string_with_variables(input_string: str) -> str:
     parent_frame = inspect.currentframe().f_back.f_locals
 
     for key, value in parent_frame.items():
-        log(F"******* {key} = '{value}'")
         if "__" not in key:
             if isinstance(value, str):
                 exec(F"{key} = '{value}'")
