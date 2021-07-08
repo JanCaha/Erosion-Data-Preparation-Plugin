@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>guitestsDialogBase</class>
+ <widget class="QDialog" name="guitestsDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1125</width>
+    <height>547</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Erosion-3D Data Preparation</string>
+  </property>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>11</x>
+     <y>100</y>
+     <width>1101</width>
+     <height>391</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>3</number>
+   </property>
+   <widget class="QWidget" name="page_0">
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>0</y>
+       <width>571</width>
+       <height>271</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Input soil layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QgsMapLayerComboBox" name="layer_soil_cb"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Input landuse layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QgsMapLayerComboBox" name="layer_landuse_cb"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_1">
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>11</x>
+       <y>0</y>
+       <width>551</width>
+       <height>301</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_23">
+        <property name="text">
+         <string>Field containing ka5 code classification if it exists (otherwise it will be calculated in next step):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QgsFieldComboBox" name="field_ka5_cb">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_2">
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>12</x>
+       <y>0</y>
+       <width>571</width>
+       <height>339</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout_3">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>FT:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_ftc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_ftc"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>MT:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_mtc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_mtc"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>GT: </string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_gtc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_gtc"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_fuc"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>FU:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_fuc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_muc"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>MU:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_muc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>GU:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_guc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_guc"/>
+      </item>
+      <item row="9" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_gsc"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>MS:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_msc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_15">
+        <property name="text">
+         <string>GS:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_gsc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_msc"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>FS:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_fsc</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_fsc"/>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>Fields containing specific content:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>571</width>
+       <height>99</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_20">
+        <property name="text">
+         <string>Landuse field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>Crop field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QgsFieldComboBox" name="fcb_landuse"/>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QgsFieldComboBox" name="fcb_crop">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_4">
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>181</width>
+       <height>81</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Crop Landuse assigment</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_5">
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Corg page</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_6">
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Bulk Density page</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_7">
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Canopy Cover page</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_8">
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Roughness page</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_9">
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Erodibility page</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page">
+    <widget class="QLabel" name="label_22">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Skinfactor page</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_10">
+    <widget class="QLabel" name="label_data_status">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>731</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Not all data have assigned values.</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkbox_export_empty_data">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>130</y>
+       <width>81</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>40</width>
+       <height>40</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_data_status_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>471</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>I understand the issue and want to export anyways:</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>580</x>
+     <y>510</y>
+     <width>531</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="previous_pb">
+      <property name="text">
+       <string>&lt; Previous</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="next_pb">
+      <property name="text">
+       <string>Next &gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDialogButtonBox" name="button_box">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="standardButtons">
+       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="qlabel_i">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>510</y>
+     <width>55</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>510</y>
+     <width>261</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Current step:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="qlabel_main">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>931</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Set up input data layers:</string>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsFieldComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsfieldcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsMapLayerComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsmaplayercombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>fcb_ftc</tabstop>
+  <tabstop>fcb_mtc</tabstop>
+  <tabstop>fcb_gtc</tabstop>
+  <tabstop>fcb_fuc</tabstop>
+  <tabstop>fcb_muc</tabstop>
+  <tabstop>fcb_guc</tabstop>
+  <tabstop>fcb_fsc</tabstop>
+  <tabstop>fcb_msc</tabstop>
+  <tabstop>fcb_gsc</tabstop>
+  <tabstop>previous_pb</tabstop>
+  <tabstop>next_pb</tabstop>
+  <tabstop>layer_soil_cb</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>button_box</sender>
+   <signal>accepted()</signal>
+   <receiver>guitestsDialogBase</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>583</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_box</sender>
+   <signal>rejected()</signal>
+   <receiver>guitestsDialogBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>583</x>
+     <y>501</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

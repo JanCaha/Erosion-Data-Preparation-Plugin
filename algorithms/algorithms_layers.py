@@ -1,0 +1,304 @@
+from typing import List, Dict, Union
+
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QVariant
+
+from qgis import processing
+
+from qgis.core import (QgsVectorLayer,
+                       QgsVectorDataProvider,
+                       QgsFields,
+                       QgsField,
+                       QgsFeature,
+                       QgsMapLayer,
+                       QgsVectorLayer,
+                       NULL,
+                       QgsProject)
+
+from ..classes.definition_landuse_crop import LanduseCrop
+from ..classes.definition_landuse_values import LanduseValues
+from ..constants import TextConstants
+from ..classes.catalog import E3dCatalog
+from ..classes.class_KA5 import KA5Class
+from ..algorithms.utils import log
+
+
+def copy_layer_fix_geoms(layer_input: QgsMapLayer, layer_name: str) -> QgsVectorLayer:
+
+    params = {'INPUT': layer_input,
+              'OUTPUT': "memory:{}".format(layer_name)}
+
+    result = processing.run("native:fixgeometries",
+                            params)
+
+    return result["OUTPUT"]
+
+
+def join_tables(layer_data: QgsVectorLayer,
+                layer_data_field_name_join: Union[str, List[str]],
+                layer_table: QgsVectorLayer,
+                layer_table_field_name_join: Union[str, List[str]],
+                progress_bar: QtWidgets.QProgressBar = QtWidgets.QProgressBar()) -> QgsVectorLayer:
+
+    merge_field_1 = "temp_merge_field_1"
+    merge_field_2 = "temp_merge_field_2"
+
+    progress_bar.setMaximum(4)
+
+    if isinstance(layer_data_field_name_join, list):
+
+        layer_data_dp: QgsVectorDataProvider = layer_data.dataProvider()
+
+        add_fields = QgsFields()
+
+        field = QgsField(merge_field_1, QVariant.String, "", 255)
+
+        add_fields.append(field)
+
+        layer_data_dp.addAttributes(add_fields)
+
+        layer_data.updateFields()
+
+        layer_data.startEditing()
+
+        feature: QgsFeature
+
+        for feature in layer_data.getFeatures():
+
+            attributes = []
+
+            for field_name in layer_data_field_name_join:
+
+                value = feature.attribute(field_name)
+
+                if not value:
+                    value = ""
+
+                attributes.append(value)
+
+            if not all(x == "" for x in attributes):
+                attributes = "_".join(attributes)
+
+                layer_data.changeAttributeValue(feature.id(),
+                                                feature.fieldNameIndex(merge_field_1),
+                                                attributes)
+
+        layer_data.commitChanges()
+
+        layer_data_field_name_join = merge_field_1
+
+    progress_bar.setValue(1)
+
+    if isinstance(layer_table_field_name_join, list):
+
+        layer_table_dp: QgsVectorDataProvider = layer_table.dataProvider()
+
+        add_fields = QgsFields()
+
+        field = QgsField(merge_field_2, QVariant.String, "", 255)
+
+        add_fields.append(field)
+
+        layer_table_dp.addAttributes(add_fields)
+
+        layer_table.updateFields()
+
+        layer_table.startEditing()
+
+        feature: QgsFeature
+
+        for feature in layer_table.getFeatures():
+
+            attributes = []
+
+            for field_name in layer_table_field_name_join:
+
+                value = feature.attribute(field_name)
+
+                if not value:
+                    value = ""
+
+                attributes.append(value)
+
+            if not all(x == "" for x in attributes):
+                attributes = "_".join(attributes)
+
+                layer_table.changeAttributeValue(feature.id(),
+                                                 feature.fieldNameIndex(merge_field_2),
+                                                 attributes)
+        layer_table.commitChanges()
+
+        fields_to_delete = []
+        for field_name in layer_table_field_name_join:
+            fields_to_delete.append(layer_table_dp.fieldNameIndex(field_name))
+
+        layer_table.startEditing()
+        layer_table.deleteAttributes(fields_to_delete)
+        layer_table.commitChanges()
+
+        layer_table_field_name_join = merge_field_2
+
+    progress_bar.setValue(2)
+
+    result = processing.run('qgis:joinattributestable', {
+        'INPUT': layer_data,
+        'FIELD': layer_data_field_name_join,
+        'INPUT_2': layer_table,
+        'FIELD_2': layer_table_field_name_join,
+        'OUTPUT': f"memory:{layer_data.name()}"})
+
+    progress_bar.setValue(3)
+
+    if layer_data_field_name_join == merge_field_1 and layer_table_field_name_join == merge_field_2:
+
+        result = processing.run("native:deletecolumn",
+                                {'INPUT': result['OUTPUT'],
+                                 'COLUMN': [layer_data_field_name_join, layer_table_field_name_join],
+                                 'OUTPUT': f"memory:{layer_data.name()}"})
+
+    progress_bar.setValue(4)
+
+    return result['OUTPUT']
+
+
+def intersect_dissolve(layer_input_1: QgsVectorLayer,
+                       layer_input_2: QgsVectorLayer,
+                       fieldname_new: str,
+                       fieldname_sid: str,
+                       fieldname_landuse_crop: str,
+                       dissolve_fields: List[str],
+                       progress_bar: QtWidgets.QProgressBar) -> QgsVectorLayer:
+
+    progress_bar.setMaximum(4)
+
+    result = processing.run("native:intersection", {'INPUT': layer_input_1,
+                                                    'OVERLAY': layer_input_2,
+                                                    'INPUT_FIELDS': [],
+                                                    'OVERLAY_FIELDS': [],
+                                                    'OVERLAY_FIELDS_PREFIX': '',
+                                                    'OUTPUT': 'memory:intersection'})
+
+    layer_intersection: QgsVectorLayer = result["OUTPUT"]
+
+    progress_bar.setValue(1)
+
+    dp_layer_intersection: QgsVectorDataProvider = layer_intersection.dataProvider()
+
+    add_fields = QgsFields()
+
+    field = QgsField(fieldname_new, QVariant.String, "", 255)
+
+    add_fields.append(field)
+
+    dp_layer_intersection.addAttributes(add_fields)
+
+    layer_intersection.updateFields()
+
+    layer_intersection.startEditing()
+
+    for number, feature in enumerate(layer_intersection.getFeatures()):
+
+        attr_result = "{}_{}".format(feature.attribute(fieldname_sid),
+                                     feature.attribute(fieldname_landuse_crop))
+
+        layer_intersection.changeAttributeValue(feature.id(),
+                                                feature.fieldNameIndex(fieldname_new),
+                                                attr_result)
+
+    layer_intersection.commitChanges()
+
+    progress_bar.setValue(2)
+
+    result = processing.run("native:retainfields", {'INPUT': layer_intersection,
+                                                    'FIELDS': dissolve_fields,
+                                                    'OUTPUT': 'memory:removed_fields'})
+
+    progress_bar.setValue(3)
+
+    result = processing.run("native:dissolve", {'INPUT': result["OUTPUT"],
+                                                'FIELD': dissolve_fields,
+                                                'OUTPUT': 'memory:dissolve'})
+
+    progress_bar.setValue(4)
+
+    return result["OUTPUT"]
+
+
+def create_table_to_join(dict_assigned_values: Dict[str, LanduseValues],
+                         dict_catalog_values: Dict[str, LanduseCrop]) -> QgsVectorLayer:
+
+    fields = [F"field={TextConstants.vl_join_col_name}:string",
+              F"field={TextConstants.tw_lv_col_bulkdensity}:double",
+              F"field={TextConstants.tw_lv_col_initmoisture}:double",
+              F"field={TextConstants.tw_lv_col_erodibility}:double",
+              F"field={TextConstants.tw_lv_col_roughn}:double",
+              F"field={TextConstants.tw_lv_col_cover}:double",
+              F"field={TextConstants.tw_lv_col_skinfactor}:double"]
+
+    fields = "&".join(fields)
+
+    layer = QgsVectorLayer(
+        F"NoGeometry?{fields}",
+        "source",
+        "memory")
+
+    layer_dp: QgsVectorDataProvider = layer.dataProvider()
+
+    for landuse_values in list(dict_assigned_values.values()):
+
+        f = QgsFeature()
+
+        f.setAttributes(landuse_values.get_fields_for_layer())
+
+        layer_dp.addFeature(f)
+
+    for (landuse_name, landuse_values) in dict_catalog_values.items():
+
+        f = QgsFeature()
+
+        f.setAttributes([landuse_name] + landuse_values.get_fields_for_layer())
+
+        layer_dp.addFeature(f)
+
+    return layer
+
+
+def create_table_KA5_to_join() -> QgsVectorLayer:
+
+    classes = E3dCatalog().get_KA5_table()
+
+    fields = [F"field={TextConstants.field_name_ka5_code}:string",
+              F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
+              F"field=ka5_ft:double",
+              F"field=ka5_mt:double",
+              F"field=ka5_gt:double",
+              F"field=ka5_fu:double",
+              F"field=ka5_mu:double",
+              F"field=ka5_gu:double",
+              F"field=ka5_fs:double",
+              F"field=ka5_ms:double",
+              F"field=ka5_gs:double"]
+
+    fields = "&".join(fields)
+
+    layer = QgsVectorLayer(
+        F"NoGeometry?{fields}",
+        "ka5_data",
+        "memory")
+
+    layer_dp: QgsVectorDataProvider = layer.dataProvider()
+
+    ka5_class: KA5Class
+
+    for ka5_class in classes:
+
+        f = QgsFeature()
+
+        f.setAttributes([ka5_class.code, ka5_class.group_lv2_id,
+                         ka5_class.FT, ka5_class.MT, ka5_class.GT,
+                         ka5_class.FU, ka5_class.MU, ka5_class.GU,
+                         ka5_class.FS, ka5_class.MS, ka5_class.GS])
+
+        layer_dp.addFeature(f)
+
+    return layer
