@@ -50,6 +50,9 @@ class TextConstants:
     field_name_erodibility = "Erodibility"
     field_name_skinfactor = "Skin_Factor"
 
+    # GUI
+
+    # Main Labels for stackedWidget
     main_labels = ["Set up input data layers:",
                    "Prepared soil KA5 classification:",
                    "Calculate Garbrecht rougness (and possibly KA5 classification)\nfrom structural subclasses content:",
@@ -62,3 +65,19 @@ class TextConstants:
                    "Assign values of Erodibility to data:",
                    "Assign values of Skin Factor to data:"
                    ]
+
+    # Tables with widgets
+
+    col_crop = "Crop"
+    col_ka5_code = "KA5 Class"
+    col_stats = "Statistics"
+
+    header_table_corg = [col_crop, col_ka5_code, "Corg from catalog", "Corg"]
+    header_table_bulkdensity = [col_crop, col_ka5_code, "Bulk Density from catalog", "Bulk Density"]
+    header_table_canopycover = [col_crop, "Canopy Cover from catalog", "Canopy Cover"]
+    header_table_roughness = [col_crop, "Roughness from catalog", "Roughness"]
+    header_table_erodibility = [col_crop, col_ka5_code, "Erodibility from catalog", "Erodibility"]
+    header_table_skinfactor = [col_crop, col_ka5_code, "Skin Factor from catalog", "Skin Factor"]
+
+    message_statistics = "Found {count} records with range ({min}, {max}) and mean {round(mean, 2)}."
+    message_statistics_no_records = "Found 0 records."
