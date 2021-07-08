@@ -30,7 +30,8 @@ from .algorithms.algorithms_layers import (join_tables,
 from .algorithms.extract_elements_from_dicts import (extract_elements_without_values,
                                                      extract_elements_with_values)
 from .algorithms.utils import (log,
-                               evaluate_result_layer)
+                               evaluate_result_layer,
+                               eval_string_with_variables)
 
 from .gui_classes.table_widget_landuse_assigned_catalog import TableWidgetLanduseAssignedCatalog
 from .gui_classes.table_widget_values import TableWidgetLanduseAssignedValues
@@ -172,32 +173,32 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(4, self.table_landuse_assign_catalog)
 
-        self.table_corg = TableWidgetCorg(["Crop", "KA5 Class", "Corg from catalog", "Corg"])
+        self.table_corg = TableWidgetCorg(TextConstants.header_table_corg)
         widget = self.stackedWidget.widget(5)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(5, self.table_corg)
 
-        self.table_bulk_density = TableWidgetBulkDensity(["Crop", "KA5 Class", "Bulk Density from catalog", "Bulk Density"])
+        self.table_bulk_density = TableWidgetBulkDensity(TextConstants.header_table_bulkdensity)
         widget = self.stackedWidget.widget(6)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(6, self.table_bulk_density)
 
-        self.table_canopy_cover = TableWidgetCanopyCover(["Crop", "Canopy Cover from catalog", "Canopy Cover"])
+        self.table_canopy_cover = TableWidgetCanopyCover(TextConstants.header_table_canopycover)
         widget = self.stackedWidget.widget(7)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(7, self.table_canopy_cover)
 
-        self.table_roughness = TableWidgetRoughness(["Crop", "Roughness from catalog", "Roughness"])
+        self.table_roughness = TableWidgetRoughness(TextConstants.header_table_roughness)
         widget = self.stackedWidget.widget(8)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(8, self.table_roughness)
 
-        self.table_erodibility = TableWidgetErodibility(["Crop", "KA5 Class", "Erodibility from catalog", "Erodibility"])
+        self.table_erodibility = TableWidgetErodibility(TextConstants.header_table_erodibility)
         widget = self.stackedWidget.widget(9)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(9, self.table_erodibility)
 
-        self.table_skinfactor = TableWidgetSkinFactor(["Crop", "KA5 Class", "Skin Factor from catalog", "Skin Factor"])
+        self.table_skinfactor = TableWidgetSkinFactor(TextConstants.header_table_skinfactor)
         widget = self.stackedWidget.widget(10)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(10, self.table_skinfactor)
@@ -217,7 +218,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         status = True if self.layer_soil_cb.currentLayer() else False
 
         if not status:
-            msg = "Layer must be selected."
+            msg = TextConstants.msg_select_layer
 
         return status, msg
 
@@ -230,8 +231,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             ok, missing_values = validate_KA5(self.layer_soil, self.field_ka5_cb.currentText())
 
-            msg = F"Provided column does not contain valid values.\n" \
-                  F"Values `{missing_values}` are not found amongst KA5 classes in catalog."
+            msg = eval_string_with_variables(TextConstants.msg_validate_ka5_classes)
 
         return ok, msg
 
@@ -250,7 +250,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                  len(self.fcb_gsc.currentText()) > 0
 
         if not status:
-            msg = "All fields must be selected."
+            msg = TextConstants.msg_select_all_fields
 
         return status, msg
 
@@ -260,18 +260,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         status = len(self.fcb_landuse.currentText()) > 0
 
         if not status:
-            msg = "Landuse field must be selected."
-
-        return status, msg
-
-    def validate_widget_4(self):
-
-        msg = ""
-
-        status = self.table_landuse_assign_catalog.is_filled()
-
-        if not status:
-            msg = "Every row must have value assigned in second column."
+            msg = TextConstants.mgs_select_landuse_field
 
         return status, msg
 
@@ -382,8 +371,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 ok, msg = self.validate_widget_0()
 
                 if ok:
-                    self.layer_soil = copy_layer_fix_geoms(self.layer_soil_cb.currentLayer(), "soils")
-                    self.layer_landuse = copy_layer_fix_geoms(self.layer_landuse_cb.currentLayer(), "landuse")
+                    self.layer_soil = copy_layer_fix_geoms(self.layer_soil_cb.currentLayer(),
+                                                           TextConstants.layer_soil)
+
+                    self.layer_landuse = copy_layer_fix_geoms(self.layer_landuse_cb.currentLayer(),
+                                                              TextConstants.layer_landuse)
 
                     self.update_layer_soil()
 
@@ -609,7 +601,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.stackedWidget.setCurrentIndex(i + 1)
                 self.progressBar.setValue(0)
             else:
-                QtWidgets.QMessageBox.warning(self, "Error in this step", msg)
+                QtWidgets.QMessageBox.warning(self, TextConstants.msg_title, msg)
                 self.progressBar.setValue(0)
 
     def prev(self):
