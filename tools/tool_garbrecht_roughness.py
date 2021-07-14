@@ -1,0 +1,202 @@
+from PyQt5.QtCore import QVariant
+
+from qgis.core import (QgsProcessing,
+                       QgsFeatureSink,
+                       QgsProcessingException,
+                       QgsProcessingAlgorithm,
+                       QgsProcessingParameterFeatureSource,
+                       QgsProcessingParameterString,
+                       QgsProcessingParameterBoolean,
+                       QgsProcessingParameterVectorLayer,
+                       QgsFeature,
+                       QgsVectorDataProvider,
+                       QgsFields,
+                       QgsField,
+                       QgsProcessingFeedback,
+                       QgsFeatureRequest,
+                       QgsGeometry,
+                       QgsCoordinateReferenceSystem,
+                       QgsProject,
+                       QgsProcessingParameterDateTime,
+                       QgsProcessingOutputNumber,
+                       QgsVectorLayer)
+
+from qgis import processing
+
+# TODO add input parameters
+
+
+class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
+
+    INPUT = "Input"
+    D90 = "D90"
+    D90NAME = "D90NAME"
+    NNAME = "NNAME"
+
+    def createInstance(self):
+        return GarbrechtRougnessProcessingAlgorithm()
+
+    def name(self):
+        return "GarbrechtRougness"
+
+    def displayName(self):
+        return "Calculate Garbrecht roughness from structural subclasses content"
+
+    def group(self):
+        return "Erosion-3D Data Plugin"
+
+    def groupId(self):
+        return 'erosiondataplugin'
+
+    def shortHelpString(self):
+        return "Calculate Garbrech roughness based on D90 diameter"
+
+    def initAlgorithm(self, config=None):
+        self.addParameter(
+            QgsProcessingParameterVectorLayer(
+                self.INPUT,
+                "Input feature layer:")
+        )
+
+        self.addParameter(
+            QgsProcessingParameterBoolean(
+                self.D90,
+                "Add D90 field into the input table and write the values?"
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterString(
+                self.D90NAME,
+                "Set D90 field name:",
+                "d90"
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterString(
+                self.NNAME,
+                "Set Garbrech roughness field name:",
+                "N_garbr"
+            )
+        )
+
+    def processAlgorithm(self, parameters, context, feedback: QgsProcessingFeedback):
+
+        # default field names of the fractions content
+        FTcode = "FT"
+        MTcode = "MT"
+        GTcode = "GT"
+        FUcode = "FU"
+        MUcode = "MU"
+        GUcode = "GU"
+        FScode = "FS"
+        MScode = "MS"
+        GScode = "GS"
+        # array of fraction codes - needed for iterating the fractions in right order
+        fractionCodes = [FTcode, MTcode, GTcode, FUcode, MUcode, GUcode, FScode, MScode, GScode]
+        # dictionary of the fractions classes codes and particle diameter of top and bottom bodred value
+        top = "top"
+        bot = "bottom"
+        fractions = {FTcode: {bot: 0.0, top: 0.0002},
+                     MTcode: {bot: 0.0002, top: 0.00063},
+                     GTcode: {bot: 0.00063, top: 0.002},
+                     FUcode: {bot: 0.002, top: 0.0063},
+                     MUcode: {bot: 0.0063, top: 0.02},
+                     GUcode: {bot: 0.02, top: 0.063},
+                     FScode: {bot: 0.063, top: 0.2},
+                     MScode: {bot: 0.2, top: 0.63},
+                     GScode: {bot: 0.63, top: 2.0}}
+
+        layer_input: QgsVectorLayer = self.parameterAsVectorLayer(parameters, self.INPUT, context)
+
+        add_d90 = self.parameterAsBoolean(parameters, self.D90, context)
+
+        field_name_d90 = self.parameterAsString(parameters, self.D90NAME, context)
+        field_name_gb = self.parameterAsString(parameters, self.NNAME, context)
+
+        total = 100.0 / layer_input.dataProvider().featureCount() if layer_input.dataProvider().featureCount() else 0
+
+        layer_input.startEditing()
+
+        feature_polygon: QgsFeature
+
+        dp_input: QgsVectorDataProvider = layer_input.dataProvider()
+
+        add_fields = QgsFields()
+        add_fields.append(QgsField(field_name_gb, QVariant.Double))
+
+        if add_d90:
+            add_fields.append(QgsField(field_name_d90, QVariant.Double))
+
+        dp_input.addAttributes(add_fields)
+
+        layer_input.updateFields()
+
+        fields = fractionCodes + [field_name_gb]
+
+        if add_d90:
+            fields += [field_name_d90]
+
+        feature: QgsFeature
+
+        for number, feature in enumerate(layer_input.getFeatures()):
+
+            FTc = feature.attribute(fractionCodes[0])
+            MTc = FTc + feature.attribute(fractionCodes[1])
+            GTc = MTc + feature.attribute(fractionCodes[2])
+            FUc = GTc + feature.attribute(fractionCodes[3])
+            MUc = FUc + feature.attribute(fractionCodes[4])
+            GUc = MUc + feature.attribute(fractionCodes[5])
+            FSc = GUc + feature.attribute(fractionCodes[6])
+            MSc = FSc + feature.attribute(fractionCodes[7])
+            GSc = MSc + feature.attribute(fractionCodes[8])
+
+            cumContents = {FTcode: FTc, MTcode: MTc, GTcode: GTc, FUcode: FUc, MUcode: MUc, GUcode: GUc, FScode: FSc,
+                           MScode: MSc, GScode: GSc}
+
+            cumCont = 0
+            found = False
+
+            for i in range(len(fractionCodes)):
+
+                cumCont = cumCont + feature.attribute(fractionCodes[i])
+
+                feedback.pushCommandInfo("{} : cummulative content: {} ; found is: {}".format(i,
+                                                                                              cumCont,
+                                                                                              found))
+
+                if cumCont >= 90 and not found:
+
+                    upSize = fractions[fractionCodes[i]][top]
+                    botSize = fractions[fractionCodes[i]][bot]
+                    upClassIndex = fractionCodes[i]
+                    botClassIndex = fractionCodes[i - 1]
+                    upClassContent = cumContents[upClassIndex]
+                    botClassContent = cumContents[botClassIndex]
+
+                    feedback.pushWarning("{}>{} - {}>{}".format(upClassIndex, upClassContent,
+                                                                botClassIndex, botClassContent))
+                    found = True
+
+            d90 = botSize + (upSize - botSize) / (upClassContent - botClassContent) * (90 - botClassContent)
+
+            if add_d90:
+                layer_input.changeAttributeValue(feature.id(),
+                                                 feature.fieldNameIndex(field_name_d90),
+                                                 d90)
+
+            feedback.pushCommandInfo(str(d90) + " - " + str(type(d90)))
+
+            exp = 1.0 / 6.0
+            n = (d90 ** exp) / 26.0
+
+            layer_input.changeAttributeValue(feature.id(),
+                                             feature.fieldNameIndex(field_name_gb),
+                                             n)
+
+            feedback.setProgress(int(number * total))
+
+        layer_input.commitChanges()
+
+        return {}
