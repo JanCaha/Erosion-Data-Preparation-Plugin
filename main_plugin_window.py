@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 from typing import Dict
+import datetime
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -10,6 +11,7 @@ from PyQt5 import QtWidgets
 from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox
 from qgis.core import (QgsMapLayerProxyModel,
                        QgsVectorLayer,
+                       QgsRasterLayer,
                        Qgis,
                        QgsFieldProxyModel,
                        QgsProject)
@@ -58,15 +60,21 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     qlabel_i: QtWidgets.QLabel
 
     qlabel_main: QtWidgets.QLabel
+    qlabel_step_description: QtWidgets.QLabel
 
     # process parameters
     layer_soil: QgsVectorLayer = None
     layer_landuse: QgsVectorLayer = None
     layer_intersected_dissolved: QgsVectorLayer = None
+    layer_raster_dtm: QgsRasterLayer = None
+    date_month: int = None
+
 
     # widget0
     layer_soil_cb: QgsMapLayerComboBox
     layer_landuse_cb: QgsMapLayerComboBox
+    raster_dtm_cb: QgsMapLayerComboBox
+    calendar: QtWidgets.QCalendarWidget
 
     # widget1
     field_ka5_cb: QgsFieldComboBox
@@ -149,11 +157,33 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.layer_landuse_cb.layerChanged.connect(self.update_layer_landuse)
         self.layer_landuse_cb.indexChanged(0)
 
+        self.raster_dtm_cb.setFilters(QgsMapLayerProxyModel.RasterLayer)
+        self.raster_dtm_cb.layerChanged.connect(self.update_layer_raster_dtm)
+        self.raster_dtm_cb.indexChanged(0)
+
+        self.calendar.selectionChanged.connect(self.update_month)
+        self.date_month = self.calendar.selectedDate().month()
 
         # widget 1
-        self.field_ka5_cb.setFilters(QgsFieldProxyModel.String)
+        self.label_soil_layer = TextConstants.label_soil_layer
+        self.label_landuse_layer = TextConstants.label_landuse_layer
+        self.label_dtm = TextConstants.label_dtm
+        self.label_date = TextConstants.label_date
 
         # widget 2
+        self.field_ka5_cb.setFilters(QgsFieldProxyModel.String)
+
+        # widget 3
+        self.label_FT.setText(TextConstants.label_FT)
+        self.label_MT.setText(TextConstants.label_MT)
+        self.label_GT.setText(TextConstants.label_GT)
+        self.label_FU.setText(TextConstants.label_FU)
+        self.label_MU.setText(TextConstants.label_MU)
+        self.label_GU.setText(TextConstants.label_GU)
+        self.label_FS.setText(TextConstants.label_FS)
+        self.label_MS.setText(TextConstants.label_MS)
+        self.label_GS.setText(TextConstants.label_GS)
+
         self.fcb_ftc.setFilters(QgsFieldProxyModel.Numeric)
         self.fcb_mtc.setFilters(QgsFieldProxyModel.Numeric)
         self.fcb_gtc.setFilters(QgsFieldProxyModel.Numeric)
@@ -164,7 +194,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.fcb_muc.setFilters(QgsFieldProxyModel.Numeric)
         self.fcb_guc.setFilters(QgsFieldProxyModel.Numeric)
 
-        # widget 3
+        # widget 4
+        self.label_crop_field = TextConstants.label_crop_field
+        self.label_landuse_field = TextConstants.label_landuse_field
+
         self.fcb_landuse.setFilters(QgsFieldProxyModel.String)
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
 
@@ -264,6 +297,14 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         return status, msg
 
+    def update_month(self):
+        self.date_month = self.calendar.selectedDate().month()
+
+    def update_layer_raster_dtm(self):
+
+        if self.raster_dtm_cb.currentLayer():
+            self.layer_raster_dtm = self.raster_dtm_cb.currentLayer()
+
     def update_layer_landuse(self):
 
         if self.layer_landuse_cb.currentLayer():
@@ -354,6 +395,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             label = ""
 
         self.qlabel_main.setText(label)
+
+        if i < len(TextConstants.step_description_labels):
+            label = TextConstants.step_description_labels[i]
+        else:
+            label = ""
+
+        self.qlabel_step_description.setText(label)
 
     def __next__(self):
 
