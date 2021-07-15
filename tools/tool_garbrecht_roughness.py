@@ -1,11 +1,8 @@
 from PyQt5.QtCore import QVariant
 
-from qgis.core import (QgsProcessing,
-                       QgsFeatureSink,
-                       QgsProcessingException,
-                       QgsProcessingAlgorithm,
-                       QgsProcessingParameterFeatureSource,
+from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterString,
+                       QgsProcessingParameterField,
                        QgsProcessingParameterBoolean,
                        QgsProcessingParameterVectorLayer,
                        QgsFeature,
@@ -13,15 +10,9 @@ from qgis.core import (QgsProcessing,
                        QgsFields,
                        QgsField,
                        QgsProcessingFeedback,
-                       QgsFeatureRequest,
-                       QgsGeometry,
-                       QgsCoordinateReferenceSystem,
-                       QgsProject,
-                       QgsProcessingParameterDateTime,
-                       QgsProcessingOutputNumber,
                        QgsVectorLayer)
 
-from qgis import processing
+from ..constants import TextConstants
 
 # TODO add input parameters
 
@@ -32,6 +23,15 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
     D90 = "D90"
     D90NAME = "D90NAME"
     NNAME = "NNAME"
+    FT = "FT"
+    MT = "MT"
+    GT = "GT"
+    FU = "FU"
+    MU = "MU"
+    GU = "GU"
+    FS = "FS"
+    MS = "MS"
+    GS = "GS"
 
     def createInstance(self):
         return GarbrechtRougnessProcessingAlgorithm()
@@ -81,7 +81,107 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.FT,
+                TextConstants.label_FT,
+                defaultValue="FT",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.MT,
+                TextConstants.label_MT,
+                defaultValue="MT",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.GT,
+                TextConstants.label_GT,
+                defaultValue="GT",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.FU,
+                TextConstants.label_FU,
+                defaultValue="FU",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.MU,
+                TextConstants.label_MU,
+                defaultValue="MU",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.GU,
+                TextConstants.label_GU,
+                defaultValue="GU",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.FS,
+                TextConstants.label_FS,
+                defaultValue="FS",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.MS,
+                TextConstants.label_MS,
+                defaultValue="MS",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterField(
+                self.GS,
+                TextConstants.label_GS,
+                defaultValue="GS",
+                parentLayerParameterName=self.INPUT,
+                type=QgsProcessingParameterField.Numeric
+            )
+        )
+
     def processAlgorithm(self, parameters, context, feedback: QgsProcessingFeedback):
+
+        att_ft = self.parameterAsString(parameters, self.FT, context)
+        att_mt = self.parameterAsString(parameters, self.MT, context)
+        att_gt = self.parameterAsString(parameters, self.GT, context)
+        att_fu = self.parameterAsString(parameters, self.FU, context)
+        att_mu = self.parameterAsString(parameters, self.MU, context)
+        att_gu = self.parameterAsString(parameters, self.GU, context)
+        att_fs = self.parameterAsString(parameters, self.FS, context)
+        att_ms = self.parameterAsString(parameters, self.MS, context)
+        att_gs = self.parameterAsString(parameters, self.GS, context)
 
         # default field names of the fractions content
         FTcode = "FT"
@@ -142,15 +242,15 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
 
         for number, feature in enumerate(layer_input.getFeatures()):
 
-            FTc = feature.attribute(fractionCodes[0])
-            MTc = FTc + feature.attribute(fractionCodes[1])
-            GTc = MTc + feature.attribute(fractionCodes[2])
-            FUc = GTc + feature.attribute(fractionCodes[3])
-            MUc = FUc + feature.attribute(fractionCodes[4])
-            GUc = MUc + feature.attribute(fractionCodes[5])
-            FSc = GUc + feature.attribute(fractionCodes[6])
-            MSc = FSc + feature.attribute(fractionCodes[7])
-            GSc = MSc + feature.attribute(fractionCodes[8])
+            FTc = feature.attribute(att_ft)
+            MTc = FTc + feature.attribute(att_mt)
+            GTc = MTc + feature.attribute(att_gt)
+            FUc = GTc + feature.attribute(att_fu)
+            MUc = FUc + feature.attribute(att_mu)
+            GUc = MUc + feature.attribute(att_gu)
+            FSc = GUc + feature.attribute(att_fs)
+            MSc = FSc + feature.attribute(att_ms)
+            GSc = MSc + feature.attribute(att_gs)
 
             cumContents = {FTcode: FTc, MTcode: MTc, GTcode: GTc, FUcode: FUc, MUcode: MUc, GUcode: GUc, FScode: FSc,
                            MScode: MSc, GScode: GSc}
