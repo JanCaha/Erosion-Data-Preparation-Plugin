@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1125</width>
-    <height>547</height>
+    <height>721</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>100</y>
+     <y>200</y>
      <width>1101</width>
-     <height>391</height>
+     <height>451</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -32,14 +32,14 @@
        <x>11</x>
        <y>0</y>
        <width>571</width>
-       <height>271</height>
+       <height>429</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="label_soil_layer">
         <property name="text">
-         <string>Input soil layer:</string>
+         <string>Soil properties definition layer:</string>
         </property>
        </widget>
       </item>
@@ -47,14 +47,34 @@
        <widget class="QgsMapLayerComboBox" name="layer_soil_cb"/>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_18">
+       <widget class="QLabel" name="label_landuse_layer">
         <property name="text">
-         <string>Input landuse layer:</string>
+         <string>Landuse definition layer:</string>
         </property>
        </widget>
       </item>
       <item row="3" column="0" colspan="2">
        <widget class="QgsMapLayerComboBox" name="layer_landuse_cb"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_dtm">
+        <property name="text">
+         <string>Input DTM layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QgsMapLayerComboBox" name="raster_dtm_cb"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_date">
+        <property name="text">
+         <string>Event date:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QCalendarWidget" name="calendar"/>
       </item>
      </layout>
     </widget>
@@ -65,19 +85,12 @@
       <rect>
        <x>11</x>
        <y>0</y>
-       <width>551</width>
+       <width>597</width>
        <height>301</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout">
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_23">
-        <property name="text">
-         <string>Field containing ka5 code classification if it exists (otherwise it will be calculated in next step):</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="2">
+      <item row="0" column="1">
        <widget class="QgsFieldComboBox" name="field_ka5_cb">
         <property name="allowEmptyFieldName">
          <bool>true</bool>
@@ -98,8 +111,8 @@
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_3">
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_8">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_FT">
         <property name="text">
          <string>FT:</string>
         </property>
@@ -108,11 +121,11 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="0" column="1">
        <widget class="QgsFieldComboBox" name="fcb_ftc"/>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_9">
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_MT">
         <property name="text">
          <string>MT:</string>
         </property>
@@ -121,11 +134,11 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="1" column="1">
        <widget class="QgsFieldComboBox" name="fcb_mtc"/>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_10">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_GT">
         <property name="text">
          <string>GT: </string>
         </property>
@@ -134,14 +147,11 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="2" column="1">
        <widget class="QgsFieldComboBox" name="fcb_gtc"/>
       </item>
-      <item row="4" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_fuc"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_12">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_FU">
         <property name="text">
          <string>FU:</string>
         </property>
@@ -150,11 +160,11 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_muc"/>
+      <item row="3" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_fuc"/>
       </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_11">
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_MU">
         <property name="text">
          <string>MU:</string>
         </property>
@@ -163,8 +173,11 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_13">
+      <item row="4" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_muc"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_GU">
         <property name="text">
          <string>GU:</string>
         </property>
@@ -173,14 +186,24 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="5" column="1">
        <widget class="QgsFieldComboBox" name="fcb_guc"/>
       </item>
-      <item row="9" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_gsc"/>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_FS">
+        <property name="text">
+         <string>FS:</string>
+        </property>
+        <property name="buddy">
+         <cstring>fcb_fsc</cstring>
+        </property>
+       </widget>
       </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_14">
+      <item row="6" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_fsc"/>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_MS">
         <property name="text">
          <string>MS:</string>
         </property>
@@ -189,8 +212,11 @@
         </property>
        </widget>
       </item>
-      <item row="9" column="0">
-       <widget class="QLabel" name="label_15">
+      <item row="7" column="1">
+       <widget class="QgsFieldComboBox" name="fcb_msc"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_GS">
         <property name="text">
          <string>GS:</string>
         </property>
@@ -200,27 +226,7 @@
        </widget>
       </item>
       <item row="8" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_msc"/>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_16">
-        <property name="text">
-         <string>FS:</string>
-        </property>
-        <property name="buddy">
-         <cstring>fcb_fsc</cstring>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_fsc"/>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="QLabel" name="label_17">
-        <property name="text">
-         <string>Fields containing specific content:</string>
-        </property>
-       </widget>
+       <widget class="QgsFieldComboBox" name="fcb_gsc"/>
       </item>
      </layout>
     </widget>
@@ -237,14 +243,14 @@
      </property>
      <layout class="QFormLayout" name="formLayout_4">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_20">
+       <widget class="QLabel" name="label_landuse_field">
         <property name="text">
          <string>Landuse field:</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_21">
+       <widget class="QLabel" name="label_crop_field">
         <property name="text">
          <string>Crop field:</string>
         </property>
@@ -430,7 +436,7 @@
    <property name="geometry">
     <rect>
      <x>580</x>
-     <y>510</y>
+     <y>680</y>
      <width>531</width>
      <height>30</height>
     </rect>
@@ -469,7 +475,7 @@
    <property name="geometry">
     <rect>
      <x>370</x>
-     <y>510</y>
+     <y>680</y>
      <width>55</width>
      <height>16</height>
     </rect>
@@ -482,7 +488,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>510</y>
+     <y>680</y>
      <width>261</width>
      <height>26</height>
     </rect>
@@ -507,10 +513,10 @@
   <widget class="QLabel" name="qlabel_main">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>20</y>
      <width>931</width>
-     <height>71</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
@@ -520,6 +526,35 @@
    </property>
    <property name="text">
     <string>Set up input data layers:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="qlabel_step_description">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>1091</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>180</y>
+     <width>1121</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
    </property>
   </widget>
  </widget>
