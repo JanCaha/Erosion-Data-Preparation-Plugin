@@ -51,6 +51,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         item.setTextAlignment(QtCore.Qt.AlignCenter)
 
         self.setHorizontalHeaderItem(1, item)
+
+        self.setColumnWidth(0, self.columnWidth(1) * 2)
         self.setColumnWidth(1, self.columnWidth(1) * 2)
 
     @staticmethod
