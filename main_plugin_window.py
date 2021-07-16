@@ -12,22 +12,29 @@ from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox
 from qgis.core import (QgsMapLayerProxyModel,
                        QgsVectorLayer,
                        QgsRasterLayer,
+                       QgsMapLayer,
                        Qgis,
+                       QgsRasterFileWriter,
                        QgsFieldProxyModel,
-                       QgsProject)
+                       QgsProject,
+                       QgsFileUtils,
+                       QgsProcessingUtils)
 
 from .algorithms.algs import (calculate_garbrecht_roughness,
                               landuse_with_crops,
                               validate_KA5,
                               classify_KA5,
                               add_fields_to_landuse,
-                              add_field_with_constant_value)
+                              add_field_with_constant_value,
+                              add_fid_field,
+                              save_raster_as_asc)
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
                                            create_table_to_join,
                                            copy_layer_fix_geoms,
-                                           create_table_KA5_to_join)
+                                           create_table_KA5_to_join,
+                                           rasterize_layer_by_example)
 
 from .algorithms.extract_elements_from_dicts import (extract_elements_without_values,
                                                      extract_elements_with_values)
@@ -67,6 +74,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     layer_landuse: QgsVectorLayer = None
     layer_intersected_dissolved: QgsVectorLayer = None
     layer_raster_dtm: QgsRasterLayer = None
+    layer_raster_rasterized: QgsRasterLayer = None
     date_month: int = None
 
 
@@ -230,7 +238,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.toolButton_lookup_table.clicked.connect(self.select_file_lookup_table)
         self.toolButton_parameter_table.clicked.connect(self.select_file_parameter_table)
 
-
+        self.lineEdit_landuse_raster.setText(QgsProcessingUtils.generateTempFilename("landuse_raster.asc"))
+        self.lineEdit_parameter_table.setText(QgsProcessingUtils.generateTempFilename("parameter_table.csv"))
+        self.lineEdit_lookup_table.setText(QgsProcessingUtils.generateTempFilename("lookup_table.csv"))
 
         self.fcb_landuse.setFilters(QgsFieldProxyModel.String)
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
@@ -273,7 +283,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.checkbox_export_empty_data.stateChanged.connect(self.allow_ok_button)
 
     def select_file_landuse_raster(self):
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file')
+        filter = "asc (*.asc)"
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_landuse_raster.setText(file_name)
 
     def select_file_lookup_table(self):
@@ -333,6 +345,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         return status, msg
 
+
     def validate_widget_3(self):
         msg = ""
 
@@ -349,7 +362,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def update_layer_raster_dtm(self):
 
         if self.raster_dtm_cb.currentLayer():
-            self.layer_raster_dtm = self.raster_dtm_cb.currentLayer()
+            self.layer_raster_dtm = QgsRasterLayer(self.raster_dtm_cb.currentLayer().source(), "raster_dtm")
 
     def update_layer_landuse(self):
 
@@ -613,50 +626,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
 
-                # self.dict_landuse_values = self.table_assign_values.get_data()
-                #
-                # # log(self.dict_landuse_values)
-                #
-                # layer = create_table_to_join(self.dict_landuse_values,
-                #                              extract_elements_with_values(self.dict_landuse_crop))
-                #
-                # QgsProject.instance().addMapLayer(layer)
-                #
-                # self.layer_landuse = join_tables(self.layer_landuse,
-                #                                  TextConstants.field_name_landuse_crops,
-                #                                  layer,
-                #                                  TextConstants.vl_join_col_name)
+                add_fid_field(self.layer_intersected_dissolved)
 
-            # if i == 5:
-            #
-            #     dissolve_list = [self.fcb_ftc.currentText(),
-            #                      self.fcb_mtc.currentText(),
-            #                      self.fcb_gtc.currentText(),
-            #                      self.fcb_fuc.currentText(),
-            #                      self.fcb_muc.currentText(),
-            #                      self.fcb_guc.currentText(),
-            #                      self.fcb_fsc.currentText(),
-            #                      self.fcb_msc.currentText(),
-            #                      self.fcb_gsc.currentText(),
-            #                      TextConstants.field_name_corg,
-            #                      TextConstants.field_name_k4_name,
-            #                      TextConstants.field_name_k4_code,
-            #                      TextConstants.field_name_GB,
-            #                      TextConstants.field_name_poly_id,
-            #                      TextConstants.tw_lv_col_bulkdensity,
-            #                      TextConstants.tw_lv_col_initmoisture,
-            #                      TextConstants.tw_lv_col_erodibility,
-            #                      TextConstants.tw_lv_col_roughn,
-            #                      TextConstants.tw_lv_col_cover,
-            #                      TextConstants.tw_lv_col_skinfactor]
-            #
-            #     self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
-            #                                                           self.layer_landuse,
-            #                                                           TextConstants.field_name_poly_id,
-            #                                                           TextConstants.field_name_sid,
-            #                                                           TextConstants.field_name_landuse_crops,
-            #                                                           dissolve_list,
-            #                                                           progress_bar=self.progressBar)
+                self.layer_raster_rasterized = rasterize_layer_by_example(self.layer_intersected_dissolved,
+                                                                          TextConstants.field_name_fid,
+                                                                          self.layer_raster_dtm,
+                                                                          progress_bar=self.progressBar)
+
             if i == 5:
 
                 self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
@@ -671,27 +647,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i + 1 == self.stackedWidget.count() - 1:
 
                 if self.ok_result_layer or self.checkbox_export_empty_data.isChecked():
-                    self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
-
-            # ok = True
-            # if i == 0:
-            #     ok = self.validate_entries()
-            # if i == 1:
-            #     ok = self.validate_about()
-            # if i == 4:
-            #     ok = self.validate_publication()
-            # if i == 5:
-            #     ok = self.validate_output_directory()
-            # if ok:
-            #     if i < 5:
-            #         self.stackedWidget.setCurrentIndex(i + 1)
-            #         if i == 4:
-            #             self.next_button.setText('Generate')
-            #             if self.output_directory.text() != '':
-            #                 self.show_output_info(
-            #                     os.path.join(self.output_directory.text(), self.module_name.text().lower()))
-            #     else:
-            #         self.accept()
+                        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
 
             if ok:
                 self.stackedWidget.setCurrentIndex(i + 1)
