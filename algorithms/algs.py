@@ -8,7 +8,10 @@ from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,
                        QgsFeature,
                        QgsFields,
-                       QgsField)
+                       QgsField,
+                       QgsRasterLayer)
+
+from qgis import processing
 
 from .utils import recode_2_ascii
 from ..classes.catalog import E3dCatalog
@@ -420,3 +423,46 @@ def add_field_with_constant_value(layer: QgsVectorLayer,
                                    value)
 
     layer.commitChanges()
+
+
+def add_fid_field(layer: QgsVectorLayer) -> NoReturn:
+
+    layer_dp: QgsVectorDataProvider = layer.dataProvider()
+
+    add_fields = QgsFields()
+
+    field = QgsField(TextConstants.field_name_fid, QVariant.Int)
+
+    add_fields.append(field)
+
+    layer_dp.addAttributes(add_fields)
+
+    layer.updateFields()
+
+    layer.startEditing()
+
+    feature: QgsFeature
+
+    field_index = layer_dp.fieldNameIndex(TextConstants.field_name_fid)
+
+    for feature in layer.getFeatures():
+
+        layer.changeAttributeValue(feature.id(),
+                                   field_index,
+                                   feature.id())
+
+    layer.commitChanges()
+
+
+def save_raster_as_asc(raster: QgsRasterLayer,
+                       path: str) -> NoReturn:
+
+    processing.run("gdal:translate", {
+        'INPUT': raster,
+        'TARGET_CRS': None,
+        'NODATA': None,
+        'COPY_SUBDATASETS': False,
+        'OPTIONS': '',
+        'EXTRA': '',
+        'DATA_TYPE': 0,
+        'OUTPUT': path})
