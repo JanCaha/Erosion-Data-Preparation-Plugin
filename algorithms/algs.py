@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, NoReturn, Union, List
+from typing import Tuple, Dict, NoReturn, Union, List, Any
 import math
 
 from PyQt5.QtCore import QVariant
@@ -383,4 +383,40 @@ def delete_fields(layer: QgsVectorLayer,
 
     layer.startEditing()
     layer.deleteAttributes(fields_to_delete)
+    layer.commitChanges()
+
+
+def add_field_with_constant_value(layer: QgsVectorLayer,
+                                  fieldname: str,
+                                  value: Any) -> NoReturn:
+
+    layer_dp: QgsVectorDataProvider = layer.dataProvider()
+
+    add_fields = QgsFields()
+
+    if isinstance(value, int):
+        field = QgsField(fieldname, QVariant.Int)
+    elif isinstance(value, float):
+        field = QgsField(fieldname, QVariant.Double)
+    else:
+        field = QgsField(fieldname, QVariant.String, "", 255)
+
+    add_fields.append(field)
+
+    layer_dp.addAttributes(add_fields)
+
+    layer.updateFields()
+
+    layer.startEditing()
+
+    feature: QgsFeature
+
+    field_index = layer_dp.fieldNameIndex(fieldname)
+
+    for feature in layer.getFeatures():
+
+        layer.changeAttributeValue(feature.id(),
+                                   field_index,
+                                   value)
+
     layer.commitChanges()
