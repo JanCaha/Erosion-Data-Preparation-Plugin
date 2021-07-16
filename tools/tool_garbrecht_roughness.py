@@ -14,8 +14,6 @@ from qgis.core import (QgsProcessingAlgorithm,
 
 from ..constants import TextConstants
 
-# TODO add input parameters
-
 
 class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
 
