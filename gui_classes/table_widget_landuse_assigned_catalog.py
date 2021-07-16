@@ -53,7 +53,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         self.setHorizontalHeaderItem(1, item)
 
         self.setColumnWidth(0, self.columnWidth(1) * 2)
-        self.setColumnWidth(1, self.columnWidth(1) * 2)
+        self.setColumnWidth(1, self.columnWidth(1) * 3)
 
     @staticmethod
     def filterTheDict(dictObj, callback):
