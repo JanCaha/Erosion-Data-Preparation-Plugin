@@ -5,9 +5,11 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
-from qgis.core import (Qgis, QgsProject, QgsApplication)
+from qgis.core import (Qgis, QgsProject, QgsApplication, QgsFileUtils)
 
 import processing
+
+from .algorithms.algs import save_raster_as_asc
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -151,8 +153,7 @@ class ErosionDataPreparationPlugin:
             return
 
         if result:
-            # QgsProject.instance().addMapLayer(self.dlg.layer_soil)
-            # QgsProject.instance().addMapLayer(self.dlg.layer_landuse)
             QgsProject.instance().addMapLayer(self.dlg.layer_intersected_dissolved)
-            # self.iface.messageBar().pushMessage(self.tr('<b>{}</b> reloaded.').format(self.dlg.__dict__.keys()),
-            #                                     Qgis.Info)
+
+            save_raster_as_asc(self.dlg.rasterized_layer,
+                               self.dlg.lineEdit_landuse_raster.text())
