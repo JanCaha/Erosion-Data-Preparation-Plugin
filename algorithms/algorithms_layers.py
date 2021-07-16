@@ -12,8 +12,12 @@ from qgis.core import (QgsVectorLayer,
                        QgsFeature,
                        QgsMapLayer,
                        QgsVectorLayer,
+                       QgsRasterDataProvider,
                        NULL,
-                       QgsProject)
+                       QgsProject,
+                       QgsRectangle,
+                       QgsCoordinateReferenceSystem,
+                       QgsRasterLayer)
 
 from ..classes.definition_landuse_crop import LanduseCrop
 from ..classes.definition_landuse_values import LanduseValues
@@ -21,6 +25,49 @@ from ..constants import TextConstants
 from ..classes.catalog import E3dCatalog
 from ..classes.class_KA5 import KA5Class
 from ..algorithms.utils import log
+
+
+def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
+                               field_name_vectorize: str,
+                               raster_template: QgsRasterLayer,
+                               progress_bar: QtWidgets.QProgressBar) -> QgsRasterLayer:
+
+    progress_bar.setMaximum(3)
+    progress_bar.setValue(1)
+
+    extent: QgsRectangle = raster_template.extent()
+
+    crs: QgsCoordinateReferenceSystem = vector_layer.crs()
+
+    extent_string = f"{extent.xMinimum()},{extent.xMaximum()},{extent.yMinimum()},{extent.yMaximum()} [{crs.authid()}]"
+
+    raster_data_provider: QgsRasterDataProvider = raster_template.dataProvider()
+    no_data = raster_data_provider.sourceNoDataValue(1)
+
+    width_size = extent.width() / raster_template.width()
+    height_size = extent.height() / raster_template.height()
+
+    progress_bar.setValue(2)
+
+    result = processing.run("gdal:rasterize",
+                   {'INPUT': vector_layer,
+                    'FIELD': field_name_vectorize,
+                    'BURN': 0,
+                    'UNITS': 1,
+                    'WIDTH': width_size,
+                    'HEIGHT': height_size,
+                    'EXTENT': extent_string,
+                    'NODATA': no_data,
+                    'OPTIONS': '',
+                    'DATA_TYPE': 5,
+                    'INIT': None,
+                    'INVERT': False,
+                    'EXTRA': '',
+                    'OUTPUT': 'TEMPORARY_OUTPUT'})
+
+    progress_bar.setValue(3)
+
+    return QgsRasterLayer(result["OUTPUT"], f"rasterized_{vector_layer.name()}")
 
 
 def copy_layer_fix_geoms(layer_input: QgsMapLayer, layer_name: str) -> QgsVectorLayer:
