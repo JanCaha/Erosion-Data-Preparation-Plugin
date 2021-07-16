@@ -32,6 +32,8 @@ class TextConstants:
     vl_join_col_name = "name"
 
     # field names
+    field_name_fid = "POLY_NR"
+
     field_name_sid = "SID"
     field_name_corg = "Corg"
 
@@ -143,6 +145,8 @@ class TextConstants:
                                "Values `{missing_values}` are not found amongst KA5 classes in catalog."
 
     msg_select_all_fields = "All fields must be selected."
+
+    msg_select_all_files = "All file paths must be specified."
 
     mgs_select_landuse_field = "Landuse field must be selected."
 
