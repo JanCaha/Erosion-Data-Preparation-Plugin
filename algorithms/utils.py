@@ -9,6 +9,8 @@ from qgis.core import (QgsMessageLog,
                        QgsFeature,
                        NULL)
 
+from ..constants import TextConstants
+
 
 def eval_string_with_variables(input_string: str) -> str:
 
@@ -77,14 +79,13 @@ def evaluate_result_layer(layer: QgsVectorLayer) -> Tuple[bool, str]:
 
         is_complete = True
 
-        message = "Data for export is complete."
+        message = TextConstants.msg_result_data_ok
 
     else:
 
         is_complete = False
 
-        message = F"Only {complete} from {number_of_features} for export are complete. \n" \
-                  F"The resulting {partially_complete} features are only partially complete."
+        message = TextConstants.msg_result_data_missing
 
     return is_complete, message
 
