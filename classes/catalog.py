@@ -5,6 +5,7 @@ import sqlite3
 
 from .singleton import Singleton
 from .class_KA5 import KA5Class
+from ..constants import TextConstants
 
 
 class E3dCatalog(metaclass=Singleton):
@@ -72,7 +73,7 @@ class E3dCatalog(metaclass=Singleton):
 
         data = {}
 
-        self.db_cursor.execute("SELECT name_cz, id FROM landuse_lv1")
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM landuse_lv1")
 
         rows = self.db_cursor.fetchall()
 
@@ -86,7 +87,7 @@ class E3dCatalog(metaclass=Singleton):
                                              id_landuse_lv2=None,
                                              id_crop=None)})
 
-        self.db_cursor.execute("SELECT name_cz, id, landuse_lv1_id FROM landuse_lv2")
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv1_id FROM landuse_lv2")
 
         rows = self.db_cursor.fetchall()
 
@@ -100,7 +101,7 @@ class E3dCatalog(metaclass=Singleton):
                                              id_landuse_lv2=row[1],
                                              id_crop=None)})
 
-        self.db_cursor.execute("SELECT name_cz, id, landuse_lv2_id FROM crop")
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv2_id FROM crop")
 
         rows = self.db_cursor.fetchall()
 
@@ -123,8 +124,8 @@ class E3dCatalog(metaclass=Singleton):
 
         classes = []
 
-        self.db_cursor.execute("SELECT id, code, name_cz, ka5_group_lv2_id, "
-                               "ft, mt, gt, fu, mu, gu, fs, ms, gs FROM ka5_class")
+        self.db_cursor.execute(f"SELECT id, code, name_{TextConstants.language}, ka5_group_lv2_id, "
+                               f"ft, mt, gt, fu, mu, gu, fs, ms, gs FROM ka5_class")
 
         rows = self.db_cursor.fetchall()
 
@@ -155,6 +156,9 @@ class E3dCatalog(metaclass=Singleton):
 
         if landuse_lv2:
             conds.append(f"landuse_lv2_id = {landuse_lv2}")
+
+        if month:
+            conds.append(f"month_id = {month}")
 
         if 0 < len(conds):
 
