@@ -6,7 +6,7 @@ import datetime
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox
 from qgis.core import (QgsMapLayerProxyModel,
@@ -21,7 +21,7 @@ from .algorithms.algs import (calculate_garbrecht_roughness,
                               validate_KA5,
                               classify_KA5,
                               add_fields_to_landuse,
-                              delete_fields)
+                              add_field_with_constant_value)
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
@@ -106,11 +106,28 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # widget 6
     label_data_status: QtWidgets.QLabel
 
+    # widget last
+
+    label_landuse_raster: QtWidgets.QLabel
+    lineEdit_landuse_raster: QtWidgets.QLineEdit
+    toolButton_landuse_raster: QtWidgets.QFileDialog
+
+    label_parameter_table: QtWidgets.QLabel
+    lineEdit_parameter_table: QtWidgets.QLineEdit
+    toolButton_parameter_table: QtWidgets.QFileDialog
+
+    label_lookup_table: QtWidgets.QLabel
+    lineEdit_lookup_table: QtWidgets.QLineEdit
+    toolButton_lookup_table: QtWidgets.QFileDialog
+
     # main window
     stackedWidget: QtWidgets.QStackedWidget
     progressBar: QtWidgets.QProgressBar
     button_box: QtWidgets.QDialogButtonBox
     checkbox_export_empty_data: QtWidgets.QCheckBox
+
+    label_created: QtWidgets.QLabel
+    label_project: QtWidgets.QLabel
 
     dict_landuse_values: Dict[str, LanduseValues]
     dict_landuse_crop: Dict[str, LanduseCrop]
@@ -148,6 +165,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.set_main_label()
         self.update_prev_next_buttons()
 
+        self.label_created.setText(TextConstants.label_created)
+        self.label_project.setText(TextConstants.label_project)
+
         # widget 0
         self.layer_soil_cb.setFilters(QgsMapLayerProxyModel.PolygonLayer)
         self.layer_soil_cb.layerChanged.connect(self.update_layer_soil)
@@ -162,13 +182,14 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.raster_dtm_cb.indexChanged(0)
 
         self.calendar.selectionChanged.connect(self.update_month)
+        self.calendar.setLocale(TextConstants.locale)
         self.date_month = self.calendar.selectedDate().month()
 
         # widget 1
-        self.label_soil_layer = TextConstants.label_soil_layer
-        self.label_landuse_layer = TextConstants.label_landuse_layer
-        self.label_dtm = TextConstants.label_dtm
-        self.label_date = TextConstants.label_date
+        self.label_soil_layer.setText(TextConstants.label_soil_layer)
+        self.label_landuse_layer.setText(TextConstants.label_landuse_layer)
+        self.label_dtm.setText(TextConstants.label_dtm)
+        self.label_date.setText(TextConstants.label_date)
 
         # widget 2
         self.field_ka5_cb.setFilters(QgsFieldProxyModel.String)
@@ -195,8 +216,21 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.fcb_guc.setFilters(QgsFieldProxyModel.Numeric)
 
         # widget 4
-        self.label_crop_field = TextConstants.label_crop_field
-        self.label_landuse_field = TextConstants.label_landuse_field
+        self.label_crop_field.setText(TextConstants.label_crop_field)
+        self.label_landuse_field.setText(TextConstants.label_landuse_field)
+
+        # widget last
+        self.label_data_status_confirm.setText(TextConstants.label_data_status_confirm)
+
+        self.label_landuse_raster.setText(TextConstants.label_landuse_raster)
+        self.label_lookup_table.setText(TextConstants.label_lookup_table)
+        self.label_parameter_table.setText(TextConstants.label_parameter_table)
+
+        self.toolButton_landuse_raster.clicked.connect(self.select_file_landuse_raster)
+        self.toolButton_lookup_table.clicked.connect(self.select_file_lookup_table)
+        self.toolButton_parameter_table.clicked.connect(self.select_file_parameter_table)
+
+
 
         self.fcb_landuse.setFilters(QgsFieldProxyModel.String)
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
@@ -237,6 +271,18 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.stackedWidget.insertWidget(10, self.table_skinfactor)
 
         self.checkbox_export_empty_data.stateChanged.connect(self.allow_ok_button)
+
+    def select_file_landuse_raster(self):
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file')
+        self.lineEdit_landuse_raster.setText(file_name)
+
+    def select_file_lookup_table(self):
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file')
+        self.lineEdit_lookup_table.setText(file_name)
+
+    def select_file_parameter_table(self):
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file')
+        self.lineEdit_parameter_table.setText(file_name)
 
     def allow_ok_button(self):
         if self.sender().isChecked() or self.ok_result_layer:
@@ -525,7 +571,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                           dissolve_list,
                                                                           progress_bar=self.progressBar)
 
-                    # self.table_assign_values.add_data(extract_elements_without_values(self.dict_landuse_crop))
+                    add_field_with_constant_value(self.layer_intersected_dissolved,
+                                                  TextConstants.field_name_month,
+                                                  self.date_month)
 
             if i == 4:
 
