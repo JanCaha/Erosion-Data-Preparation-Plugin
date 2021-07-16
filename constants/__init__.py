@@ -1,5 +1,10 @@
+from PyQt5 import QtCore
+
 # class TextConstantsEN:
 class TextConstants:
+
+    language = "en"
+    locale = QtCore.QLocale(QtCore.QLocale.English)
 
     # Layer names
 
@@ -32,6 +37,8 @@ class TextConstants:
 
     field_name_d90 = "D90"
     field_name_GB = "GB"
+
+    field_name_month = "month"
 
     field_name_k4_code = "k4_code"
     field_name_k4_name = "k4_name"
@@ -69,7 +76,8 @@ class TextConstants:
                    "Canopy cover",
                    "Surface roughness",
                    "Soil erosion resistence",
-                   "Skinfactor"
+                   "Skinfactor",
+                   "Export input datasets for Erosion-3D"
                    ]
 
     a = """
@@ -88,6 +96,7 @@ class TextConstants:
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
+        "Data for export is complete. Please select the input files you want to export and set name and directory to store them to.",
         ""
     ]
 
@@ -99,9 +108,16 @@ class TextConstants:
     label_crop_field = "Landuse field:"
     label_landuse_field = "Crop field:"
 
-    # Tables with widgets
+    label_data_status_confirm = "I understand and want to proceed anyway."
 
-    """Source landuse category	Catalogue landuse category"""
+    label_landuse_raster = "Landuse raster:"
+    label_parameter_table = "Parameters table:"
+    label_lookup_table = "Lookup table:"
+
+    label_created = "Vytvořil <a href=\"https://www.cahik.cz/o-mne/\">Jan Caha</a> pro Katedru hydromeliorací a krajinného inženýrství, Fakulta stavební, ČVUT v Praze v roce 2021."
+    label_project = "Vývoj byl financován projektem QK1810341 „Vytvoření národní databáze parametrů matematického simulačního modelu Erosion3D a jeho standardizace pro rutinní využití v podmínkách ČR“\nNárodní agentury zemědělského výzkumu České republiky."
+
+    # Tables with widgets
 
     col_crop = "Crop"
     col_ka5_code = "KA5 Class"
@@ -129,6 +145,9 @@ class TextConstants:
     msg_select_all_fields = "All fields must be selected."
 
     mgs_select_landuse_field = "Landuse field must be selected."
+
+    msg_result_data_ok = "Data for export is complete."
+    msg_result_data_missing = "Parameters table is missing some values.\nThe datasets can be saved anyway but they may need some more processing to be used in Erosion-3D."
 
     # Labels
 
