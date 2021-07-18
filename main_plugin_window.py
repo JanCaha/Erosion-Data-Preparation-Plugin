@@ -362,19 +362,21 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def update_layer_raster_dtm(self):
 
         if self.raster_dtm_cb.currentLayer():
-            self.layer_raster_dtm = QgsRasterLayer(self.raster_dtm_cb.currentLayer().source(), "raster_dtm")
+            self.layer_raster_dtm = self.raster_dtm_cb.currentLayer()
 
     def update_layer_landuse(self):
 
         if self.layer_landuse_cb.currentLayer():
-            self.layer_landuse = QgsVectorLayer(self.layer_landuse_cb.currentLayer().source())
 
-            fields = self.layer_landuse.fields()
+            fields = self.layer_landuse_cb.currentLayer().fields()
 
             self.fcb_landuse.setFields(fields)
-            self.fcb_landuse.setField("LandUse")
+            if "LandUse" in fields.names():
+                self.fcb_landuse.setField("LandUse")
+
             self.fcb_crop.setFields(fields)
-            self.fcb_crop.setField("plodina")
+            if "plodina" in fields.names():
+                self.fcb_crop.setField("plodina")
 
     def update_layer_soil(self):
 
@@ -633,7 +635,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                           self.layer_raster_dtm,
                                                                           progress_bar=self.progressBar)
 
-            if i == 5:
+            if i == 10:
 
                 self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
 
