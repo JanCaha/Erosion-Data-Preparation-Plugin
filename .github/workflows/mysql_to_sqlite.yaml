@@ -35,7 +35,7 @@ jobs:
           
       - name: Convert MySQL to SQLite
         run: |
-          python mysql_to_sqlite.py
+          python ./db_catalog/mysql_to_sqlite.py
       
       - uses: EndBug/add-and-commit@v7
         with:
