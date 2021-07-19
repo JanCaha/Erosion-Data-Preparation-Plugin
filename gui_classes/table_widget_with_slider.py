@@ -646,3 +646,54 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
         return [row[0], row[1], row[2], row[3], row[4], row[5], value]
+
+
+class TableWidgetInitMoisture(TableWidgetWithSlider):
+
+    def field_to_add(self) -> str:
+        return TextConstants.field_name_init_moisture
+
+    def field_list_for_table(self) -> List[str]:
+        return [TextConstants.field_name_crop_id,
+                TextConstants.field_name_landuse_lv2_id,
+                TextConstants.field_name_landuse_lv1_id,
+                TextConstants.field_name_crop_name,
+                TextConstants.field_name_ka5_id,
+                TextConstants.field_name_ka5_name]
+
+    def field_list_for_join(self) -> List[str]:
+        return [TextConstants.field_name_crop_id,
+                TextConstants.field_name_landuse_lv2_id,
+                TextConstants.field_name_landuse_lv1_id,
+                TextConstants.field_name_crop_name,
+                TextConstants.field_name_ka5_id,
+                TextConstants.field_name_ka5_name]
+
+    def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
+        if row[3] and row[5]:
+            return [row[3], row[5]]
+        else:
+            return None
+
+    def get_slider_stat_values(self, values: List[Any]) -> Tuple[float, float, float, float]:
+        return E3dCatalog().get_initmoisture_range(crop=values[0],
+                                                   landuse_lv1=values[2],
+                                                   landuse_lv2=values[1],
+                                                   ka5_class=values[4])
+
+    def prepare_fields(self) -> str:
+
+        fields = [F"field={TextConstants.field_name_crop_id}:string",
+                  F"field={TextConstants.field_name_landuse_lv2_id}:string",
+                  F"field={TextConstants.field_name_landuse_lv1_id}:string",
+                  F"field={TextConstants.field_name_crop_name}:string",
+                  F"field={TextConstants.field_name_ka5_id}:string",
+                  F"field={TextConstants.field_name_ka5_name}:string",
+                  F"field={TextConstants.field_name_init_moisture}:double"]
+
+        fields = "&".join(fields)
+
+        return fields
+
+    def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
+        return [row[0], row[1], row[2], row[3], row[4], row[5], value]
