@@ -1,7 +1,10 @@
 name: SQL to SQLite
 
 on:
-  push
+  push:
+     paths:
+      - .github/workflows/**
+      - db_catalog/**
 
 jobs:
 
