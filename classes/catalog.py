@@ -399,3 +399,53 @@ class E3dCatalog(metaclass=Singleton):
 
         else:
             return None, None, None, 0
+
+    def get_initmoisture_range(self,
+                               crop: Optional[str] = None,
+                               landuse_lv1: Optional[str] = None,
+                               landuse_lv2: Optional[str] = None,
+                               ka5_class: Optional[str] = None,
+                               ka5_group_lv2: Optional[str] = None,
+                               agrotechnology: Optional[str] = None,
+                               protection_measure: Optional[str] = None,
+                               surface_condition: Optional[str] = None,
+                               month: Optional[str] = None):
+
+        conds = []
+
+        if month:
+            conds.append(f"month_id = {month}")
+
+        if crop:
+            conds.append(f"crop_id = {crop}")
+
+        if landuse_lv1:
+            conds.append(f"landuse_lv1_id = {landuse_lv1}")
+
+        if landuse_lv2:
+            conds.append(f"landuse_lv2_id = {landuse_lv2}")
+
+        if ka5_class:
+            conds.append(f"ka5_class_id = {ka5_class}")
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            variable_name = "initmoisture"
+
+            self.db_cursor.execute(
+                F"SELECT "
+                F"MIN({variable_name}) AS min, "
+                F"MAX({variable_name}) AS max, "
+                F"AVG({variable_name}) as mean, "
+                F"COUNT() as count FROM calibration "
+                F"WHERE {conds}")
+
+            rows = self.db_cursor.fetchall()
+
+            if 0 < len(rows):
+                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+
+        else:
+            return None, None, None, 0
