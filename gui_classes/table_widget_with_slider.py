@@ -49,7 +49,7 @@ class TableWidgetWithSlider(QTableWidget):
             self.setHorizontalHeaderItem(i, self.header_column(column_names[i]))
 
             if column_names[i] == TextConstants.col_ka5_code:
-                self.setColumnWidth(i, 100)
+                self.setColumnWidth(i, 150)
 
             else:
 
@@ -87,6 +87,7 @@ class TableWidgetWithSlider(QTableWidget):
     def add_cell_item_number(self) -> QLineEdit:
         cell_item = QLineEdit()
         cell_item.setPlaceholderText('0')
+        cell_item.setAlignment(QtCore.Qt.AlignRight)
         validator = QRegExpValidator(QRegExp(r'^-?[0-9]+[\.,]?[0-9]{0,14}$'))
         cell_item.setValidator(validator)
         cell_item.returnPressed.connect(self.clear_focus)
@@ -361,7 +362,8 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_soil_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -369,7 +371,8 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_soil_id]
 
     def get_slider_stat_values(self, values: List[Any]) -> Tuple[float, float, float, float]:
 
@@ -380,7 +383,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], row[5]]
+            return [row[3], f"{row[6]} ({row[5]})"]
         else:
             return None
 
@@ -392,6 +395,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_crop_name}:string",
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
+                  F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_bulk_density}:double"]
 
         fields = "&".join(fields)
@@ -399,7 +403,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
 
 
 class TableWidgetCorg(TableWidgetWithSlider):
@@ -415,7 +419,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_ka5_group_lv2_id,
-                TextConstants.field_name_ka5_code]
+                TextConstants.field_name_ka5_code,
+                TextConstants.field_name_soil_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -424,11 +429,12 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_ka5_group_lv2_id]
+                TextConstants.field_name_ka5_group_lv2_id,
+                TextConstants.field_name_soil_id]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[7]:
-            return [row[3], row[7]]
+            return [row[3], f"{row[8]} ({row[7]})"]
         else:
             return None
 
@@ -448,6 +454,7 @@ class TableWidgetCorg(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
+                  F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_corg}:double"]
 
         fields = "&".join(fields)
@@ -455,7 +462,7 @@ class TableWidgetCorg(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[8], value]
 
 
 class TableWidgetCanopyCover(TableWidgetWithSlider):
@@ -557,7 +564,8 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_soil_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -565,11 +573,12 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_soil_id]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], row[5]]
+            return [row[3], f"{row[6]} ({row[5]})"]
         else:
             return None
 
@@ -587,6 +596,7 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_crop_name}:string",
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
+                  F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_erodibility}:double"]
 
         fields = "&".join(fields)
@@ -594,7 +604,7 @@ class TableWidgetErodibility(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
 
 
 class TableWidgetSkinFactor(TableWidgetWithSlider):
@@ -608,7 +618,8 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_soil_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -616,11 +627,12 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_soil_id]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], row[5]]
+            return [row[3], f"{row[6]} ({row[5]})"]
         else:
             return None
 
@@ -638,6 +650,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_crop_name}:string",
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
+                  F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_skinfactor}:double"]
 
         fields = "&".join(fields)
@@ -645,7 +658,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
 
 
 class TableWidgetInitMoisture(TableWidgetWithSlider):
