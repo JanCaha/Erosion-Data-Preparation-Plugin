@@ -51,9 +51,6 @@ class TextConstants:
     # field names
     field_name_fid = "POLY_NR"
 
-    field_name_sid = "SID"
-    field_name_corg = "Corg"
-
     field_name_d90 = "D90"
     field_name_GB = "GB"
 
@@ -67,7 +64,7 @@ class TextConstants:
     field_name_ka5_id = "ka5_id"
     field_name_ka5_group_lv2_id = "ka5_group_lv2_id"
 
-    field_name_poly_id = "poly_id"
+    field_name_poly_id = "POLY_ID"
 
     field_name_landuse_crops = "landuse_crop"
 
@@ -76,13 +73,21 @@ class TextConstants:
     field_name_crop_id = "crop_id"
     field_name_crop_name = "crop_name"
 
-    field_name_bulk_density = "Bulk_Density"
-    field_name_canopy_cover = "Canopy_Cover"
-    field_name_roughness = "Roughness"
-    field_name_erodibility = "Erodibility"
-    field_name_skinfactor = "Skin_Factor"
+    field_name_corg = "CORG"
+    field_name_bulk_density = "BLKDENSITY"
+    field_name_canopy_cover = "COVER"
+    field_name_roughness = "ROUGHNESS"
+    field_name_erodibility = "ERODIBIL"
+    field_name_skinfactor = "SKINFACTOR"
+    field_name_init_moisture = "INITMOIST"
+
+    field_name_layer_id = "LAYER_ID"
+    field_name_layer_thick = "LAYERTHICK"
 
     # GUI
+    label_steps = "Step "
+    label_from = " from "
+    label_dot = "."
 
     # Main Labels for stackedWidget
     main_labels = ["Set up input data layers",
@@ -99,9 +104,6 @@ class TextConstants:
                    "Export input datasets for Erosion-3D"
                    ]
 
-    a = """
-    
-    """
 
     step_description_labels = [
         "Please select source layers for your landuse and soil properties definition. Both layers need to be polygon geometry vector datasets.\n\nPlease select the digital terrain model that will be used in the model. It will be used for referencing the Erosion-3D input parameter rasters that are going to be generated in the end of this wizard.\n\nAnd set the date when the modeled rainfall event occurs.",
@@ -123,6 +125,9 @@ class TextConstants:
     label_landuse_layer = "Landuse definition layer:"
     label_dtm = "DMT layer:"
     label_date = "Event date:"
+
+    label_ka5_class ="KA5 class:"
+    label_soil_id = "Soil ID:"
 
     label_crop_field = "Landuse field:"
     label_landuse_field = "Crop field:"
@@ -157,6 +162,8 @@ class TextConstants:
     msg_title = "Error in this step"
 
     msg_select_layer = "Layer must be selected."
+
+    msg_select_soil_id = "Soil ID field must be selected."
 
     msg_validate_ka5_classes = "Provided column does not contain valid values.\n" \
                                "Values `{missing_values}` are not found amongst KA5 classes in catalog."
