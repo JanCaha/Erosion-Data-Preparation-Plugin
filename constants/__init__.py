@@ -1,10 +1,22 @@
 from PyQt5 import QtCore
 
+
 # class TextConstantsEN:
 class TextConstants:
 
     language = "en"
     locale = QtCore.QLocale(QtCore.QLocale.English)
+
+    # Plugin constants
+
+    plugin_name = "Erosion-3D Data Preparation"
+    plugin_toolbar_name = "Erosion-3D Data Preparation Toolbar"
+    plugin_toolbar_name_id = "Erosion3DDataPreparationToolbar"
+
+    plugin_main_tool_name = "Erosion-3D Data Preparation Wizard"
+
+    plugin_action_name_garbrech_roughness = "Garbrech roughness"
+    plugin_action_id_garbrech_roughness = "GarbrechRoughness"
 
     # Layer names
 
