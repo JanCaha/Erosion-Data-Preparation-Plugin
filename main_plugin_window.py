@@ -27,7 +27,7 @@ from .algorithms.algs import (calculate_garbrecht_roughness,
                               add_fields_to_landuse,
                               add_field_with_constant_value,
                               add_fid_field,
-                              save_raster_as_asc)
+                              rename_field)
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
@@ -523,6 +523,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     self.update_layer_soil()
 
+                rename_field(self.layer_soil,
+                             self.field_soilid_cb.currentText(),
+                             TextConstants.field_name_soil_id)
+
             if i == 2:
 
                 ok, msg = self.validate_widget_2()
@@ -594,19 +598,17 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                      TextConstants.field_name_landuse_lv2_id,
                                      TextConstants.field_name_crop_id,
                                      TextConstants.field_name_crop_name,
-                                     self.field_soilid_cb.currentText(),
+                                     TextConstants.field_name_soil_id,
                                      TextConstants.field_name_landuse_crops,
                                      TextConstants.field_name_poly_id]
 
                     self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
                                                                           self.layer_landuse,
                                                                           TextConstants.field_name_poly_id,
-                                                                          self.field_soilid_cb.currentText(),
+                                                                          TextConstants.field_name_soil_id,
                                                                           TextConstants.field_name_landuse_crops,
                                                                           dissolve_list,
                                                                           progress_bar=self.progressBar)
-
-                    QgsProject.instance().addMapLayer(self.layer_intersected_dissolved)
 
                     add_field_with_constant_value(self.layer_intersected_dissolved,
                                                   TextConstants.field_name_month,
@@ -688,10 +690,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if ok:
                 self.stackedWidget.setCurrentIndex(i + 1)
-                self.progressBar.setValue(0)
+                self.progressBar.setMaximum(1)
+                self.progressBar.setValue(1)
             else:
                 QtWidgets.QMessageBox.warning(self, TextConstants.msg_title, msg)
-                self.progressBar.setValue(0)
+                self.progressBar.setMaximum(1)
+                self.progressBar.setValue(1)
 
     def prev(self):
         i = self.stackedWidget.currentIndex()
