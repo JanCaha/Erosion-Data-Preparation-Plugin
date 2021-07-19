@@ -454,6 +454,19 @@ def add_fid_field(layer: QgsVectorLayer) -> NoReturn:
     layer.commitChanges()
 
 
+def rename_field(layer: QgsVectorLayer,
+                 field_name_original: str,
+                 field_name_new: str) -> NoReturn:
+
+    layer.startEditing()
+
+    field_name_original_index = layer.fields().lookupField(field_name_original)
+
+    layer.renameAttribute(field_name_original_index, field_name_new)
+
+    layer.commitChanges()
+
+
 def save_raster_as_asc(raster: QgsRasterLayer,
                        path: str) -> NoReturn:
 
