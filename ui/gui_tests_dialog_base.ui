@@ -404,21 +404,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="page_11">
-    <widget class="QLabel" name="label_23">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>141</width>
-       <height>91</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Initmoisture page</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QWidget" name="page_10">
     <widget class="QLabel" name="label_data_status">
      <property name="geometry">
@@ -663,7 +648,7 @@
     <rect>
      <x>10</x>
      <y>680</y>
-     <width>261</width>
+     <width>262</width>
      <height>26</height>
     </rect>
    </property>
@@ -671,7 +656,7 @@
     <item row="0" column="0">
      <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>Current step:</string>
+       <string>Current step processing:</string>
       </property>
      </widget>
     </item>
