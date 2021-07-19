@@ -31,5 +31,5 @@ jobs:
       - name: SQL setup
         run: |
           sudo systemctl start mysql.service
-          mysql -u root -p root < ./db_catalog/e3dcatalog_20210629.sql
+          mysql -u root -proot < ./db_catalog/e3dcatalog_20210629.sql
           
