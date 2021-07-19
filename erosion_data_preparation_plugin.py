@@ -147,7 +147,8 @@ class ErosionDataPreparationPlugin:
         self.actions_menu_toolbar.append(action)
 
     def GarbrechRoughnessTool(self):
-        processing.execAlgorithmDialog('erosiondataplugin:GarbrechtRougness', {})
+        tool_call = f"{TextConstants.tool_group_id}:{TextConstants.plugin_action_id_garbrech_roughness}"
+        processing.execAlgorithmDialog(tool_call, {})
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -163,7 +164,6 @@ class ErosionDataPreparationPlugin:
                 action)
             self.toolbar.removeAction(action)
 
-        self.GarbrechRoughnessTool = None
         del self.toolbar
 
         QgsApplication.processingRegistry().removeProvider(self.provider)
