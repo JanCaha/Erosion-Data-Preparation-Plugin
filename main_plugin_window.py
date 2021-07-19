@@ -585,7 +585,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     add_fields_to_landuse(self.layer_landuse,
                                           self.dict_landuse_crop)
-                    # TODO SID???
+
                     dissolve_list = [TextConstants.field_name_ka5_id,
                                      TextConstants.field_name_ka5_name,
                                      TextConstants.field_name_ka5_code,
@@ -646,8 +646,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 self.table_skinfactor.add_data(self.layer_intersected_dissolved)
 
-            # TODO add initmoisture
-
             if i == 10:
 
                 self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
@@ -661,6 +659,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_layer_thick,
                                               10000)
+
+                # TODO add initmoisture
+                add_field_with_constant_value(self.layer_intersected_dissolved,
+                                              TextConstants.field_name_init_moisture,
+                                              None)
 
                 self.layer_raster_rasterized = rasterize_layer_by_example(self.layer_intersected_dissolved,
                                                                           TextConstants.field_name_fid,
