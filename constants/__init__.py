@@ -15,8 +15,13 @@ class TextConstants:
 
     plugin_main_tool_name = "Erosion-3D Data Preparation Wizard"
 
-    plugin_action_name_garbrech_roughness = "Garbrech roughness"
-    plugin_action_id_garbrech_roughness = "GarbrechRoughness"
+    plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
+    plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
+
+    ## Tools
+
+    tool_group_name = "Erosion-3D Data Plugin"
+    tool_group_id = "erosiondataplugin"
 
     # Layer names
 
