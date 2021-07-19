@@ -6,10 +6,12 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
 from qgis.core import (Qgis, QgsProject, QgsApplication, QgsFileUtils)
+from qgis.gui import (QgisInterface)
 
 import processing
 
 from .algorithms.algs import save_raster_as_asc
+from .constants import TextConstants
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -22,10 +24,12 @@ from .erosion_data_plugin_provider import ErosionDataPluginProvider
 
 class ErosionDataPreparationPlugin:
 
+    garbrech_roughness_action: QAction
+
     def __init__(self, iface):
 
         # Save reference to the QGIS interface
-        self.iface = iface
+        self.iface: QgisInterface = iface
 
         # initialize plugin directory
         self.path_plugin = Path(__file__).parent
@@ -43,9 +47,11 @@ class ErosionDataPreparationPlugin:
             self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
 
+        self.actions_menu_toolbar = []
+
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'Erosion-3D Data Preparation')
+        self.menu = TextConstants.plugin_name
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -53,10 +59,8 @@ class ErosionDataPreparationPlugin:
 
         self.provider = ErosionDataPluginProvider()
 
-        self.toolbar = self.iface.addToolBar("Erosion-3D Data Preparation Toolbar")
-        self.toolbar.setObjectName('Erosion3DDataPreparationToolbar')
-
-        self.garbrech_roughness_action: QAction
+        self.toolbar = self.iface.addToolBar(TextConstants.plugin_toolbar_name)
+        self.toolbar.setObjectName(TextConstants.plugin_toolbar_name_id)
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -73,7 +77,8 @@ class ErosionDataPreparationPlugin:
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+        add_to_specific_toolbar=None):
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
@@ -95,6 +100,9 @@ class ErosionDataPreparationPlugin:
                 self.menu,
                 action)
 
+        if add_to_specific_toolbar:
+            add_to_specific_toolbar.addAction(action)
+
         self.actions.append(action)
 
         return action
@@ -104,24 +112,39 @@ class ErosionDataPreparationPlugin:
 
         path_icon = Path(__file__).parent / "icon.png"
 
-        icon_path = str(path_icon.absolute())
-
-        self.add_action(
-            icon_path,
-            text=self.tr(u'Erosion-3D Data Preparation'),
-            callback=self.run,
-            parent=self.iface.mainWindow())
-
-        # will be set False in run()
         self.first_start = True
 
         QgsApplication.processingRegistry().addProvider(self.provider)
 
-        icon = QIcon(str(self.path_plugin / "icon.png"))
-        self.garbrech_roughness_action = QAction(icon, "Garbrech roughness", self.iface.mainWindow())
-        self.garbrech_roughness_action.setObjectName('GarbrechRoughness')
-        self.garbrech_roughness_action.triggered.connect(self.GarbrechRoughnessTool)
-        self.toolbar.addAction(self.garbrech_roughness_action)
+        self.add_action(icon_path=str(self.path_plugin / "icon.png"),
+                        text=TextConstants.plugin_main_tool_name,
+                        callback=self.run,
+                        add_to_toolbar=True,
+                        add_to_menu=TextConstants.plugin_name,
+                        add_to_specific_toolbar=self.toolbar)
+
+        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icon.png"),
+                                           action_name=TextConstants.plugin_action_name_garbrech_roughness,
+                                           action_id=TextConstants.plugin_action_id_garbrech_roughness,
+                                           callback=self.GarbrechRoughnessTool,
+                                           plugin_menu_name=TextConstants.plugin_name)
+
+    def add_to_pluginmenu_and_toolbar(self,
+                                      icon: str,
+                                      action_name: str,
+                                      action_id: str,
+                                      callback,
+                                      plugin_menu_name: str):
+
+        icon = QIcon(icon)
+        action = QAction(icon, action_name, self.iface.mainWindow())
+        action.setObjectName(action_id)
+        action.triggered.connect(callback)
+
+        self.toolbar.addAction(action)
+        self.iface.addPluginToMenu(plugin_menu_name, action)
+
+        self.actions_menu_toolbar.append(action)
 
     def GarbrechRoughnessTool(self):
         processing.execAlgorithmDialog('erosiondataplugin:GarbrechtRougness', {})
@@ -130,11 +153,16 @@ class ErosionDataPreparationPlugin:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'Erosion-3D Data Preparation'),
+                TextConstants.plugin_name,
                 action)
             self.iface.removeToolBarIcon(action)
 
-        self.iface.removeToolBarIcon(self.garbrech_roughness_action)
+        for action in self.actions_menu_toolbar:
+            self.iface.removePluginMenu(
+                TextConstants.plugin_name,
+                action)
+            self.toolbar.removeAction(action)
+
         self.GarbrechRoughnessTool = None
         del self.toolbar
 
@@ -155,6 +183,6 @@ class ErosionDataPreparationPlugin:
         if result:
             QgsProject.instance().addMapLayer(self.dlg.layer_intersected_dissolved)
             QgsProject.instance().addMapLayer(self.dlg.layer_raster_rasterized)
-            
+
             save_raster_as_asc(self.dlg.layer_raster_rasterized,
                                self.dlg.lineEdit_landuse_raster.text())
