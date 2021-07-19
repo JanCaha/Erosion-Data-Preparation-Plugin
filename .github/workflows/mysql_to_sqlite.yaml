@@ -1,0 +1,32 @@
+name: SQL to SQLite
+
+on:
+  push
+
+jobs:
+
+  test:
+  
+    name: test package
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+      - uses: actions/checkout@v2
+      
+      - uses: s-weigand/setup-conda@v1.0.5
+        with:
+          update-conda: true
+          python-version: 3.8
+          conda-channels: anaconda, conda-forge
+
+      - name: Install python dependency packages
+        run: |
+          conda install pip numpy gdal
+          
+      - name: SQL setup
+        run: |
+          sudo systemctl start mysql.service
+          mysql -u root -p root < ./db_catalog/e3dcatalog_20210629.sql
+          
