@@ -32,4 +32,16 @@ jobs:
         run: |
           sudo systemctl start mysql.service
           mysql -u root -proot < ./db_catalog/e3dcatalog_20210629.sql
+          mysql -u root -proot –e “show databases;”
+          mysql -u root -proot -e 'SHOW TABLES FROM testcatalog;'
           
+      - name: Convert MySQL to SQLite
+        run: |
+          python mysql_to_sqlite.py
+      
+      - uses: EndBug/add-and-commit@v7
+        with:
+          add: 'db_catalog'
+          author_name: github-actions
+          author_email: github-actions@github.com
+          message: "current catalog update"
