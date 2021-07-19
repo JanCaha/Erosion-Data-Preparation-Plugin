@@ -6,11 +6,12 @@ from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterBoolean,
                        QgsProcessingParameterVectorLayer,
                        QgsFeature,
-                       QgsVectorDataProvider,
                        QgsFields,
                        QgsField,
                        QgsProcessingFeedback,
-                       QgsVectorLayer)
+                       QgsVectorLayer,
+                       QgsProcessingParameterFeatureSink,
+                       QgsFeatureSink)
 
 from ..constants import TextConstants
 
@@ -18,6 +19,7 @@ from ..constants import TextConstants
 class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
 
     INPUT = "Input"
+    OUTPUT = "Output"
     D90 = "D90"
     D90NAME = "D90NAME"
     NNAME = "NNAME"
@@ -35,16 +37,16 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         return GarbrechtRougnessProcessingAlgorithm()
 
     def name(self):
-        return "GarbrechtRougness"
+        return TextConstants.plugin_action_id_garbrech_roughness
 
     def displayName(self):
         return "Calculate Garbrecht roughness from structural subclasses content"
 
     def group(self):
-        return "Erosion-3D Data Plugin"
+        return TextConstants.tool_group_name
 
     def groupId(self):
-        return 'erosiondataplugin'
+        return TextConstants.tool_group_id
 
     def shortHelpString(self):
         return "Calculate Garbrech roughness based on D90 diameter"
@@ -169,6 +171,13 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
+        self.addParameter(
+            QgsProcessingParameterFeatureSink(
+                self.OUTPUT,
+                "Output layer"
+            )
+        )
+
     def processAlgorithm(self, parameters, context, feedback: QgsProcessingFeedback):
 
         att_ft = self.parameterAsString(parameters, self.FT, context)
@@ -219,36 +228,53 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
 
         feature_polygon: QgsFeature
 
-        dp_input: QgsVectorDataProvider = layer_input.dataProvider()
-
         add_fields = QgsFields()
         add_fields.append(QgsField(field_name_gb, QVariant.Double))
 
         if add_d90:
             add_fields.append(QgsField(field_name_d90, QVariant.Double))
 
-        dp_input.addAttributes(add_fields)
+        fields: QgsFields = layer_input.fields()
 
-        layer_input.updateFields()
-
-        fields = fractionCodes + [field_name_gb]
+        fields.append(QgsField(field_name_gb, QVariant.Double))
 
         if add_d90:
-            fields += [field_name_d90]
+            fields.append(QgsField(field_name_d90, QVariant.Double))
 
-        feature: QgsFeature
+        sink: QgsFeatureSink
+        sink, path_sink = self.parameterAsSink(parameters,
+                                               self.OUTPUT,
+                                               context,
+                                               fields,
+                                               layer_input.wkbType(),
+                                               layer_input.sourceCrs())
 
-        for number, feature in enumerate(layer_input.getFeatures()):
+        iterator = layer_input.getFeatures()
 
-            FTc = feature.attribute(att_ft)
-            MTc = FTc + feature.attribute(att_mt)
-            GTc = MTc + feature.attribute(att_gt)
-            FUc = GTc + feature.attribute(att_fu)
-            MUc = FUc + feature.attribute(att_mu)
-            GUc = MUc + feature.attribute(att_gu)
-            FSc = GUc + feature.attribute(att_fs)
-            MSc = FSc + feature.attribute(att_ms)
-            GSc = MSc + feature.attribute(att_gs)
+        for cnt, input_feature in enumerate(iterator):
+
+            if feedback.isCanceled():
+                break
+
+            new_feature = QgsFeature(fields)
+            new_feature.setGeometry(input_feature.geometry())
+
+            # copy attributes
+            attributes = input_feature.attributes()
+            i = 0
+            for att in attributes:
+                new_feature.setAttribute(i, att)
+                i += 1
+
+            FTc = input_feature.attribute(att_ft)
+            MTc = FTc + input_feature.attribute(att_mt)
+            GTc = MTc + input_feature.attribute(att_gt)
+            FUc = GTc + input_feature.attribute(att_fu)
+            MUc = FUc + input_feature.attribute(att_mu)
+            GUc = MUc + input_feature.attribute(att_gu)
+            FSc = GUc + input_feature.attribute(att_fs)
+            MSc = FSc + input_feature.attribute(att_ms)
+            GSc = MSc + input_feature.attribute(att_gs)
 
             cumContents = {FTcode: FTc, MTcode: MTc, GTcode: GTc, FUcode: FUc, MUcode: MUc, GUcode: GUc, FScode: FSc,
                            MScode: MSc, GScode: GSc}
@@ -258,14 +284,13 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
 
             for i in range(len(fractionCodes)):
 
-                cumCont = cumCont + feature.attribute(fractionCodes[i])
+                cumCont = cumCont + input_feature.attribute(fractionCodes[i])
 
                 feedback.pushCommandInfo("{} : cummulative content: {} ; found is: {}".format(i,
                                                                                               cumCont,
                                                                                               found))
 
                 if cumCont >= 90 and not found:
-
                     upSize = fractions[fractionCodes[i]][top]
                     botSize = fractions[fractionCodes[i]][bot]
                     upClassIndex = fractionCodes[i]
@@ -280,21 +305,17 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
             d90 = botSize + (upSize - botSize) / (upClassContent - botClassContent) * (90 - botClassContent)
 
             if add_d90:
-                layer_input.changeAttributeValue(feature.id(),
-                                                 feature.fieldNameIndex(field_name_d90),
-                                                 d90)
-
-            feedback.pushCommandInfo(str(d90) + " - " + str(type(d90)))
+                new_feature.setAttribute(new_feature.fieldNameIndex(field_name_d90),
+                                         d90)
 
             exp = 1.0 / 6.0
             n = (d90 ** exp) / 26.0
 
-            layer_input.changeAttributeValue(feature.id(),
-                                             feature.fieldNameIndex(field_name_gb),
-                                             n)
+            new_feature.setAttribute(new_feature.fieldNameIndex(field_name_gb),
+                                     n)
 
-            feedback.setProgress(int(number * total))
+            sink.addFeature(new_feature)
 
-        layer_input.commitChanges()
+            feedback.setProgress(int(cnt * total))
 
-        return {}
+        return {self.OUTPUT: path_sink}
