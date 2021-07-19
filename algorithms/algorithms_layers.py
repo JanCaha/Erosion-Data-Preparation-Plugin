@@ -245,8 +245,8 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
 
     for number, feature in enumerate(layer_intersection.getFeatures()):
 
-        attr_result = "{}_{}".format(feature.attribute(fieldname_sid),
-                                     feature.attribute(fieldname_landuse_crop))
+        attr_result = "{}_{}".format(feature.attribute(fieldname_landuse_crop),
+                                     feature.attribute(fieldname_sid))
 
         layer_intersection.changeAttributeValue(feature.id(),
                                                 feature.fieldNameIndex(fieldname_new),
