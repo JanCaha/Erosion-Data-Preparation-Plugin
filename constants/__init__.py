@@ -51,6 +51,8 @@ class TextConstants:
     # field names
     field_name_fid = "POLY_NR"
 
+    field_name_soil_id = "Soil_ID"
+
     field_name_d90 = "D90"
     field_name_GB = "GB"
 
@@ -144,7 +146,7 @@ class TextConstants:
     # Tables with widgets
 
     col_crop = "Crop"
-    col_ka5_code = "KA5 Class"
+    col_ka5_code = "Soil ID (KA5 Class)"
     col_stats = "Statistics"
 
     header_table_corg = [col_crop, col_ka5_code, "Corg from catalog", "Corg"]
