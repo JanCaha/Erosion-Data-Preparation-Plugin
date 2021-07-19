@@ -49,7 +49,8 @@ from .gui_classes.table_widget_with_slider import (TableWidgetBulkDensity,
                                                    TableWidgetCanopyCover,
                                                    TableWidgetRoughness,
                                                    TableWidgetErodibility,
-                                                   TableWidgetSkinFactor)
+                                                   TableWidgetSkinFactor,
+                                                   TableWidgetInitMoisture)
 
 from .classes.definition_landuse_values import LanduseValues
 from .classes.definition_landuse_crop import LanduseCrop
@@ -68,6 +69,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     qlabel_main: QtWidgets.QLabel
     qlabel_step_description: QtWidgets.QLabel
+    qlabel_steps: QtWidgets.QLabel
 
     # process parameters
     layer_soil: QgsVectorLayer = None
@@ -86,6 +88,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     # widget1
     field_ka5_cb: QgsFieldComboBox
+    label_ka5_class: QtWidgets.QLabel
+    label_soil_id: QtWidgets.QLabel
+    field_soilid_cb: QgsFieldComboBox
 
     # widget2
     layer_soil_cb_2: QgsMapLayerComboBox
@@ -107,9 +112,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # widget 4
     fcb_landuse: QgsFieldComboBox
     fcb_crop: QgsFieldComboBox
-
-    # widget 5
-    tableView_a: QtWidgets.QTableWidget
 
     # widget 6
     label_data_status: QtWidgets.QLabel
@@ -169,6 +171,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.stackedWidget.currentChanged.connect(self.update_prev_next_buttons)
         self.stackedWidget.currentChanged.connect(self.set_main_label)
+        self.stackedWidget.currentChanged.connect(self.set_steps_label)
 
         self.set_main_label()
         self.update_prev_next_buttons()
@@ -200,6 +203,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.label_date.setText(TextConstants.label_date)
 
         # widget 2
+        self.label_ka5_class.setText(TextConstants.label_ka5_class)
+        self.label_soil_id.setText(TextConstants.label_soil_id)
+        self.field_soilid_cb.setFilters(QgsFieldProxyModel.String)
         self.field_ka5_cb.setFilters(QgsFieldProxyModel.String)
 
         # widget 3
@@ -318,11 +324,18 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         msg = ""
         ok = True
 
-        if self.field_ka5_cb.currentText():
+        if not self.field_soilid_cb.currentText():
 
-            ok, missing_values = validate_KA5(self.layer_soil, self.field_ka5_cb.currentText())
+            ok = False
+            msg = TextConstants.msg_select_soil_id
 
-            msg = eval_string_with_variables(TextConstants.msg_validate_ka5_classes)
+        if ok:
+
+            if self.field_ka5_cb.currentText():
+
+                ok, missing_values = validate_KA5(self.layer_soil, self.field_ka5_cb.currentText())
+
+                msg = eval_string_with_variables(TextConstants.msg_validate_ka5_classes)
 
         return ok, msg
 
@@ -344,7 +357,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             msg = TextConstants.msg_select_all_fields
 
         return status, msg
-
 
     def validate_widget_3(self):
         msg = ""
@@ -383,6 +395,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         if self.layer_soil:
 
             fields = self.layer_soil.fields()
+
+            if not self.field_soilid_cb.currentText():
+                self.field_soilid_cb.setFields(fields)
 
             if not self.field_ka5_cb.currentText():
                 self.field_ka5_cb.setFields(fields)
@@ -446,6 +461,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         i = self.stackedWidget.currentIndex()
         self.previous_pb.setEnabled(i > 0)
         self.next_pb.setEnabled(i < self.stackedWidget.count() - 1)
+
+    def set_steps_label(self):
+        self.qlabel_steps.setText(TextConstants.label_steps + str(self.stackedWidget.currentIndex()+1) +
+                                  TextConstants.label_from + str(self.stackedWidget.count()) + TextConstants.label_dot)
 
     def set_main_label(self):
         i = self.stackedWidget.currentIndex()
@@ -575,16 +594,19 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                      TextConstants.field_name_landuse_lv2_id,
                                      TextConstants.field_name_crop_id,
                                      TextConstants.field_name_crop_name,
-                                     TextConstants.field_name_sid,
-                                     TextConstants.field_name_landuse_crops]
+                                     self.field_soilid_cb.currentText(),
+                                     TextConstants.field_name_landuse_crops,
+                                     TextConstants.field_name_poly_id]
 
                     self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
                                                                           self.layer_landuse,
                                                                           TextConstants.field_name_poly_id,
-                                                                          TextConstants.field_name_sid,
+                                                                          self.field_soilid_cb.currentText(),
                                                                           TextConstants.field_name_landuse_crops,
                                                                           dissolve_list,
                                                                           progress_bar=self.progressBar)
+
+                    QgsProject.instance().addMapLayer(self.layer_intersected_dissolved)
 
                     add_field_with_constant_value(self.layer_intersected_dissolved,
                                                   TextConstants.field_name_month,
@@ -624,11 +646,21 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 self.table_skinfactor.add_data(self.layer_intersected_dissolved)
 
+            # TODO add initmoisture
+
             if i == 10:
 
                 self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
 
                 add_fid_field(self.layer_intersected_dissolved)
+
+                add_field_with_constant_value(self.layer_intersected_dissolved,
+                                              TextConstants.field_name_layer_id,
+                                              1)
+
+                add_field_with_constant_value(self.layer_intersected_dissolved,
+                                              TextConstants.field_name_layer_thick,
+                                              10000)
 
                 self.layer_raster_rasterized = rasterize_layer_by_example(self.layer_intersected_dissolved,
                                                                           TextConstants.field_name_fid,
