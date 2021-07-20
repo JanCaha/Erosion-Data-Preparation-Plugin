@@ -122,6 +122,10 @@ class TableWidgetWithSlider(QTableWidget):
             min, max, mean, count = self.get_slider_values(value)
 
             if 0 < count:
+
+                if "mean" not in locals():
+                    mean = 0
+
                 statistics_str = eval_string_with_variables(TextConstants.message_statistics)
             else:
                 statistics_str = TextConstants.message_statistics_no_records
