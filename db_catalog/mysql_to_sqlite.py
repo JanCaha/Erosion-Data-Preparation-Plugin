@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from osgeo import ogr, gdal
 
 conn_string = "MYSQL:testcatalog,user=root,password=root,host=localhost,port=3306"
@@ -13,7 +14,9 @@ driver: ogr.Driver = ogr.GetDriverByName("SQLite")
 
 path = Path(__file__).parent / "database.sqlite"
 
-ds: ogr.DataSource = driver.CreateDataSource(str(path))
+print(path.absolute())
+
+ds: ogr.DataSource = driver.CreateDataSource(str(path.absolute()))
 
 for i in range(mysql_ds.GetLayerCount()):
 
