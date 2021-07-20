@@ -34,7 +34,8 @@ from .algorithms.algorithms_layers import (join_tables,
                                            create_table_to_join,
                                            copy_layer_fix_geoms,
                                            create_table_KA5_to_join,
-                                           rasterize_layer_by_example)
+                                           rasterize_layer_by_example,
+                                           retain_only_fields)
 
 from .algorithms.extract_elements_from_dicts import (extract_elements_without_values,
                                                      extract_elements_with_values)
@@ -78,7 +79,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     layer_raster_dtm: QgsRasterLayer = None
     layer_raster_rasterized: QgsRasterLayer = None
     date_month: int = None
+    layer_export_parameters: QgsVectorLayer = None
+    layer_export_lookup: QgsVectorLayer = None
 
+    layer_channel_elements: QgsVectorLayer = None
+    layer_drain_elements: QgsVectorLayer = None
+    layer_pour_points: QgsVectorLayer = None
 
     # widget0
     layer_soil_cb: QgsMapLayerComboBox
@@ -115,6 +121,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     # widget 6
     label_data_status: QtWidgets.QLabel
+
+    # widget optional
+    layer_channel_elements_cb: QgsMapLayerComboBox
+    layer_drain_elements_cb: QgsMapLayerComboBox
+    layer_pour_points_cb: QgsMapLayerComboBox
+
+    label_channel_elements: QtWidgets.QLabel
+    label_drain_elements: QtWidgets.QLabel
+    label_pour_points: QtWidgets.QLabel
 
     # widget last
 
@@ -168,6 +183,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.next_pb.clicked.connect(self.__next__)
         self.previous_pb.clicked.connect(self.prev)
+
+        self.progressBar.setMaximum(1)
+        self.progressBar.setValue(1)
 
         self.stackedWidget.currentChanged.connect(self.update_prev_next_buttons)
         self.stackedWidget.currentChanged.connect(self.set_main_label)
@@ -233,6 +251,21 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.label_crop_field.setText(TextConstants.label_crop_field)
         self.label_landuse_field.setText(TextConstants.label_landuse_field)
 
+        # widget optional
+
+        self.label_pour_points.setText(TextConstants.label_pour_points)
+        self.label_drain_elements.setText(TextConstants.label_drain_elements)
+        self.label_channel_elements.setText(TextConstants.label_channel_elements)
+
+        self.layer_channel_elements_cb.setFilters(QgsMapLayerProxyModel.LineLayer)
+        self.layer_channel_elements_cb.layerChanged.connect(self.update_layer_channel_elements)
+
+        self.layer_drain_elements_cb.setFilters(QgsMapLayerProxyModel.LineLayer)
+        self.layer_drain_elements_cb.layerChanged.connect(self.update_layer_drain_elements)
+
+        self.layer_pour_points_cb.setFilters(QgsMapLayerProxyModel.PointLayer)
+        self.layer_pour_points_cb.layerChanged.connect(self.update_layer_pour_points)
+
         # widget last
         self.label_data_status_confirm.setText(TextConstants.label_data_status_confirm)
 
@@ -244,9 +277,19 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.toolButton_lookup_table.clicked.connect(self.select_file_lookup_table)
         self.toolButton_parameter_table.clicked.connect(self.select_file_parameter_table)
 
-        self.lineEdit_landuse_raster.setText(QgsProcessingUtils.generateTempFilename("landuse_raster.asc"))
-        self.lineEdit_parameter_table.setText(QgsProcessingUtils.generateTempFilename("parameter_table.csv"))
-        self.lineEdit_lookup_table.setText(QgsProcessingUtils.generateTempFilename("lookup_table.csv"))
+        project_path = QgsProject.instance().absolutePath()
+
+        if project_path != "":
+            project_path = Path(project_path)
+
+            self.lineEdit_landuse_raster.setText(str(project_path / "landuse_raster.asc"))
+            self.lineEdit_parameter_table.setText(str(project_path / "parameter_table.csv"))
+            self.lineEdit_lookup_table.setText(str(project_path / "lookup_table.csv"))
+
+        else:
+            self.lineEdit_landuse_raster.setText(QgsProcessingUtils.generateTempFilename("landuse_raster.asc"))
+            self.lineEdit_parameter_table.setText(QgsProcessingUtils.generateTempFilename("parameter_table.csv"))
+            self.lineEdit_lookup_table.setText(QgsProcessingUtils.generateTempFilename("lookup_table.csv"))
 
         self.fcb_landuse.setFilters(QgsFieldProxyModel.String)
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
@@ -295,11 +338,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.lineEdit_landuse_raster.setText(file_name)
 
     def select_file_lookup_table(self):
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file')
+        filter = "csv (*.csv)"
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_lookup_table.setText(file_name)
 
     def select_file_parameter_table(self):
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file')
+        filter = "csv (*.csv)"
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_parameter_table.setText(file_name)
 
     def allow_ok_button(self):
@@ -367,6 +414,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             msg = TextConstants.mgs_select_landuse_field
 
         return status, msg
+
+    def update_layer_channel_elements(self):
+        self.layer_channel_elements = self.layer_channel_elements_cb.currentLayer()
+
+    def update_layer_drain_elements(self):
+        self.layer_drain_elements = self.layer_drain_elements_cb.currentLayer()
+
+    def update_layer_pour_points(self):
+        self.layer_pour_points = self.layer_pour_points_cb.currentLayer()
 
     def update_month(self):
         self.date_month = self.calendar.selectedDate().month()
@@ -565,6 +621,38 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                            TextConstants.field_name_ka5_id,
                                            self.progressBar)
 
+                    self.progressBar.setMaximum(2)
+                    self.progressBar.setValue(1)
+
+                    rename_field(self.layer_soil,
+                                 self.fcb_ftc.currentText(),
+                                 TextConstants.field_name_FT)
+                    rename_field(self.layer_soil,
+                                 self.fcb_mtc.currentText(),
+                                 TextConstants.field_name_MT)
+                    rename_field(self.layer_soil,
+                                 self.fcb_gtc.currentText(),
+                                 TextConstants.field_name_GT)
+                    rename_field(self.layer_soil,
+                                 self.fcb_fuc.currentText(),
+                                 TextConstants.field_name_FU)
+                    rename_field(self.layer_soil,
+                                 self.fcb_muc.currentText(),
+                                 TextConstants.field_name_MU)
+                    rename_field(self.layer_soil,
+                                 self.fcb_guc.currentText(),
+                                 TextConstants.field_name_GU)
+                    rename_field(self.layer_soil,
+                                 self.fcb_fsc.currentText(),
+                                 TextConstants.field_name_FS)
+                    rename_field(self.layer_soil,
+                                 self.fcb_msc.currentText(),
+                                 TextConstants.field_name_MS)
+                    rename_field(self.layer_soil,
+                                 self.fcb_gsc.currentText(),
+                                 TextConstants.field_name_GS)
+                    self.progressBar.setValue(2)
+
             if i == 3:
 
                 ok, msg = self.validate_widget_3()
@@ -600,7 +688,16 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                      TextConstants.field_name_crop_name,
                                      TextConstants.field_name_soil_id,
                                      TextConstants.field_name_landuse_crops,
-                                     TextConstants.field_name_poly_id]
+                                     TextConstants.field_name_poly_id,
+                                     TextConstants.field_name_FU,
+                                     TextConstants.field_name_MU,
+                                     TextConstants.field_name_GU,
+                                     TextConstants.field_name_FT,
+                                     TextConstants.field_name_MT,
+                                     TextConstants.field_name_GT,
+                                     TextConstants.field_name_FS,
+                                     TextConstants.field_name_MS,
+                                     TextConstants.field_name_GS]
 
                     self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
                                                                           self.layer_landuse,
@@ -665,12 +762,39 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 # TODO add initmoisture
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_init_moisture,
-                                              None)
+                                              "")
 
                 self.layer_raster_rasterized = rasterize_layer_by_example(self.layer_intersected_dissolved,
                                                                           TextConstants.field_name_fid,
                                                                           self.layer_raster_dtm,
                                                                           progress_bar=self.progressBar)
+
+                self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
+                                                                  [TextConstants.field_name_poly_id,
+                                                                   TextConstants.field_name_layer_id,
+                                                                   TextConstants.field_name_layer_thick,
+                                                                   TextConstants.field_name_FT,
+                                                                   TextConstants.field_name_MT,
+                                                                   TextConstants.field_name_GT,
+                                                                   TextConstants.field_name_FU,
+                                                                   TextConstants.field_name_MU,
+                                                                   TextConstants.field_name_GU,
+                                                                   TextConstants.field_name_FS,
+                                                                   TextConstants.field_name_GS,
+                                                                   TextConstants.field_name_MS,
+                                                                   TextConstants.field_name_bulk_density,
+                                                                   TextConstants.field_name_corg,
+                                                                   TextConstants.field_name_init_moisture,
+                                                                   TextConstants.field_name_roughness,
+                                                                   TextConstants.field_name_canopy_cover,
+                                                                   TextConstants.field_name_skinfactor,
+                                                                   TextConstants.field_name_erodibility],
+                                                                  "parameters")
+
+                self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
+                                                              [TextConstants.field_name_poly_id,
+                                                               TextConstants.field_name_fid],
+                                                              "lookup")
 
             if i == 10:
 
@@ -686,7 +810,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i + 1 == self.stackedWidget.count() - 1:
 
                 if self.ok_result_layer or self.checkbox_export_empty_data.isChecked():
-                        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
+                    self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
 
             if ok:
                 self.stackedWidget.setCurrentIndex(i + 1)
