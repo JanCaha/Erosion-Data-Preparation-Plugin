@@ -398,9 +398,10 @@ def add_field_with_constant_value(layer: QgsVectorLayer,
     add_fields = QgsFields()
 
     if isinstance(value, int):
-        field = QgsField(fieldname, QVariant.Int)
+        field = QgsField(fieldname, QVariant.Double)
     elif isinstance(value, float):
         field = QgsField(fieldname, QVariant.Double)
+
     else:
         field = QgsField(fieldname, QVariant.String, "", 255)
 
@@ -431,7 +432,7 @@ def add_fid_field(layer: QgsVectorLayer) -> NoReturn:
 
     add_fields = QgsFields()
 
-    field = QgsField(TextConstants.field_name_fid, QVariant.Int)
+    field = QgsField(TextConstants.field_name_fid, QVariant.Double)
 
     add_fields.append(field)
 
