@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QVariant
@@ -349,3 +349,20 @@ def create_table_KA5_to_join() -> QgsVectorLayer:
         layer_dp.addFeature(f)
 
     return layer
+
+
+def retain_only_fields(layer: QgsVectorLayer,
+                       fields_to_retain: List[str],
+                       result_layer_name: Optional[str] = None) -> QgsVectorLayer:
+
+    if result_layer_name:
+        layer_name = f"memory:{result_layer_name}"
+    else:
+        layer_name = f"memory:{layer.name()}"
+
+    result = processing.run("native:retainfields", {
+        'INPUT': layer,
+        'FIELDS': fields_to_retain,
+        'OUTPUT': layer_name})
+
+    return result["OUTPUT"]
