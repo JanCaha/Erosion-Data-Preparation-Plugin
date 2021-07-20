@@ -389,7 +389,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="page">
+   <widget class="QWidget" name="page_12">
     <widget class="QLabel" name="label_22">
      <property name="geometry">
       <rect>
@@ -402,6 +402,50 @@
      <property name="text">
       <string>Skinfactor page</string>
      </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_11">
+    <widget class="QWidget" name="layoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>571</width>
+       <height>201</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_channel_elements">
+        <property name="text">
+         <string>Channel elements:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QgsMapLayerComboBox" name="layer_channel_elements_cb"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_drain_elements">
+        <property name="text">
+         <string>Drain elements:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
+       <widget class="QgsMapLayerComboBox" name="layer_drain_elements_cb"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_pour_points">
+        <property name="text">
+         <string>Pour points:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QgsMapLayerComboBox" name="layer_pour_points_cb"/>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="page_10">
