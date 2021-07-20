@@ -83,6 +83,16 @@ class TextConstants:
     field_name_skinfactor = "SKINFACTOR"
     field_name_init_moisture = "INITMOIST"
 
+    field_name_FT = "FT"
+    field_name_MT = "MT"
+    field_name_GT = "GT"
+    field_name_FU = "FU"
+    field_name_MU = "MU"
+    field_name_GU = "GU"
+    field_name_FS = "FS"
+    field_name_MS = "MS"
+    field_name_GS = "GS"
+
     field_name_layer_id = "LAYER_ID"
     field_name_layer_thick = "LAYERTHICK"
 
@@ -103,6 +113,7 @@ class TextConstants:
                    "Surface roughness",
                    "Soil erosion resistence",
                    "Skinfactor",
+                   "Optional parameters",
                    "Export input datasets for Erosion-3D"
                    ]
 
@@ -119,6 +130,7 @@ class TextConstants:
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
+        "Set optional parameters.",
         "Data for export is complete. Please select the input files you want to export and set name and directory to store them to.",
         ""
     ]
@@ -133,6 +145,10 @@ class TextConstants:
 
     label_crop_field = "Landuse field:"
     label_landuse_field = "Crop field:"
+
+    label_pour_points = "Pour points:"
+    label_drain_elements = "Drain elements:"
+    label_channel_elements = "Channel elements:"
 
     label_data_status_confirm = "I understand and want to proceed anyway."
 
