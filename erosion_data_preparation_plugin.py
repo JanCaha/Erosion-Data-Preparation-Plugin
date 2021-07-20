@@ -5,7 +5,7 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
-from qgis.core import (Qgis, QgsProject, QgsApplication, QgsFileUtils)
+from qgis.core import (Qgis, QgsProject, QgsApplication, QgsFileUtils, QgsVectorFileWriter, QgsCoordinateTransformContext)
 from qgis.gui import (QgisInterface)
 
 import processing
@@ -186,3 +186,17 @@ class ErosionDataPreparationPlugin:
 
             save_raster_as_asc(self.dlg.layer_raster_rasterized,
                                self.dlg.lineEdit_landuse_raster.text())
+
+            options = QgsVectorFileWriter.SaveVectorOptions()
+            options.driverName = "CSV"
+            options.fileEncoding = "UTF-8"
+
+            QgsVectorFileWriter.writeAsVectorFormatV2(self.dlg.layer_export_lookup,
+                                                      self.dlg.lineEdit_lookup_table.text(),
+                                                      transformContext=QgsCoordinateTransformContext(),
+                                                      options=options)
+
+            QgsVectorFileWriter.writeAsVectorFormatV2(self.dlg.layer_export_parameters,
+                                                      self.dlg.lineEdit_parameter_table.text(),
+                                                      transformContext=QgsCoordinateTransformContext(),
+                                                      options=options)
