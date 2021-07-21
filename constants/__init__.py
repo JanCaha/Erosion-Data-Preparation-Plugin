@@ -27,6 +27,7 @@ class TextConstants:
 
     layer_soil = "soils"
     layer_landuse = "landuse"
+    layer_channel_elements = "channel_elements"
 
     # TableWidgetLanduseAssignedCatalog
 
