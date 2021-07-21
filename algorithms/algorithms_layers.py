@@ -17,7 +17,14 @@ from qgis.core import (QgsVectorLayer,
                        QgsProject,
                        QgsRectangle,
                        QgsCoordinateReferenceSystem,
-                       QgsRasterLayer)
+                       QgsRasterLayer,
+                       QgsRasterBandStats,
+                       QgsProcessingUtils,
+                       QgsCoordinateTransformContext)
+
+from processing.algs.gdal.GdalUtils import GdalUtils
+
+from qgis.analysis import (QgsRasterCalculatorEntry, QgsRasterCalculator)
 
 from ..classes.definition_landuse_crop import LanduseCrop
 from ..classes.definition_landuse_values import LanduseValues
@@ -366,3 +373,74 @@ def retain_only_fields(layer: QgsVectorLayer,
         'OUTPUT': layer_name})
 
     return result["OUTPUT"]
+
+
+def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
+                                    raster_new_values: QgsRasterLayer,
+                                    progress_bar: QtWidgets.QProgressBar) -> QgsRasterLayer:
+
+    progress_bar.setMaximum(5)
+
+    progress_bar.setValue(1)
+
+    result = processing.run("native:fillnodata", {
+        'INPUT': raster_new_values,
+        'BAND': 1,
+        'FILL_VALUE': 0,
+        'OUTPUT': 'TEMPORARY_OUTPUT'})
+
+    raster_new_values = QgsRasterLayer(result["OUTPUT"])
+
+    progress_bar.setValue(2)
+
+    raster_new_values_dp = raster_new_values.dataProvider()
+
+    stats = raster_new_values_dp.bandStatistics(1, QgsRasterBandStats.All, raster_new_values.extent())
+    max_value = str(round(stats.maximumValue))
+
+    progress_bar.setValue(3)
+
+    # "@1" raster_new_values
+    # "lusoils@1" raster_orig
+    # ("@1" != 57) * "lusoils@1" + "@1"
+
+    one_value_raster = QgsRasterCalculatorEntry()
+    one_value_raster.ref = 'one_value_raster@1'
+    one_value_raster.raster = raster_new_values
+    one_value_raster.bandNumber = 1
+
+    org_raster = QgsRasterCalculatorEntry()
+    org_raster.ref = 'org_rast@1'
+    org_raster.raster = raster_orig
+    org_raster.bandNumber = 1
+
+    raster_entries = []
+    raster_entries.append(one_value_raster)
+    raster_entries.append(org_raster)
+
+    expression = "({0} != {1}) * {2} + {0}".format(one_value_raster.ref,
+                                                   max_value,
+                                                   org_raster.ref)
+
+    extent = raster_orig.extent()
+    output_raster_filename = QgsProcessingUtils.generateTempFilename("raster.tif")
+
+    calc = QgsRasterCalculator(
+        expression,
+        output_raster_filename,
+        GdalUtils.getFormatShortNameFromFilename(output_raster_filename),
+        extent,
+        raster_orig.crs(),
+        int(extent.width()),
+        int(extent.height()),
+        raster_entries,
+        QgsCoordinateTransformContext()
+    )
+
+    progress_bar.setValue(4)
+
+    calc.processCalculation()
+
+    progress_bar.setValue(5)
+
+    return QgsRasterLayer(output_raster_filename)
