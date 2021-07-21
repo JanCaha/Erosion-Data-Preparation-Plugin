@@ -468,6 +468,14 @@ def rename_field(layer: QgsVectorLayer,
     layer.commitChanges()
 
 
+def max_value_in_field(layer: QgsVectorLayer,
+                       field_name: str) -> float:
+
+    field_index = layer.fields().lookupField(field_name)
+
+    return layer.maximumValue(field_index)
+
+
 def save_raster_as_asc(raster: QgsRasterLayer,
                        path: str) -> NoReturn:
 
