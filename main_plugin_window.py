@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 import datetime
 
 from qgis.PyQt import uic
@@ -27,7 +27,8 @@ from .algorithms.algs import (calculate_garbrecht_roughness,
                               add_fields_to_landuse,
                               add_field_with_constant_value,
                               add_fid_field,
-                              rename_field)
+                              rename_field,
+                              max_value_in_field)
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
@@ -35,7 +36,8 @@ from .algorithms.algorithms_layers import (join_tables,
                                            copy_layer_fix_geoms,
                                            create_table_KA5_to_join,
                                            rasterize_layer_by_example,
-                                           retain_only_fields)
+                                           retain_only_fields,
+                                           replace_raster_values_by_raster)
 
 from .algorithms.extract_elements_from_dicts import (extract_elements_without_values,
                                                      extract_elements_with_values)
@@ -85,6 +87,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     layer_channel_elements: QgsVectorLayer = None
     layer_drain_elements: QgsVectorLayer = None
     layer_pour_points: QgsVectorLayer = None
+
+    poly_nr_additons: List[int] = []
 
     # widget0
     layer_soil_cb: QgsMapLayerComboBox
@@ -259,12 +263,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.layer_channel_elements_cb.setFilters(QgsMapLayerProxyModel.LineLayer)
         self.layer_channel_elements_cb.layerChanged.connect(self.update_layer_channel_elements)
+        self.layer_channel_elements_cb.setCurrentIndex(0)
 
-        self.layer_drain_elements_cb.setFilters(QgsMapLayerProxyModel.LineLayer)
+        self.layer_drain_elements_cb.setFilters(QgsMapLayerProxyModel.LineLayer | QgsMapLayerProxyModel.PointLayer)
         self.layer_drain_elements_cb.layerChanged.connect(self.update_layer_drain_elements)
+        self.layer_drain_elements_cb.setCurrentIndex(0)
 
         self.layer_pour_points_cb.setFilters(QgsMapLayerProxyModel.PointLayer)
         self.layer_pour_points_cb.layerChanged.connect(self.update_layer_pour_points)
+        self.layer_pour_points_cb.setCurrentIndex(0)
 
         # widget last
         self.label_data_status_confirm.setText(TextConstants.label_data_status_confirm)
@@ -416,7 +423,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         return status, msg
 
     def update_layer_channel_elements(self):
-        self.layer_channel_elements = self.layer_channel_elements_cb.currentLayer()
+        self.layer_channel_elements = copy_layer_fix_geoms(self.layer_channel_elements_cb.currentLayer(),
+                                                           TextConstants.layer_channel_elements)
 
     def update_layer_drain_elements(self):
         self.layer_drain_elements = self.layer_drain_elements_cb.currentLayer()
@@ -806,6 +814,60 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.label_data_status.setStyleSheet("color : black;")
                 else:
                     self.label_data_status.setStyleSheet("color : red;")
+
+            if i == 11:
+
+                if 0 < len(self.layer_channel_elements_cb.currentText()):
+
+                    value = max_value_in_field(self.layer_intersected_dissolved,
+                                               TextConstants.field_name_fid)
+
+                    value += 1
+
+                    self.poly_nr_additons.append(value)
+
+                    add_field_with_constant_value(self.layer_channel_elements,
+                                                  TextConstants.field_name_fid,
+                                                  value)
+
+                    raster = rasterize_layer_by_example(self.layer_channel_elements,
+                                                        TextConstants.field_name_fid,
+                                                        self.layer_raster_dtm,
+                                                        progress_bar=self.progressBar)
+
+                    self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
+                                                                                   raster,
+                                                                                   progress_bar=self.progressBar)
+
+                if 0 < len(self.layer_drain_elements_cb.currentText()):
+
+                    value = max_value_in_field(self.layer_intersected_dissolved,
+                                               TextConstants.field_name_fid)
+
+                    value += 1
+
+                    if 0 < len(self.poly_nr_additons):
+                        value = self.poly_nr_additons[-1]
+                        value = value + 1
+
+                    self.poly_nr_additons.append(value)
+
+                    add_field_with_constant_value(self.layer_drain_elements,
+                                                  TextConstants.field_name_fid,
+                                                  value)
+
+                    raster = rasterize_layer_by_example(self.layer_drain_elements,
+                                                        TextConstants.field_name_fid,
+                                                        self.layer_raster_dtm,
+                                                        progress_bar=self.progressBar)
+
+                    raster = replace_raster_values_by_raster(self.layer_raster_rasterized,
+                                                             raster,
+                                                             progress_bar=self.progressBar)
+
+                    self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
+                                                                                   raster,
+                                                                                   progress_bar=self.progressBar)
 
             if i + 1 == self.stackedWidget.count() - 1:
 
