@@ -438,11 +438,24 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         return status, msg
 
     def update_layer_channel_elements(self):
-        self.layer_channel_elements = copy_layer_fix_geoms(self.layer_channel_elements_cb.currentLayer(),
-                                                           TextConstants.layer_channel_elements)
+
+        if 0 < len(self.layer_channel_elements_cb.currentText()):
+
+            self.layer_channel_elements = copy_layer_fix_geoms(self.layer_channel_elements_cb.currentLayer(),
+                                                               TextConstants.layer_channel_elements)
+
+        else:
+            self.layer_channel_elements = None
 
     def update_layer_drain_elements(self):
-        self.layer_drain_elements = self.layer_drain_elements_cb.currentLayer()
+
+        if 0 < len(self.layer_drain_elements_cb.currentText()):
+
+            self.layer_drain_elements = copy_layer_fix_geoms(self.layer_drain_elements_cb.currentLayer(),
+                                                             TextConstants.layer_drain_elements)
+
+        else:
+            self.layer_drain_elements = None
 
     def update_layer_pour_points(self):
         self.layer_pour_points = self.layer_pour_points_cb.currentLayer()
@@ -616,7 +629,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if i < self.stackedWidget.count():
 
-            self.qlabel_i.setText(F"{i+1}")
+            self.qlabel_i.setText(F"{i}")
 
             if i == 0:
 
@@ -789,8 +802,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                       dissolve_list,
                                                                       progress_bar=self.progressBar)
 
-                QgsProject.instance().addMapLayer(self.layer_intersected_dissolved)
-
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_month,
                                               self.date_month)
@@ -831,6 +842,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
 
+            if i == 12:
+
                 self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
 
                 self.label_data_status.setText(msg)
@@ -839,7 +852,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.label_data_status.setStyleSheet("color : black;")
                 else:
                     self.label_data_status.setStyleSheet("color : red;")
-
 
                 # add "POLY_NR" field
 
@@ -896,55 +908,50 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                         self.layer_raster_dtm,
                                                         progress_bar=self.progressBar)
 
-                    raster = replace_raster_values_by_raster(self.layer_raster_rasterized,
-                                                             raster,
-                                                             progress_bar=self.progressBar)
-
                     self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
                                                                                    raster,
                                                                                    progress_bar=self.progressBar)
 
+                # add rows for channel elements and drain elements
+                for value in self.poly_nr_additons:
 
-                    # add rows for channel elements and drain elements
-                    for value in self.poly_nr_additons:
+                    add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: value,
+                                                                            TextConstants.field_name_init_moisture: 0})
 
-                        add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: value,
-                                                                   TextConstants.field_name_init_moisture: 0})
+                add_field_with_constant_value(self.layer_intersected_dissolved,
+                                              TextConstants.field_name_layer_id,
+                                              1)
 
-                    add_field_with_constant_value(self.layer_intersected_dissolved,
-                                                  TextConstants.field_name_layer_id,
-                                                  1)
+                add_field_with_constant_value(self.layer_intersected_dissolved,
+                                              TextConstants.field_name_layer_thick,
+                                              10000)
 
-                    add_field_with_constant_value(self.layer_intersected_dissolved,
-                                                  TextConstants.field_name_layer_thick,
-                                                  10000)
-
-                    self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
-                                                                      [TextConstants.field_name_poly_id,
-                                                                       TextConstants.field_name_layer_id,
-                                                                       TextConstants.field_name_layer_thick,
-                                                                       TextConstants.field_name_FT,
-                                                                       TextConstants.field_name_MT,
-                                                                       TextConstants.field_name_GT,
-                                                                       TextConstants.field_name_FU,
-                                                                       TextConstants.field_name_MU,
-                                                                       TextConstants.field_name_GU,
-                                                                       TextConstants.field_name_FS,
-                                                                       TextConstants.field_name_GS,
-                                                                       TextConstants.field_name_MS,
-                                                                       TextConstants.field_name_bulk_density,
-                                                                       TextConstants.field_name_corg,
-                                                                       TextConstants.field_name_init_moisture,
-                                                                       TextConstants.field_name_roughness,
-                                                                       TextConstants.field_name_canopy_cover,
-                                                                       TextConstants.field_name_skinfactor,
-                                                                       TextConstants.field_name_erodibility],
-                                                                      "parameters")
-
-                    self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
+                self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
                                                                   [TextConstants.field_name_poly_id,
-                                                                   TextConstants.field_name_fid],
-                                                                  "lookup")
+                                                                   TextConstants.field_name_layer_id,
+                                                                   TextConstants.field_name_layer_thick,
+                                                                   TextConstants.field_name_FT,
+                                                                   TextConstants.field_name_MT,
+                                                                   TextConstants.field_name_GT,
+                                                                   TextConstants.field_name_FU,
+                                                                   TextConstants.field_name_MU,
+                                                                   TextConstants.field_name_GU,
+                                                                   TextConstants.field_name_FS,
+                                                                   TextConstants.field_name_GS,
+                                                                   TextConstants.field_name_MS,
+                                                                   TextConstants.field_name_bulk_density,
+                                                                   TextConstants.field_name_corg,
+                                                                   TextConstants.field_name_init_moisture,
+                                                                   TextConstants.field_name_roughness,
+                                                                   TextConstants.field_name_canopy_cover,
+                                                                   TextConstants.field_name_skinfactor,
+                                                                   TextConstants.field_name_erodibility],
+                                                                  "parameters")
+
+                self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
+                                                              [TextConstants.field_name_poly_id,
+                                                               TextConstants.field_name_fid],
+                                                              "lookup")
 
             if i + 1 == self.stackedWidget.count() - 1:
 
