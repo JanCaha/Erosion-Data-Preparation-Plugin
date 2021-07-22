@@ -181,8 +181,9 @@ class ErosionDataPreparationPlugin:
             return
 
         if result:
-            QgsProject.instance().addMapLayer(self.dlg.layer_intersected_dissolved)
-            QgsProject.instance().addMapLayer(self.dlg.layer_raster_rasterized)
+
+            # QgsProject.instance().addMapLayer(self.dlg.layer_intersected_dissolved)
+            # QgsProject.instance().addMapLayer(self.dlg.layer_raster_rasterized)
 
             save_raster_as_asc(self.dlg.layer_raster_rasterized,
                                self.dlg.lineEdit_landuse_raster.text())
