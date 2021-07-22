@@ -682,10 +682,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 if ok:
 
-                    self.dict_landuse_crop = self.table_landuse_assign_catalog.get_data()
+                    table = self.table_landuse_assign_catalog.get_data_as_layer(TextConstants.field_name_landuse_crops)
 
-                    add_fields_to_landuse(self.layer_landuse,
-                                          self.dict_landuse_crop)
+                    self.layer_landuse = join_tables(self.layer_landuse,
+                                                     TextConstants.field_name_landuse_crops,
+                                                     table,
+                                                     TextConstants.field_name_landuse_crops,
+                                                     self.progressBar)
 
                     dissolve_list = [TextConstants.field_name_ka5_id,
                                      TextConstants.field_name_ka5_name,
@@ -706,7 +709,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                      TextConstants.field_name_GT,
                                      TextConstants.field_name_FS,
                                      TextConstants.field_name_MS,
-                                     TextConstants.field_name_GS]
+                                     TextConstants.field_name_GS,
+                                     TextConstants.field_name_agrotechnology,
+                                     TextConstants.field_name_protection_measure,
+                                     TextConstants.field_name_vegetation_conditions,
+                                     TextConstants.field_name_surface_conditions]
 
                     self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
                                                                           self.layer_landuse,
