@@ -488,3 +488,25 @@ def save_raster_as_asc(raster: QgsRasterLayer,
         'EXTRA': '',
         'DATA_TYPE': 0,
         'OUTPUT': path})
+
+
+def add_row_without_geom(layer: QgsVectorLayer,
+                         fields_set: Dict) -> NoReturn:
+
+    layer_dp: QgsVectorDataProvider = layer.dataProvider()
+
+    layer.startEditing()
+
+    # field_index = layer_dp.fieldNameIndex(TextConstants.field_name_fid)
+
+    feature = QgsFeature(layer.fields())
+
+    for key in fields_set.keys():
+
+        field_index = layer_dp.fieldNameIndex(key)
+
+        feature.setAttribute(field_index, fields_set[key])
+
+    layer.addFeature(feature)
+
+    layer.commitChanges()
