@@ -34,6 +34,10 @@ class TextConstants:
     tw_lc_sub_cats = "subcategories"
     tw_lc_col_value = "Source landuse category"
     tw_lc_col_assigned = "Catalogue landuse category"
+    tw_lc_col_agrotechnology = "Agrotechnology"
+    tw_lc_col_vegetation_condition = "Vegetation condition"
+    tw_lc_col_protection_measure = "Protection measure"
+    tw_lc_col_surface_conditions = "Surface conditions"
 
     # TableWidgetLanduseAssignedValues
 
@@ -75,6 +79,11 @@ class TextConstants:
     field_name_landuse_lv2_id = "landuse_lv2_id"
     field_name_crop_id = "crop_id"
     field_name_crop_name = "crop_name"
+
+    field_name_agrotechnology = "agrotechnology"
+    field_name_vegetation_conditions = "vegetation_conditions"
+    field_name_protection_measure = "protection_measure"
+    field_name_surface_conditions = "surface_conditions"
 
     field_name_corg = "CORG"
     field_name_bulk_density = "BLKDENSITY"
