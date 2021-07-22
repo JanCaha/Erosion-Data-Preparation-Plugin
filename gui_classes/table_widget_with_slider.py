@@ -367,7 +367,8 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_agrotechnology]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -376,14 +377,16 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_agrotechnology]
 
     def get_slider_stat_values(self, values: List[Any]) -> Tuple[float, float, float, float]:
 
         return E3dCatalog().get_bulk_density_range(crop=values[0],
                                                    landuse_lv1=values[2],
                                                    landuse_lv2=values[1],
-                                                   ka5_class=values[4])
+                                                   ka5_class=values[4],
+                                                   agrotechnology=values[7])
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
@@ -400,6 +403,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
+                  F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_bulk_density}:double"]
 
         fields = "&".join(fields)
@@ -407,7 +411,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], value]
 
 
 class TableWidgetCorg(TableWidgetWithSlider):
