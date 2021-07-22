@@ -530,13 +530,23 @@ class TableWidgetRoughness(TableWidgetWithSlider):
         return [TextConstants.field_name_crop_id,
                 TextConstants.field_name_landuse_lv2_id,
                 TextConstants.field_name_landuse_lv1_id,
-                TextConstants.field_name_crop_name]
+                TextConstants.field_name_crop_name,
+                TextConstants.field_name_month,
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_surface_conditions,
+                TextConstants.field_name_vegetation_conditions,
+                TextConstants.field_name_protection_measure]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
                 TextConstants.field_name_landuse_lv2_id,
                 TextConstants.field_name_landuse_lv1_id,
-                TextConstants.field_name_crop_name]
+                TextConstants.field_name_crop_name,
+                TextConstants.field_name_month,
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_surface_conditions,
+                TextConstants.field_name_vegetation_conditions,
+                TextConstants.field_name_protection_measure]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3]:
@@ -547,7 +557,12 @@ class TableWidgetRoughness(TableWidgetWithSlider):
     def get_slider_stat_values(self, values: List[Any]) -> Tuple[float, float, float, float]:
         return E3dCatalog().get_roughness_range(crop=values[0],
                                                 landuse_lv1=values[2],
-                                                landuse_lv2=values[1])
+                                                landuse_lv2=values[1],
+                                                month=values[4],
+                                                agrotechnology=values[5],
+                                                surface_condition=values[6],
+                                                vegetation_condition=values[7],
+                                                protection_measure=values[8])
 
     def prepare_fields(self) -> str:
 
@@ -555,6 +570,11 @@ class TableWidgetRoughness(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_landuse_lv2_id}:string",
                   F"field={TextConstants.field_name_landuse_lv1_id}:string",
                   F"field={TextConstants.field_name_crop_name}:string",
+                  F"field={TextConstants.field_name_month}:string",
+                  F"field={TextConstants.field_name_agrotechnology}:string",
+                  F"field={TextConstants.field_name_surface_conditions}:string",
+                  F"field={TextConstants.field_name_vegetation_conditions}:string",
+                  F"field={TextConstants.field_name_protection_measure}:string"
                   F"field={TextConstants.field_name_roughness}:double"]
 
         fields = "&".join(fields)
@@ -562,7 +582,7 @@ class TableWidgetRoughness(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], value]
 
 
 class TableWidgetErodibility(TableWidgetWithSlider):
@@ -577,7 +597,10 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_protection_measure,
+                TextConstants.field_name_surface_conditions]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -586,7 +609,10 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_protection_measure,
+                TextConstants.field_name_surface_conditions]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
@@ -598,7 +624,10 @@ class TableWidgetErodibility(TableWidgetWithSlider):
         return E3dCatalog().get_erodibility_range(crop=values[0],
                                                   landuse_lv1=values[2],
                                                   landuse_lv2=values[1],
-                                                  ka5_class=values[4])
+                                                  ka5_class=values[4],
+                                                  agrotechnology=values[7],
+                                                  protection_measure=values[8],
+                                                  surface_condition=values[9])
 
     def prepare_fields(self) -> str:
 
@@ -609,6 +638,9 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
+                  F"field={TextConstants.field_name_agrotechnology}:string",
+                  F"field={TextConstants.field_name_protection_measure}:string",
+                  F"field={TextConstants.field_name_surface_conditions}:string",
                   F"field={TextConstants.field_name_erodibility}:double"]
 
         fields = "&".join(fields)
@@ -616,7 +648,7 @@ class TableWidgetErodibility(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], value]
 
 
 class TableWidgetSkinFactor(TableWidgetWithSlider):
@@ -631,7 +663,11 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_month,
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_protection_measure,
+                TextConstants.field_name_surface_conditions]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -640,7 +676,11 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_month,
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_protection_measure,
+                TextConstants.field_name_surface_conditions]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
@@ -652,7 +692,11 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
         return E3dCatalog().get_skinfactor_range(crop=values[0],
                                                  landuse_lv1=values[2],
                                                  landuse_lv2=values[1],
-                                                 ka5_class=values[4])
+                                                 ka5_class=values[4],
+                                                 month=values[7],
+                                                 agrotechnology=values[8],
+                                                 protection_measure=values[9],
+                                                 surface_condition=values[10])
 
     def prepare_fields(self) -> str:
 
@@ -663,6 +707,10 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
+                  F"field={TextConstants.field_name_month}:string",
+                  F"field={TextConstants.field_name_agrotechnology}:string",
+                  F"field={TextConstants.field_name_protection_measure}:string",
+                  F"field={TextConstants.field_name_surface_conditions}:string",
                   F"field={TextConstants.field_name_skinfactor}:double"]
 
         fields = "&".join(fields)
@@ -670,7 +718,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], value]
 
 
 class TableWidgetInitMoisture(TableWidgetWithSlider):

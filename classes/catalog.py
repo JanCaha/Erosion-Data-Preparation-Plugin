@@ -328,6 +328,18 @@ class E3dCatalog(metaclass=Singleton):
                             month: Optional[str] = None):
         conds = []
 
+        if agrotechnology:
+            conds.append(f"agrotechnology_id = {agrotechnology}")
+
+        if protection_measure:
+            conds.append(f"protection_measure_id = {protection_measure}")
+
+        if surface_condition:
+            conds.append(f"surface_condition_id = {surface_condition}")
+
+        if vegetation_condition:
+            conds.append(f"vegetation_condition_id = {vegetation_condition}")
+
         if month:
             conds.append(f"month_id = {month}")
 
@@ -374,6 +386,15 @@ class E3dCatalog(metaclass=Singleton):
                               month: Optional[str] = None):
 
         conds = []
+
+        if agrotechnology:
+            conds.append(f"agrotechnology_id = {agrotechnology}")
+
+        if protection_measure:
+            conds.append(f"protection_measure_id = {protection_measure}")
+
+        if surface_condition:
+            conds.append(f"surface_condition_id = {surface_condition}")
 
         if month:
             conds.append(f"month_id = {month}")
@@ -424,6 +445,15 @@ class E3dCatalog(metaclass=Singleton):
                              month: Optional[str] = None):
 
         conds = []
+
+        if agrotechnology:
+            conds.append(f"agrotechnology_id = {agrotechnology}")
+
+        if protection_measure:
+            conds.append(f"protection_measure_id = {protection_measure}")
+
+        if surface_condition:
+            conds.append(f"surface_condition_id = {surface_condition}")
 
         if month:
             conds.append(f"month_id = {month}")
