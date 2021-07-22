@@ -65,6 +65,62 @@ class E3dCatalog(metaclass=Singleton):
 
         return ka5_classes
 
+    def get_surface_condition(self) -> Dict[str, int]:
+
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM surface_condition")
+
+        rows = self.db_cursor.fetchall()
+
+        data = {}
+
+        for row in rows:
+
+            data.update({row[0]: row[1]})
+
+        return data
+
+    def get_protection_measure(self) -> Dict[str, int]:
+
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM protection_measure")
+
+        rows = self.db_cursor.fetchall()
+
+        data = {}
+
+        for row in rows:
+
+            data.update({row[0]: row[1]})
+
+        return data
+
+    def get_vegetation_condition(self) -> Dict[str, int]:
+
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM vegetation_condition")
+
+        rows = self.db_cursor.fetchall()
+
+        data = {}
+
+        for row in rows:
+
+            data.update({row[0]: row[1]})
+
+        return data
+
+    def get_agrotechnology(self) -> Dict[str, int]:
+
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM agrotechnology")
+
+        rows = self.db_cursor.fetchall()
+
+        data = {}
+
+        for row in rows:
+
+            data.update({row[0]: row[1]})
+
+        return data
+
     def get_landuse_crop(self):  # -> Dict[str, LanduseCrop]:
 
         from .definition_landuse_crop import LanduseCrop
