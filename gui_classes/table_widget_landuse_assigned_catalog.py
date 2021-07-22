@@ -214,8 +214,6 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
                 self.setCellWidget(i, 4, self.build_menu_protection_measure())
                 self.setCellWidget(i, 5, self.build_menu_surface_conditions())
 
-            self.repaint()
-
     def is_filled(self):
 
         rows_filled = [None] * self.rowCount()
@@ -264,7 +262,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
         for i in range(self.rowCount()):
 
-            text_orig = self.takeItem(i, 0).text()
+            text_orig = self.item(i, 0).text()
             text_new = self.cellWidget(i, 1).text()
 
             if text_new in self.data_dict.keys():
