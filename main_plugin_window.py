@@ -15,6 +15,7 @@ from qgis.core import (QgsMapLayerProxyModel,
                        QgsMapLayer,
                        Qgis,
                        QgsRasterFileWriter,
+                       QgsFields,
                        QgsFieldProxyModel,
                        QgsProject,
                        QgsFileUtils,
@@ -67,6 +68,9 @@ FORM_CLASS, _ = uic.loadUiType(str(path_ui))
 
 
 class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
+
+    landuse_select_widget_index = 4
+    corg_widget_index = 6
 
     # TODO fix element to remove
     qlabel_i: QtWidgets.QLabel
@@ -127,6 +131,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # widget 6
     label_data_status: QtWidgets.QLabel
 
+    # widget initmoisture
+    label_initmoisture: QtWidgets.QLabel
+    fcb_initmoisture: QgsFieldComboBox
+    label_initmoisture_layer: QtWidgets.QLabel
+    fcb_initmoisture_layer: QtWidgets.QComboBox
+
     # widget optional
     layer_channel_elements_cb: QgsMapLayerComboBox
     layer_drain_elements_cb: QgsMapLayerComboBox
@@ -182,7 +192,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.stackedWidget.setCurrentIndex(0)
 
-        self.qlabel_i.setVisible(False)
+        self.qlabel_i.setVisible(True)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
@@ -256,6 +266,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.label_crop_field.setText(TextConstants.label_crop_field)
         self.label_landuse_field.setText(TextConstants.label_landuse_field)
 
+        self.label_initmoisture.setText(TextConstants.label_initmoisture)
+        self.label_initmoisture_layer.setText(TextConstants.label_initmoisture_layer)
+        self.fcb_initmoisture_layer.currentIndexChanged.connect(self.update_initmoisture_fields)
+
         # widget optional
 
         self.label_pour_points.setText(TextConstants.label_pour_points)
@@ -303,39 +317,39 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
 
         self.table_landuse_assign_catalog = TableWidgetLanduseAssignedCatalog()
-        widget: QtWidgets.QWidget = self.stackedWidget.widget(4)
+        widget: QtWidgets.QWidget = self.stackedWidget.widget(self.landuse_select_widget_index)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(4, self.table_landuse_assign_catalog)
+        self.stackedWidget.insertWidget(self.landuse_select_widget_index, self.table_landuse_assign_catalog)
 
         self.table_corg = TableWidgetCorg(TextConstants.header_table_corg)
-        widget = self.stackedWidget.widget(5)
+        widget = self.stackedWidget.widget(self.corg_widget_index)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(5, self.table_corg)
+        self.stackedWidget.insertWidget(self.corg_widget_index, self.table_corg)
 
         self.table_bulk_density = TableWidgetBulkDensity(TextConstants.header_table_bulkdensity)
-        widget = self.stackedWidget.widget(6)
+        widget = self.stackedWidget.widget(self.corg_widget_index+1)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(6, self.table_bulk_density)
+        self.stackedWidget.insertWidget(self.corg_widget_index+1, self.table_bulk_density)
 
         self.table_canopy_cover = TableWidgetCanopyCover(TextConstants.header_table_canopycover)
-        widget = self.stackedWidget.widget(7)
+        widget = self.stackedWidget.widget(self.corg_widget_index+2)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(7, self.table_canopy_cover)
+        self.stackedWidget.insertWidget(self.corg_widget_index+2, self.table_canopy_cover)
 
         self.table_roughness = TableWidgetRoughness(TextConstants.header_table_roughness)
-        widget = self.stackedWidget.widget(8)
+        widget = self.stackedWidget.widget(self.corg_widget_index+3)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(8, self.table_roughness)
+        self.stackedWidget.insertWidget(self.corg_widget_index+3, self.table_roughness)
 
         self.table_erodibility = TableWidgetErodibility(TextConstants.header_table_erodibility)
-        widget = self.stackedWidget.widget(9)
+        widget = self.stackedWidget.widget(self.corg_widget_index+4)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(9, self.table_erodibility)
+        self.stackedWidget.insertWidget(self.corg_widget_index+4, self.table_erodibility)
 
         self.table_skinfactor = TableWidgetSkinFactor(TextConstants.header_table_skinfactor)
-        widget = self.stackedWidget.widget(10)
+        widget = self.stackedWidget.widget(self.corg_widget_index+5)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(10, self.table_skinfactor)
+        self.stackedWidget.insertWidget(self.corg_widget_index+5, self.table_skinfactor)
 
         self.checkbox_export_empty_data.stateChanged.connect(self.allow_ok_button)
 
@@ -522,6 +536,51 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             else:
                 self.fcb_gsc.setField("GS")
 
+    def update_initmisture_layer(self):
+
+        for i in range(self.fcb_initmoisture_layer.count()):
+            self.fcb_initmoisture_layer.removeItem(i)
+
+        # self.fcb_initmoisture_layer
+        self.fcb_initmoisture_layer.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
+        self.fcb_initmoisture_layer.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
+
+    def update_initmoisture_fields(self):
+
+        if "Soil" in self.fcb_initmoisture_layer.currentText():
+
+            fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
+
+        elif "Landuse" in self.fcb_initmoisture_layer.currentText():
+
+            fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+
+        self.fcb_initmoisture.setFields(fields)
+        self.fcb_initmoisture.setFilters(QgsFieldProxyModel.Numeric)
+        self.fcb_initmoisture.setCurrentIndex(0)
+
+    def rename_initmoisture(self):
+
+        if 0 < len(self.fcb_initmoisture.currentText()):
+
+            if "Soil" in self.fcb_initmoisture_layer.currentText():
+
+                rename_field(self.layer_soil,
+                             self.fcb_initmoisture.currentText(),
+                             TextConstants.field_name_init_moisture)
+
+            elif "Landuse" in self.fcb_initmoisture_layer.currentText():
+
+                rename_field(self.layer_landuse,
+                             self.fcb_initmoisture.currentText(),
+                             TextConstants.field_name_init_moisture)
+
+        else:
+
+            add_field_with_constant_value(self.layer_soil,
+                                          TextConstants.field_name_init_moisture,
+                                          "")
+
     def update_prev_next_buttons(self):
         i = self.stackedWidget.currentIndex()
         self.previous_pb.setEnabled(i > 0)
@@ -690,78 +749,85 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                      TextConstants.field_name_landuse_crops,
                                                      self.progressBar)
 
-                    dissolve_list = [TextConstants.field_name_ka5_id,
-                                     TextConstants.field_name_ka5_name,
-                                     TextConstants.field_name_ka5_code,
-                                     TextConstants.field_name_ka5_group_lv2_id,
-                                     TextConstants.field_name_landuse_lv1_id,
-                                     TextConstants.field_name_landuse_lv2_id,
-                                     TextConstants.field_name_crop_id,
-                                     TextConstants.field_name_crop_name,
-                                     TextConstants.field_name_soil_id,
-                                     TextConstants.field_name_landuse_crops,
-                                     TextConstants.field_name_poly_id,
-                                     TextConstants.field_name_FU,
-                                     TextConstants.field_name_MU,
-                                     TextConstants.field_name_GU,
-                                     TextConstants.field_name_FT,
-                                     TextConstants.field_name_MT,
-                                     TextConstants.field_name_GT,
-                                     TextConstants.field_name_FS,
-                                     TextConstants.field_name_MS,
-                                     TextConstants.field_name_GS,
-                                     TextConstants.field_name_agrotechnology,
-                                     TextConstants.field_name_protection_measure,
-                                     TextConstants.field_name_vegetation_conditions,
-                                     TextConstants.field_name_surface_conditions]
+                    self.update_initmisture_layer()
 
-                    self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
-                                                                          self.layer_landuse,
-                                                                          TextConstants.field_name_poly_id,
-                                                                          TextConstants.field_name_soil_id,
-                                                                          TextConstants.field_name_landuse_crops,
-                                                                          dissolve_list,
-                                                                          progress_bar=self.progressBar)
+            if i == 5:
 
-                    add_field_with_constant_value(self.layer_intersected_dissolved,
-                                                  TextConstants.field_name_month,
-                                                  self.date_month)
+                self.rename_initmoisture()
 
-            if i == 4:
+                dissolve_list = [TextConstants.field_name_ka5_id,
+                                 TextConstants.field_name_ka5_name,
+                                 TextConstants.field_name_ka5_code,
+                                 TextConstants.field_name_ka5_group_lv2_id,
+                                 TextConstants.field_name_landuse_lv1_id,
+                                 TextConstants.field_name_landuse_lv2_id,
+                                 TextConstants.field_name_crop_id,
+                                 TextConstants.field_name_crop_name,
+                                 TextConstants.field_name_soil_id,
+                                 TextConstants.field_name_landuse_crops,
+                                 TextConstants.field_name_poly_id,
+                                 TextConstants.field_name_FU,
+                                 TextConstants.field_name_MU,
+                                 TextConstants.field_name_GU,
+                                 TextConstants.field_name_FT,
+                                 TextConstants.field_name_MT,
+                                 TextConstants.field_name_GT,
+                                 TextConstants.field_name_FS,
+                                 TextConstants.field_name_MS,
+                                 TextConstants.field_name_GS,
+                                 TextConstants.field_name_agrotechnology,
+                                 TextConstants.field_name_protection_measure,
+                                 TextConstants.field_name_vegetation_conditions,
+                                 TextConstants.field_name_surface_conditions,
+                                 TextConstants.field_name_init_moisture]
+
+                self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
+                                                                      self.layer_landuse,
+                                                                      TextConstants.field_name_poly_id,
+                                                                      TextConstants.field_name_soil_id,
+                                                                      TextConstants.field_name_landuse_crops,
+                                                                      dissolve_list,
+                                                                      progress_bar=self.progressBar)
+
+                QgsProject.instance().addMapLayer(self.layer_intersected_dissolved)
+
+                add_field_with_constant_value(self.layer_intersected_dissolved,
+                                              TextConstants.field_name_month,
+                                              self.date_month)
 
                 self.table_corg.add_data(self.layer_intersected_dissolved)
 
-            if i == 5:
+            if i == 6:
 
                 self.layer_intersected_dissolved = self.table_corg.join_data(self.layer_intersected_dissolved)
 
                 self.table_bulk_density.add_data(self.layer_intersected_dissolved)
 
-            if i == 6:
+            if i == 7:
 
                 self.layer_intersected_dissolved = self.table_bulk_density.join_data(self.layer_intersected_dissolved)
 
                 self.table_canopy_cover.add_data(self.layer_intersected_dissolved)
 
-            if i == 7:
+            if i == 8:
 
                 self.layer_intersected_dissolved = self.table_canopy_cover.join_data(self.layer_intersected_dissolved)
 
                 self.table_roughness.add_data(self.layer_intersected_dissolved)
 
-            if i == 8:
+            if i == 9:
 
                 self.layer_intersected_dissolved = self.table_roughness.join_data(self.layer_intersected_dissolved)
 
                 self.table_erodibility.add_data(self.layer_intersected_dissolved)
 
-            if i == 9:
+            if i == 10:
 
                 self.layer_intersected_dissolved = self.table_erodibility.join_data(self.layer_intersected_dissolved)
 
                 self.table_skinfactor.add_data(self.layer_intersected_dissolved)
 
-            if i == 10:
+            if i == 11:
 
                 self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
 
@@ -774,7 +840,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 else:
                     self.label_data_status.setStyleSheet("color : red;")
 
-            if i == 11:
 
                 # add "POLY_NR" field
 
@@ -839,12 +904,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                                    raster,
                                                                                    progress_bar=self.progressBar)
 
-                    # solve table
-
-                    # TODO add initmoisture
-                    add_field_with_constant_value(self.layer_intersected_dissolved,
-                                                  TextConstants.field_name_init_moisture,
-                                                  "")
 
                     # add rows for channel elements and drain elements
                     for value in self.poly_nr_additons:

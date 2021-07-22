@@ -117,6 +117,7 @@ class TextConstants:
                    "Particle size distribution",
                    "Landuse classification",
                    "Landuse categories",
+                   "Initial moisture",
                    "Organic carbon content (Corg)",
                    "Bulk density",
                    "Canopy cover",
@@ -133,7 +134,8 @@ class TextConstants:
         "Please select the attribute field containing the KA5 (KA4) identifier code. If not present it will be calculated later in the proces from structurall classes contents.",
         "Please assign attribute field from Soils layer containing the pareticle size classes according to the KA5 standard.",
         "Please select attribute field from Landuse layer containing the landuse type and optionaly a crop.",
-        "Assign source landuse categories to Erosion-3D Parameters Catalogue categories. For correct quering of the catalogue the landuse categories need to be assigned from values available within the catalogue. Each category can be assigned on different level of classification (don’t miss the „subcategories“ items!)",
+        "Assign source landuse categories to Erosion-3D Parameters Catalogue categories. For correct quering of the catalogue the landuse categories need to be assigned from values available within the catalogue. Each category can be assigned on different level of classification (don’t miss the „subcategories“ items!)\nIf the categories include any special limitations (agrotechnology, soil erosion protection measures, vegetation condition) you may specify them too and the query will be limited accordingly.",
+        "Select the input layer and its attribute field where the values of initial moisture values are stored. If you don’t have the values in your inputs it can be filled in manualy at the end of this wizard.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
@@ -155,6 +157,9 @@ class TextConstants:
 
     label_crop_field = "Landuse field:"
     label_landuse_field = "Crop field:"
+
+    label_initmoisture = "Initial moisture attribute field:"
+    label_initmoisture_layer = "Initial moistre layer:"
 
     label_pour_points = "Pour points:"
     label_drain_elements = "Drain elements:"
@@ -282,6 +287,7 @@ class TextConstantsCZ:
                    "Calculate Garbrecht rougness (and possibly KA5 classification)\nfrom structural subclasses content:",
                    "Classify landuse with crops:",
                    "Assign classes to Landuse-Crop pairs:",
+                   "Initial moisture:",
                    "Assign values of Corg to data:",
                    "Assign values of Bulk Density to data:",
                    "Assign values of Canopy Cover to data:",
