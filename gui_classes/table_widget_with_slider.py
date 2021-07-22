@@ -574,7 +574,7 @@ class TableWidgetRoughness(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_surface_conditions}:string",
                   F"field={TextConstants.field_name_vegetation_conditions}:string",
-                  F"field={TextConstants.field_name_protection_measure}:string"
+                  F"field={TextConstants.field_name_protection_measure}:string",
                   F"field={TextConstants.field_name_roughness}:double"]
 
         fields = "&".join(fields)
