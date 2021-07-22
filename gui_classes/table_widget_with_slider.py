@@ -424,7 +424,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_ka5_group_lv2_id,
                 TextConstants.field_name_ka5_code,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_agrotechnology]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -434,7 +435,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_ka5_group_lv2_id,
-                TextConstants.field_name_soil_id]
+                TextConstants.field_name_soil_id,
+                TextConstants.field_name_agrotechnology]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[7]:
@@ -447,7 +449,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                                            crop=values[0],
                                            landuse_lv1=values[2],
                                            landuse_lv2=values[1],
-                                           ka5_group_lv2=values[6])
+                                           ka5_group_lv2=values[6],
+                                           agrotechnology=values[9])
 
     def prepare_fields(self) -> str:
 
@@ -459,6 +462,7 @@ class TableWidgetCorg(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
+                  F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_corg}:double"]
 
         fields = "&".join(fields)
@@ -466,7 +470,7 @@ class TableWidgetCorg(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[8], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[8], row[9], value]
 
 
 class TableWidgetCanopyCover(TableWidgetWithSlider):

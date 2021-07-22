@@ -242,6 +242,9 @@ class E3dCatalog(metaclass=Singleton):
 
         conds = []
 
+        if agrotechnology:
+            conds.append(f"agrotechnology_id = {agrotechnology}")
+
         if ka5_class:
             conds.append(f"ka5_class_id = {ka5_class}")
 
