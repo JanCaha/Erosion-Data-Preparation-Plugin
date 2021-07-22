@@ -10,10 +10,12 @@ from PyQt5 import QtCore
 from qgis.core import (QgsVectorLayer,
                        QgsFields,
                        QgsFeature,
-                       QgsVectorDataProvider)
+                       QgsVectorDataProvider,
+                       QgsProject)
 
 from ..classes.catalog import E3dCatalog
 from ..constants import TextConstants
+from ..algorithms.utils import log
 
 
 class TableWidgetLanduseAssignedCatalog(QTableWidget):
@@ -34,26 +36,38 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
         self.data_dict = self.catalog.get_landuse_crop()
 
-        self.setColumnCount(2)
+        self.agrotechnology_dict = self.catalog.get_agrotechnology()
+        self.vegetation_dict = self.catalog.get_vegetation_condition()
+        self.protection_dict = self.catalog.get_protection_measure()
+        self.surface_dict = self.catalog.get_surface_condition()
 
-        item = QTableWidgetItem(TextConstants.tw_lc_col_value)
-        font: QFont = self.font()
-        font.setBold(True)
-        item.setFont(font)
-        item.setTextAlignment(QtCore.Qt.AlignCenter)
+        self.setColumnCount(6)
 
-        self.setHorizontalHeaderItem(0, item)
+        self.setHorizontalHeaderItem(0, self.add_header(TextConstants.tw_lc_col_value))
+        self.setHorizontalHeaderItem(1, self.add_header(TextConstants.tw_lc_col_assigned))
+        self.setHorizontalHeaderItem(2, self.add_header(TextConstants.tw_lc_col_agrotechnology))
+        self.setHorizontalHeaderItem(3, self.add_header(TextConstants.tw_lc_col_vegetation_condition))
+        self.setHorizontalHeaderItem(4, self.add_header(TextConstants.tw_lc_col_protection_measure))
+        self.setHorizontalHeaderItem(5, self.add_header(TextConstants.tw_lc_col_surface_conditions))
 
-        item = QTableWidgetItem(TextConstants.tw_lc_col_assigned)
-        font: QFont = self.font()
-        font.setBold(True)
-        item.setFont(font)
-        item.setTextAlignment(QtCore.Qt.AlignCenter)
-
-        self.setHorizontalHeaderItem(1, item)
+        width_smaller = 0.6
 
         self.setColumnWidth(0, self.columnWidth(1) * 2)
-        self.setColumnWidth(1, self.columnWidth(1) * 3)
+        self.setColumnWidth(1, self.columnWidth(1) * 2)
+        self.setColumnWidth(2, int(self.columnWidth(1) * width_smaller))
+        self.setColumnWidth(3, int(self.columnWidth(1) * width_smaller))
+        self.setColumnWidth(4, int(self.columnWidth(1) * width_smaller))
+        self.setColumnWidth(5, int(self.columnWidth(1) * width_smaller))
+
+    def add_header(self, column_name: str) -> QTableWidgetItem:
+
+        item = QTableWidgetItem(column_name)
+        font: QFont = self.font()
+        font.setBold(True)
+        item.setFont(font)
+        item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+        return item
 
     @staticmethod
     def filterTheDict(dictObj, callback):
@@ -64,6 +78,65 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
             if callback((key, value)):
                 newDict[key] = value
         return newDict
+
+    def build_menu_button(self, menu: QMenu) -> QPushButton:
+
+        button = QPushButton()
+        button.setMenu(menu)
+        button.setStyleSheet("text-align:left;padding-left: 10px;")
+        button.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        button.customContextMenuRequested.connect(self.handle_right_click)
+
+        return button
+
+    def build_menu_surface_conditions(self) -> QPushButton:
+
+        main_menu = QMenu()
+        main_menu.triggered.connect(lambda action: button.setText(action.text()))
+
+        for name in self.surface_dict.keys():
+            main_menu.addAction(name)
+
+        button = self.build_menu_button(main_menu)
+
+        return button
+
+    def build_menu_protection_measure(self) -> QPushButton:
+
+        main_menu = QMenu()
+        main_menu.triggered.connect(lambda action: button.setText(action.text()))
+
+        for name in self.protection_dict.keys():
+            main_menu.addAction(name)
+
+        button = self.build_menu_button(main_menu)
+
+        return button
+
+    def build_menu_vegetation_condition(self) -> QPushButton:
+
+        main_menu = QMenu()
+        main_menu.triggered.connect(lambda action: button.setText(action.text()))
+
+        for name in self.vegetation_dict.keys():
+            main_menu.addAction(name)
+
+        button = self.build_menu_button(main_menu)
+
+        return button
+
+    def build_menu_agrotechnology(self) -> QPushButton:
+
+        main_menu = QMenu()
+        main_menu.triggered.connect(lambda action: button.setText(action.text()))
+
+        for name in self.agrotechnology_dict.keys():
+
+            main_menu.addAction(name)
+
+        button = self.build_menu_button(main_menu)
+
+        return button
 
     def build_menu(self) -> QPushButton:
 
@@ -136,6 +209,11 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
                 self.setCellWidget(i, 1, self.build_menu())
 
+                self.setCellWidget(i, 2, self.build_menu_agrotechnology())
+                self.setCellWidget(i, 3, self.build_menu_vegetation_condition())
+                self.setCellWidget(i, 4, self.build_menu_protection_measure())
+                self.setCellWidget(i, 5, self.build_menu_surface_conditions())
+
             self.repaint()
 
     def is_filled(self):
@@ -164,11 +242,23 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
         return data
 
-    def get_data_as_layer(self) -> QgsVectorLayer:
+    def get_data_as_layer(self, join_field_name: str) -> QgsVectorLayer:
 
-        layer = QgsVectorLayer("NoGeometry?field=orig:string&field=new:string&field=landuse_lv1:int&field=landuse_lv2:int&field=crop_id:int",
+        fields_str = f"field={join_field_name}:string&" \
+                     f"field={TextConstants.field_name_landuse_lv1_id}:int&" \
+                     f"field={TextConstants.field_name_landuse_lv2_id}:int&" \
+                     f"field={TextConstants.field_name_crop_id}:int&" \
+                     f"field={TextConstants.field_name_crop_name}:string&" \
+                     f"field={TextConstants.field_name_agrotechnology}:int&" \
+                     f"field={TextConstants.field_name_vegetation_conditions}:int&" \
+                     f"field={TextConstants.field_name_protection_measure}:int&" \
+                     f"field={TextConstants.field_name_surface_conditions}:int"
+
+        layer = QgsVectorLayer(f"NoGeometry?{fields_str}",
                                "source",
                                "memory")
+
+        fields = layer.fields()
 
         layer_dp: QgsVectorDataProvider = layer.dataProvider()
 
@@ -178,16 +268,64 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
             text_new = self.cellWidget(i, 1).text()
 
             if text_new in self.data_dict.keys():
-                a = self.data_dict[text_new]
+                landuse = self.data_dict[text_new]
             else:
-                a = None
+                landuse = None
 
-            f = QgsFeature()
+            agro = self.cellWidget(i, 2).text()
 
-            if a:
-                f.setAttributes([text_orig, text_new, a["landuse_lv1"], a["landuse_lv2"], a["crop_id"]])
+            if agro in self.agrotechnology_dict.keys():
+                agro_id = self.agrotechnology_dict[agro]
             else:
-                f.setAttributes([text_orig, text_new])
+                agro_id = None
+
+            vegetation = self.cellWidget(i, 3).text()
+
+            if vegetation in self.vegetation_dict.keys():
+                vegetation_id = self.vegetation_dict[vegetation]
+            else:
+                vegetation_id = None
+
+            protection = self.cellWidget(i, 4).text()
+
+            if protection in self.protection_dict.keys():
+                protection_id = self.protection_dict[protection]
+            else:
+                protection_id = None
+
+            surface = self.cellWidget(i, 5).text()
+
+            if surface in self.surface_dict.keys():
+                surface_id = self.surface_dict[surface]
+            else:
+                surface_id = None
+
+            f = QgsFeature(fields)
+
+            f.setAttribute(fields.lookupField(join_field_name), text_orig)
+
+            if landuse:
+                f.setAttribute(fields.lookupField(TextConstants.field_name_landuse_lv1_id), landuse.id_landuse_lv1)
+                f.setAttribute(fields.lookupField(TextConstants.field_name_landuse_lv2_id), landuse.id_landuse_lv2)
+                f.setAttribute(fields.lookupField(TextConstants.field_name_crop_id), landuse.id_crop)
+                f.setAttribute(fields.lookupField(TextConstants.field_name_crop_name), landuse.name)
+
+                if landuse.id_landuse_lv1 == 1:
+                    if agro_id:
+                        f.setAttribute(fields.lookupField(TextConstants.field_name_agrotechnology),
+                                       agro_id)
+
+                    if protection_id:
+                        f.setAttribute(fields.lookupField(TextConstants.field_name_protection_measure),
+                                       protection_id)
+
+            if vegetation_id:
+                f.setAttribute(fields.lookupField(TextConstants.field_name_vegetation_conditions),
+                               vegetation_id)
+
+            if surface_id:
+                f.setAttribute(fields.lookupField(TextConstants.field_name_surface_conditions),
+                               surface_id)
 
             layer_dp.addFeature(f)
 
