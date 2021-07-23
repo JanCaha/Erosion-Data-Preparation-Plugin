@@ -4,7 +4,7 @@ on:
   push:
      paths:
       - .github/workflows/**
-      - db_catalog/**
+      - dev_files/e3dcatalog_current_database.sql
 
 jobs:
 
@@ -33,6 +33,7 @@ jobs:
         run: |
           pip install wheel
           pip install GDAL==`gdal-config --version`
+          pip install pb_tool
       
       - name: SQL setup
         run: |
@@ -41,7 +42,7 @@ jobs:
           
       - name: Convert MySQL to SQLite
         run: |
-          python ./db_catalog/mysql_to_sqlite.py
+          python ./dev_files/mysql_to_sqlite.py
       
       - uses: EndBug/add-and-commit@v7
         with:
@@ -49,3 +50,14 @@ jobs:
           author_name: github-actions
           author_email: github-actions@github.com
           message: "current catalog update"
+
+      - name: Convert MySQL to SQLite
+        run: |
+          python ./dev_files/update_version.py
+
+      - uses: EndBug/add-and-commit@v7
+        with:
+          add: 'metadata.txt'
+          author_name: github-actions
+          author_email: github-actions@github.com
+          message: "version update"
