@@ -12,7 +12,7 @@ print(mysql_ds.GetLayerCount())
 
 driver: ogr.Driver = ogr.GetDriverByName("SQLite")
 
-path = Path(__file__).parent / "database.sqlite"
+path = Path(__file__).parent.parent / "db_catalog" / "database.sqlite"
 
 print(path.absolute())
 
