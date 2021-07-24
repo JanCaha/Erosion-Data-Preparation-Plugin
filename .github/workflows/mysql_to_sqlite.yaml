@@ -61,3 +61,20 @@ jobs:
           author_name: github-actions
           author_email: github-actions@github.com
           message: "version update"
+
+      - name: Zip plugin
+        run: |
+          pb_tool zip
+
+      - name: Get Version
+        id: version
+        run: |
+          echo "::set-output name=VERSION::$(cat metadata.txt | grep '^version' | grep -o '[0-9\.]*')"
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: zip_build/Erosion3DDataPreparationPlugin.zip
+          name: ver. ${{ steps.version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
