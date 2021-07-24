@@ -51,7 +51,7 @@ jobs:
           author_email: github-actions@github.com
           message: "current catalog update"
 
-      - name: Convert MySQL to SQLite
+      - name: Update version
         run: |
           python ./dev_files/update_version.py
 
