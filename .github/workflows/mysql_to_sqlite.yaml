@@ -8,9 +8,9 @@ on:
 
 jobs:
 
-  test:
+  update-release:
   
-    name: test package
+    name: Create new plugin release upon update of catalog
     
     runs-on: ubuntu-latest
     
