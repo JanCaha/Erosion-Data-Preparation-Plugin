@@ -3,32 +3,32 @@ from pathlib import Path
 from packaging import version
 
 
-def bump_dev_version(current_version: version.Version) -> version.Version:
+def bump_micro_version(current_version: version.Version) -> version.Version:
 
     major = current_version.major
     minor = current_version.minor
-    dev = current_version.dev
+    micro = current_version.micro
 
-    if dev is None:
-        dev = 1
+    if micro is None:
+        micro = 1
     else:
-        dev += 1
+        micro += 1
 
-    return version.parse(f"{major}.{minor}.{dev}")
+    return version.parse(f"{major}.{minor}.{micro}")
 
 
 def bump_minor_version(current_version: version.Version) -> version.Version:
 
     major = current_version.major
     minor = current_version.minor
-    dev = 0
+    micro = 0
 
     if minor is None:
         minor = 1
     else:
         minor += 1
 
-    return version.parse(f"{major}.{minor}.{dev}")
+    return version.parse(f"{major}.{minor}.{micro}")
 
 
 if __name__ == "__main__":
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     plugin_version = version.parse(config['general']["version"])
 
-    config['general']["version"] = str(bump_dev_version(plugin_version))
+    config['general']["version"] = str(bump_micro_version(plugin_version))
 
     print(f"Old version: {plugin_version} new version: {config['general']['version']}")
 
