@@ -31,15 +31,19 @@ def bump_minor_version(current_version: version.Version) -> version.Version:
     return version.parse(f"{major}.{minor}.{dev}")
 
 
-config_path = Path(__file__).parent.parent / "metadata.txt"
+if __name__ == "__main__":
 
-config = configparser.ConfigParser()
+    config_path = Path(__file__).parent.parent / "metadata.txt"
 
-config.read(str(config_path))
+    config = configparser.ConfigParser()
 
-plugin_version = version.parse(config['general']["version"])
+    config.read(str(config_path))
 
-config['general']["version"] = str(bump_dev_version(plugin_version))
+    plugin_version = version.parse(config['general']["version"])
 
-with open(config_path, "w+") as file_to_save:
-    config.write(file_to_save)
+    config['general']["version"] = str(bump_dev_version(plugin_version))
+
+    print(f"Old version: {plugin_version} new version: {config['general']['version']}")
+
+    with open(config_path, "w+") as file_to_save:
+        config.write(file_to_save)
