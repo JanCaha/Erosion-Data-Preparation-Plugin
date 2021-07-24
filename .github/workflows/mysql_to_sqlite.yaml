@@ -74,6 +74,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
           files: zip_build/Erosion3DDataPreparationPlugin.zip
           name: ver. ${{ steps.version.outputs.VERSION }}
         env:
