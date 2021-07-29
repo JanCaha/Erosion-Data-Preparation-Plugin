@@ -7,6 +7,8 @@ from qgis.core import (QgsMessageLog,
                        Qgis,
                        QgsVectorLayer,
                        QgsFeature,
+                       QgsProject,
+                       QgsMapLayer,
                        NULL)
 
 from ..constants import TextConstants
@@ -37,9 +39,14 @@ def recode_2_ascii(unicode_string: str) -> str:
         replace(" ", "_")
 
 
+def add_maplayer_to_project(layer: QgsMapLayer):
+
+    QgsProject.instance().addMapLayer(layer)
+
+
 def log(text):
     QgsMessageLog.logMessage(str(text),
-                             "TEST GUI",
+                             TextConstants.plugin_name,
                              Qgis.Info)
 
 
