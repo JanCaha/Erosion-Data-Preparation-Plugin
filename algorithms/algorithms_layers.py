@@ -20,7 +20,9 @@ from qgis.core import (QgsVectorLayer,
                        QgsRasterLayer,
                        QgsRasterBandStats,
                        QgsProcessingUtils,
-                       QgsCoordinateTransformContext)
+                       QgsCoordinateTransformContext,
+                       QgsProcessingContext,
+                       QgsProcessingFeedback)
 
 from processing.algs.gdal.GdalUtils import GdalUtils
 
@@ -31,7 +33,7 @@ from ..classes.definition_landuse_values import LanduseValues
 from ..constants import TextConstants
 from ..classes.catalog import E3dCatalog
 from ..classes.class_KA5 import KA5Class
-from ..algorithms.utils import log
+from ..algorithms.utils import log, add_maplayer_to_project
 
 
 def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
@@ -57,20 +59,23 @@ def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
     progress_bar.setValue(2)
 
     result = processing.run("gdal:rasterize",
-                   {'INPUT': vector_layer,
-                    'FIELD': field_name_vectorize,
-                    'BURN': 0,
-                    'UNITS': 1,
-                    'WIDTH': width_size,
-                    'HEIGHT': height_size,
-                    'EXTENT': extent_string,
-                    'NODATA': no_data,
-                    'OPTIONS': '',
-                    'DATA_TYPE': 5,
-                    'INIT': None,
-                    'INVERT': False,
-                    'EXTRA': '',
-                    'OUTPUT': 'TEMPORARY_OUTPUT'})
+                            {'INPUT': vector_layer,
+                             'FIELD': field_name_vectorize,
+                             'BURN': 0,
+                             'UNITS': 1,
+                             'WIDTH': width_size,
+                             'HEIGHT': height_size,
+                             'EXTENT': extent_string,
+                             'NODATA': no_data,
+                             'OPTIONS': '',
+                             'DATA_TYPE': 5,
+                             'INIT': None,
+                             'INVERT': False,
+                             'EXTRA': '',
+                             'OUTPUT': 'TEMPORARY_OUTPUT'},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     progress_bar.setValue(3)
 
@@ -79,11 +84,12 @@ def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
 
 def copy_layer_fix_geoms(layer_input: QgsMapLayer, layer_name: str) -> QgsVectorLayer:
 
-    params = {'INPUT': layer_input,
-              'OUTPUT': "memory:{}".format(layer_name)}
-
     result = processing.run("native:fixgeometries",
-                            params)
+                            {'INPUT': layer_input,
+                             'OUTPUT': f"memory:{layer_name}"},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     return result["OUTPUT"]
 
@@ -196,12 +202,15 @@ def join_tables(layer_data: QgsVectorLayer,
 
     progress_bar.setValue(2)
 
-    result = processing.run('qgis:joinattributestable', {
-        'INPUT': layer_data,
-        'FIELD': layer_data_field_name_join,
-        'INPUT_2': layer_table,
-        'FIELD_2': layer_table_field_name_join,
-        'OUTPUT': f"memory:{layer_data.name()}"})
+    result = processing.run('qgis:joinattributestable',
+                            {'INPUT': layer_data,
+                             'FIELD': layer_data_field_name_join,
+                             'INPUT_2': layer_table,
+                             'FIELD_2': layer_table_field_name_join,
+                             'OUTPUT': f"memory:{layer_data.name()}"},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     progress_bar.setValue(3)
 
@@ -210,7 +219,10 @@ def join_tables(layer_data: QgsVectorLayer,
         result = processing.run("native:deletecolumn",
                                 {'INPUT': result['OUTPUT'],
                                  'COLUMN': [layer_data_field_name_join, layer_table_field_name_join],
-                                 'OUTPUT': f"memory:{layer_data.name()}"})
+                                 'OUTPUT': f"memory:{layer_data.name()}"},
+                                context=QgsProcessingContext(),
+                                feedback=QgsProcessingFeedback(),
+                                is_child_algorithm=True)
 
     progress_bar.setValue(4)
 
@@ -232,7 +244,10 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
                                                     'INPUT_FIELDS': [],
                                                     'OVERLAY_FIELDS': [],
                                                     'OVERLAY_FIELDS_PREFIX': '',
-                                                    'OUTPUT': 'memory:intersection'})
+                                                    'OUTPUT': 'memory:intersection'},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     layer_intersection: QgsVectorLayer = result["OUTPUT"]
 
@@ -267,13 +282,19 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
 
     result = processing.run("native:retainfields", {'INPUT': layer_intersection,
                                                     'FIELDS': dissolve_fields,
-                                                    'OUTPUT': 'memory:removed_fields'})
+                                                    'OUTPUT': 'memory:removed_fields'},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     progress_bar.setValue(3)
 
     result = processing.run("native:dissolve", {'INPUT': result["OUTPUT"],
                                                 'FIELD': dissolve_fields,
-                                                'OUTPUT': 'memory:dissolve'})
+                                                'OUTPUT': 'memory:dissolve'},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     progress_bar.setValue(4)
 
@@ -369,10 +390,13 @@ def retain_only_fields(layer: QgsVectorLayer,
     else:
         layer_name = f"memory:{layer.name()}"
 
-    result = processing.run("native:retainfields", {
-        'INPUT': layer,
-        'FIELDS': fields_to_retain,
-        'OUTPUT': layer_name})
+    result = processing.run("native:retainfields",
+                            {'INPUT': layer,
+                             'FIELDS': fields_to_retain,
+                             'OUTPUT': layer_name},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     return result["OUTPUT"]
 
@@ -385,11 +409,14 @@ def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
 
     progress_bar.setValue(1)
 
-    result = processing.run("native:fillnodata", {
-        'INPUT': raster_new_values,
-        'BAND': 1,
-        'FILL_VALUE': 0,
-        'OUTPUT': 'TEMPORARY_OUTPUT'})
+    result = processing.run("native:fillnodata",
+                            {'INPUT': raster_new_values,
+                             'BAND': 1,
+                             'FILL_VALUE': 0,
+                             'OUTPUT': 'TEMPORARY_OUTPUT'},
+                            context=QgsProcessingContext(),
+                            feedback=QgsProcessingFeedback(),
+                            is_child_algorithm=True)
 
     raster_new_values = QgsRasterLayer(result["OUTPUT"])
 
@@ -401,10 +428,6 @@ def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
     max_value = str(round(stats.maximumValue))
 
     progress_bar.setValue(3)
-
-    # "@1" raster_new_values
-    # "lusoils@1" raster_orig
-    # ("@1" != 57) * "lusoils@1" + "@1"
 
     one_value_raster = QgsRasterCalculatorEntry()
     one_value_raster.ref = 'one_value_raster@1'
