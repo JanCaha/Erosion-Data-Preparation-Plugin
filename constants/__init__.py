@@ -126,6 +126,7 @@ class TextConstants:
                    "Soil erosion resistence",
                    "Skinfactor",
                    "Optional parameters",
+                   "Manually update values",
                    "Export input datasets for Erosion-3D"
                    ]
 
@@ -144,6 +145,7 @@ class TextConstants:
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "Set optional parameters.",
+        "Manually update values.",
         "Data for export is complete. Please select the input files you want to export and set name and directory to store them to.",
         ""
     ]
