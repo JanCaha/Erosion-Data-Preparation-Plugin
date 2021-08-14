@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>5</number>
+    <number>13</number>
    </property>
    <widget class="QWidget" name="page_0">
     <widget class="QWidget" name="layoutWidget">
@@ -320,8 +320,8 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>571</width>
-       <height>99</height>
+       <width>451</width>
+       <height>224</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_6">
@@ -331,6 +331,9 @@
          <string>Initial moistre layer:</string>
         </property>
        </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QComboBox" name="fcb_initmoisture_layer"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_initmoisture">
@@ -346,8 +349,29 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QComboBox" name="fcb_initmoisture_layer"/>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_initmoisture_layer_2">
+        <property name="text">
+         <string>Corg layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="2">
+       <widget class="QComboBox" name="fcb_corg_layer"/>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_initmoisture_2">
+        <property name="text">
+         <string>Corg attribute field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="2">
+       <widget class="QgsFieldComboBox" name="fcb_corg">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -496,6 +520,21 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_13">
+    <widget class="QLabel" name="label_23">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>141</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>table with values</string>
+     </property>
     </widget>
    </widget>
    <widget class="QWidget" name="page_10">
@@ -723,19 +762,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="QLabel" name="qlabel_i">
-   <property name="geometry">
-    <rect>
-     <x>370</x>
-     <y>680</y>
-     <width>55</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>TextLabel</string>
-   </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
