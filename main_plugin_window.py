@@ -72,9 +72,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     landuse_select_widget_index = 4
     corg_widget_index = 6
 
-    # TODO fix element to remove
-    qlabel_i: QtWidgets.QLabel
-
     qlabel_main: QtWidgets.QLabel
     qlabel_step_description: QtWidgets.QLabel
     qlabel_steps: QtWidgets.QLabel
@@ -82,6 +79,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # process parameters
     layer_soil: QgsVectorLayer = None
     layer_landuse: QgsVectorLayer = None
+
+    layer_soil_interstep: QgsVectorLayer = None
+    layer_landuse_interstep: QgsVectorLayer = None
+
     layer_intersected_dissolved: QgsVectorLayer = None
     layer_raster_dtm: QgsRasterLayer = None
     layer_raster_rasterized: QgsRasterLayer = None
@@ -137,6 +138,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     label_initmoisture_layer: QtWidgets.QLabel
     fcb_initmoisture_layer: QtWidgets.QComboBox
 
+    fcb_corg_layer: QtWidgets.QComboBox
+    fcb_corg: QgsFieldComboBox
+
     # widget optional
     layer_channel_elements_cb: QgsMapLayerComboBox
     layer_drain_elements_cb: QgsMapLayerComboBox
@@ -191,8 +195,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.setupUi(self)
         self.stackedWidget.setCurrentIndex(0)
-
-        self.qlabel_i.setVisible(True)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
@@ -269,6 +271,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.label_initmoisture.setText(TextConstants.label_initmoisture)
         self.label_initmoisture_layer.setText(TextConstants.label_initmoisture_layer)
         self.fcb_initmoisture_layer.currentIndexChanged.connect(self.update_initmoisture_fields)
+
+        self.fcb_corg_layer.currentIndexChanged.connect(self.update_corg_fields)
 
         # widget optional
 
@@ -558,6 +562,30 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.fcb_initmoisture_layer.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
         self.fcb_initmoisture_layer.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
 
+        self.fcb_corg_layer.clear()
+        self.fcb_corg_layer.addItem("")
+        self.fcb_corg_layer.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
+        self.fcb_corg_layer.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
+
+    def update_corg_fields(self):
+
+        if 0 < len(self.fcb_corg_layer.currentText()):
+
+            if "Soil" in self.fcb_corg_layer.currentText():
+
+                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
+
+            elif "Landuse" in self.fcb_corg_layer.currentText():
+
+                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+
+            self.fcb_corg.setFields(fields)
+            self.fcb_corg.setFilters(QgsFieldProxyModel.Numeric)
+            self.fcb_corg.setCurrentIndex(0)
+
+        else:
+            self.fcb_corg.setFields(QgsFields())
+
     def update_initmoisture_fields(self):
 
         if "Soil" in self.fcb_initmoisture_layer.currentText():
@@ -571,6 +599,26 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.fcb_initmoisture.setFields(fields)
         self.fcb_initmoisture.setFilters(QgsFieldProxyModel.Numeric)
         self.fcb_initmoisture.setCurrentIndex(0)
+
+    def rename_corg(self):
+
+        if 0 < len(self.fcb_corg.currentText()):
+
+            if "Soil" in self.fcb_initmoisture_layer.currentText():
+
+                rename_field(self.layer_soil,
+                             self.fcb_corg.currentText(),
+                             TextConstants.field_name_corg)
+
+                QgsProject.instance().addMapLayer(self.layer_soil)
+
+            elif "Landuse" in self.fcb_initmoisture_layer.currentText():
+
+                rename_field(self.layer_landuse,
+                             self.fcb_corg.currentText(),
+                             TextConstants.field_name_corg)
+
+                QgsProject.instance().addMapLayer(self.layer_landuse)
 
     def rename_initmoisture(self):
 
@@ -628,8 +676,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         msg = None
 
         if i < self.stackedWidget.count():
-
-            self.qlabel_i.setText(F"{i}")
 
             if i == 0:
 
@@ -764,7 +810,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     self.update_initmisture_layer()
 
+                    self.layer_soil_interstep = self.layer_soil
+                    self.layer_landuse_interstep = self.layer_landuse
+
             if i == 5:
+
+                self.layer_landuse = self.layer_landuse_interstep
+                self.layer_soil = self.layer_soil_interstep
 
                 self.rename_initmoisture()
 
@@ -794,6 +846,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                  TextConstants.field_name_surface_conditions,
                                  TextConstants.field_name_init_moisture]
 
+                if self.step_table_corg_skip():
+
+                    self.rename_corg()
+
+                    dissolve_list = dissolve_list + [TextConstants.field_name_corg]
+
                 self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
                                                                       self.layer_landuse,
                                                                       TextConstants.field_name_poly_id,
@@ -806,11 +864,19 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                               TextConstants.field_name_month,
                                               self.date_month)
 
-                self.table_corg.add_data(self.layer_intersected_dissolved)
+                if not self.step_table_corg_skip():
+
+                    self.table_corg.add_data(self.layer_intersected_dissolved)
+
+                else:
+
+                    i += 1
 
             if i == 6:
 
-                self.layer_intersected_dissolved = self.table_corg.join_data(self.layer_intersected_dissolved)
+                if not self.step_table_corg_skip():
+
+                    self.layer_intersected_dissolved = self.table_corg.join_data(self.layer_intersected_dissolved)
 
                 self.table_bulk_density.add_data(self.layer_intersected_dissolved)
 
@@ -968,9 +1034,19 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.progressBar.setValue(1)
 
     def prev(self):
+
         i = self.stackedWidget.currentIndex()
+
+        if self.step_table_corg_skip() and i == self.corg_widget_index + 1:
+            i = i - 1
+
         self.stackedWidget.setCurrentIndex(i - 1)
+
         if i != self.stackedWidget.count() - 1:
             self.next_pb.setText('Next >')
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
+
+    def step_table_corg_skip(self) -> bool:
+
+        return 0 < len(self.fcb_corg.currentText())
