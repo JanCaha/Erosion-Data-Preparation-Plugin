@@ -56,6 +56,7 @@ from .gui_classes.table_widget_with_slider import (TableWidgetBulkDensity,
                                                    TableWidgetErodibility,
                                                    TableWidgetSkinFactor,
                                                    TableWidgetInitMoisture)
+from .gui_classes.table_widget_edit_values import TableWidgetEditNumericValues
 
 from .classes.definition_landuse_values import LanduseValues
 from .classes.definition_landuse_crop import LanduseCrop
@@ -184,6 +185,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     table_roughness: TableWidgetRoughness
     table_erodibility: TableWidgetErodibility
     table_skinfactor: TableWidgetSkinFactor
+
+    table_edit_values: TableWidgetEditNumericValues
 
     def __init__(self, iface, parent=None):
 
@@ -354,6 +357,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         widget = self.stackedWidget.widget(self.corg_widget_index+5)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(self.corg_widget_index+5, self.table_skinfactor)
+
+        self.table_edit_values = TableWidgetEditNumericValues()
+        widget = self.stackedWidget.widget(self.corg_widget_index + 7)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.corg_widget_index + 7, self.table_edit_values)
 
         self.checkbox_export_empty_data.stateChanged.connect(self.allow_ok_button)
 
@@ -910,15 +918,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if i == 12:
 
-                self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
-
-                self.label_data_status.setText(msg)
-
-                if self.ok_result_layer:
-                    self.label_data_status.setStyleSheet("color : black;")
-                else:
-                    self.label_data_status.setStyleSheet("color : red;")
-
                 # add "POLY_NR" field
 
                 add_fid_field(self.layer_intersected_dissolved)
@@ -931,7 +930,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                           progress_bar=self.progressBar)
 
                 if 0 < len(self.layer_channel_elements_cb.currentText()):
-
                     value = max_value_in_field(self.layer_intersected_dissolved,
                                                TextConstants.field_name_fid)
 
@@ -980,7 +978,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 # add rows for channel elements and drain elements
                 for value in self.poly_nr_additons:
-
                     add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: value,
                                                                             TextConstants.field_name_init_moisture: 0})
 
@@ -991,6 +988,21 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_layer_thick,
                                               10000)
+
+                self.table_edit_values.add_data(self.layer_intersected_dissolved)
+
+            if i == 13:
+
+                self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
+
+                self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
+
+                self.label_data_status.setText(msg)
+
+                if self.ok_result_layer:
+                    self.label_data_status.setStyleSheet("color : black;")
+                else:
+                    self.label_data_status.setStyleSheet("color : red;")
 
                 self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
                                                                   [TextConstants.field_name_poly_id,
