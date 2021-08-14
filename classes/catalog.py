@@ -523,7 +523,7 @@ class E3dCatalog(metaclass=Singleton):
 
         else:
             return self.default_stat_tuple
-    
+
     def check_stat_row(self,
                        rows: List[List[Any]]) -> Tuple[Optional[float], Optional[float],
                                                        Optional[float], Optional[float]]:
