@@ -74,8 +74,7 @@ def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
                              'EXTRA': '',
                              'OUTPUT': 'TEMPORARY_OUTPUT'},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     progress_bar.setValue(3)
 
@@ -88,8 +87,7 @@ def copy_layer_fix_geoms(layer_input: QgsMapLayer, layer_name: str) -> QgsVector
                             {'INPUT': layer_input,
                              'OUTPUT': f"memory:{layer_name}"},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     return result["OUTPUT"]
 
@@ -209,8 +207,7 @@ def join_tables(layer_data: QgsVectorLayer,
                              'FIELD_2': layer_table_field_name_join,
                              'OUTPUT': f"memory:{layer_data.name()}"},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     progress_bar.setValue(3)
 
@@ -221,8 +218,7 @@ def join_tables(layer_data: QgsVectorLayer,
                                  'COLUMN': [layer_data_field_name_join, layer_table_field_name_join],
                                  'OUTPUT': f"memory:{layer_data.name()}"},
                                 context=QgsProcessingContext(),
-                                feedback=QgsProcessingFeedback(),
-                                is_child_algorithm=True)
+                                feedback=QgsProcessingFeedback())
 
     progress_bar.setValue(4)
 
@@ -246,8 +242,7 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
                                                     'OVERLAY_FIELDS_PREFIX': '',
                                                     'OUTPUT': 'memory:intersection'},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     layer_intersection: QgsVectorLayer = result["OUTPUT"]
 
@@ -284,8 +279,7 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
                                                     'FIELDS': dissolve_fields,
                                                     'OUTPUT': 'memory:removed_fields'},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     progress_bar.setValue(3)
 
@@ -293,8 +287,7 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
                                                 'FIELD': dissolve_fields,
                                                 'OUTPUT': 'memory:dissolve'},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     progress_bar.setValue(4)
 
@@ -395,8 +388,7 @@ def retain_only_fields(layer: QgsVectorLayer,
                              'FIELDS': fields_to_retain,
                              'OUTPUT': layer_name},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     return result["OUTPUT"]
 
@@ -415,8 +407,7 @@ def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
                              'FILL_VALUE': 0,
                              'OUTPUT': 'TEMPORARY_OUTPUT'},
                             context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback(),
-                            is_child_algorithm=True)
+                            feedback=QgsProcessingFeedback())
 
     raster_new_values = QgsRasterLayer(result["OUTPUT"])
 
