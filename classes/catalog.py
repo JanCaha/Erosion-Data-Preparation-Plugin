@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Tuple, Any
 from pathlib import Path
 import sqlite3
 
@@ -6,9 +6,12 @@ import sqlite3
 from .singleton import Singleton
 from .class_KA5 import KA5Class
 from ..constants import TextConstants
+from ..algorithms.utils import log
 
 
 class E3dCatalog(metaclass=Singleton):
+
+    default_stat_tuple = (None, None, None, 0)
 
     def __init__(self,
                  database_file: Optional[str] = None):
@@ -227,13 +230,10 @@ class E3dCatalog(metaclass=Singleton):
                                    F"AVG(bulk_density) AS mean, COUNT() AS count FROM bulk_density "
                                    F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
-
-            if 0 < len(rows):
-                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+            return self.check_stat_row(self.db_cursor.fetchall())
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
 
     def get_corg_range(self,
                        ka5_class: Optional[str] = None,
@@ -267,13 +267,10 @@ class E3dCatalog(metaclass=Singleton):
             self.db_cursor.execute(F"SELECT MIN(corg) AS min, MAX(corg) AS max, AVG(corg) as mean, COUNT() as count FROM corg "
                                    F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
-
-            if 0 < len(rows):
-                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+            return self.check_stat_row(self.db_cursor.fetchall())
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
 
     def get_canopy_cover_range(self,
                                crop: Optional[str] = None,
@@ -309,13 +306,10 @@ class E3dCatalog(metaclass=Singleton):
                 F"COUNT() as count FROM canopy_cover "
                 F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
-
-            if 0 < len(rows):
-                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+            return self.check_stat_row(self.db_cursor.fetchall())
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
 
     def get_roughness_range(self,
                             crop: Optional[str] = None,
@@ -366,13 +360,10 @@ class E3dCatalog(metaclass=Singleton):
                 F"COUNT() as count FROM roughness "
                 F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
-
-            if 0 < len(rows):
-                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+            return self.check_stat_row(self.db_cursor.fetchall())
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
 
     def get_erodibility_range(self,
                               crop: Optional[str] = None,
@@ -425,13 +416,10 @@ class E3dCatalog(metaclass=Singleton):
                 F"COUNT() as count FROM calibration "
                 F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
-
-            if 0 < len(rows):
-                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+            return self.check_stat_row(self.db_cursor.fetchall())
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
 
     def get_skinfactor_range(self,
                              crop: Optional[str] = None,
@@ -484,13 +472,10 @@ class E3dCatalog(metaclass=Singleton):
                 F"COUNT() as count FROM calibration "
                 F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
-
-            if 0 < len(rows):
-                return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
+            return self.check_stat_row(self.db_cursor.fetchall())
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
 
     def get_initmoisture_range(self,
                                crop: Optional[str] = None,
@@ -534,10 +519,26 @@ class E3dCatalog(metaclass=Singleton):
                 F"COUNT() as count FROM calibration "
                 F"WHERE {conds}")
 
-            rows = self.db_cursor.fetchall()
+            return self.check_stat_row(self.db_cursor.fetchall())
 
-            if 0 < len(rows):
+        else:
+            return self.default_stat_tuple
+    
+    def check_stat_row(self,
+                       rows: List[List[Any]]) -> Tuple[Optional[float], Optional[float],
+                                                       Optional[float], Optional[float]]:
+
+        if 0 < len(rows):
+
+            if rows[0][0] is None or \
+                    rows[0][1] is None or \
+                    rows[0][2] is None:
+
+                return self.default_stat_tuple
+
+            else:
+
                 return rows[0][0], rows[0][1], rows[0][2], rows[0][3]
 
         else:
-            return None, None, None, 0
+            return self.default_stat_tuple
