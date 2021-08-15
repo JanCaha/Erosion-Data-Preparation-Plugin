@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import datetime
 
 from qgis.PyQt import uic
@@ -95,7 +95,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     layer_drain_elements: QgsVectorLayer = None
     layer_pour_points: QgsVectorLayer = None
 
-    poly_nr_additons: List[int] = []
+    poly_nr_additons: List[Tuple[int, str]] = []
 
     # widget0
     layer_soil_cb: QgsMapLayerComboBox
@@ -933,9 +933,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     value = max_value_in_field(self.layer_intersected_dissolved,
                                                TextConstants.field_name_fid)
 
-                    value += 1
+                    value = int(value + 1)
 
-                    self.poly_nr_additons.append(value)
+                    self.poly_nr_additons.append((value, "channel_elements"))
 
                     add_field_with_constant_value(self.layer_channel_elements,
                                                   TextConstants.field_name_fid,
@@ -959,9 +959,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.poly_nr_additons):
                         value = self.poly_nr_additons[-1]
-                        value = value + 1
+                        value = int(value[0] + 1)
 
-                    self.poly_nr_additons.append(value)
+                    self.poly_nr_additons.append((value, "drain_elements"))
 
                     add_field_with_constant_value(self.layer_drain_elements,
                                                   TextConstants.field_name_fid,
@@ -977,9 +977,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                                    progress_bar=self.progressBar)
 
                 # add rows for channel elements and drain elements
-                for value in self.poly_nr_additons:
-                    add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: value,
-                                                                            TextConstants.field_name_init_moisture: 0})
+                for fid_value, poly_id in self.poly_nr_additons:
+                    add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: fid_value,
+                                                                            TextConstants.field_name_init_moisture: 0,
+                                                                            TextConstants.field_name_poly_id: poly_id})
 
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_layer_id,
