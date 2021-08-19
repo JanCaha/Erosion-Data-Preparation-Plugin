@@ -1,4 +1,4 @@
-from typing import Optional, NoReturn
+from typing import Optional, NoReturn, Tuple
 
 from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
 from PyQt5 import QtCore
@@ -7,7 +7,8 @@ from PyQt5.QtGui import QFont, QRegExpValidator, QColor
 
 from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,
-                       QgsFeature)
+                       QgsFeature,
+                       NULL)
 
 from ..constants import TextConstants
 from ..algorithms.utils import log
@@ -79,20 +80,73 @@ class TableWidgetEditNumericValues(QTableWidget):
 
         layer.commitChanges()
 
+    def check_row_exist(self, feature: QgsFeature) -> Tuple[bool, Optional[int]]:
+
+        fid = str(feature.id())
+        poly_id = feature.attribute(TextConstants.field_name_poly_id)
+
+        exists = False
+        row_index = None
+
+        for i in range(self.rowCount()):
+
+            if fid == self.item(i, 8).text() and poly_id == self.item(i, 0).text():
+
+                exists = True
+                row_index = i
+
+                break
+
+        return exists, row_index
+
     def add_row(self, feature: QgsFeature):
 
-        row_to_put = self.rowCount()
-        self.insertRow(self.rowCount())
+        row_exist, index = self.check_row_exist(feature)
 
-        self.setItem(row_to_put, 0, QTableWidgetItem(feature.attribute(TextConstants.field_name_poly_id)))
-        self.setItem(row_to_put, 8, QTableWidgetItem(str(feature.id())))
-        self.setCellWidget(row_to_put, 1, self.add_cell_value(feature.attribute(TextConstants.field_name_bulk_density)))
-        self.setCellWidget(row_to_put, 2, self.add_cell_value(feature.attribute(TextConstants.field_name_corg)))
-        self.setCellWidget(row_to_put, 3, self.add_cell_value(feature.attribute(TextConstants.field_name_init_moisture)))
-        self.setCellWidget(row_to_put, 4, self.add_cell_value(feature.attribute(TextConstants.field_name_roughness)))
-        self.setCellWidget(row_to_put, 5, self.add_cell_value(feature.attribute(TextConstants.field_name_canopy_cover)))
-        self.setCellWidget(row_to_put, 6, self.add_cell_value(feature.attribute(TextConstants.field_name_skinfactor)))
-        self.setCellWidget(row_to_put, 7, self.add_cell_value(feature.attribute(TextConstants.field_name_erodibility)))
+        if not row_exist:
+
+            row_to_put = self.rowCount()
+            self.insertRow(self.rowCount())
+
+            self.setItem(row_to_put, 0, QTableWidgetItem(feature.attribute(TextConstants.field_name_poly_id)))
+            self.setItem(row_to_put, 8, QTableWidgetItem(str(feature.id())))
+            self.setCellWidget(row_to_put, 1, self.add_cell_value(feature.attribute(TextConstants.field_name_bulk_density)))
+            self.setCellWidget(row_to_put, 2, self.add_cell_value(feature.attribute(TextConstants.field_name_corg)))
+            self.setCellWidget(row_to_put, 3, self.add_cell_value(feature.attribute(TextConstants.field_name_init_moisture)))
+            self.setCellWidget(row_to_put, 4, self.add_cell_value(feature.attribute(TextConstants.field_name_roughness)))
+            self.setCellWidget(row_to_put, 5, self.add_cell_value(feature.attribute(TextConstants.field_name_canopy_cover)))
+            self.setCellWidget(row_to_put, 6, self.add_cell_value(feature.attribute(TextConstants.field_name_skinfactor)))
+            self.setCellWidget(row_to_put, 7, self.add_cell_value(feature.attribute(TextConstants.field_name_erodibility)))
+
+        else:
+
+            if not self.get_value(index, 1):
+                self.setCellWidget(index, 1,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_bulk_density)))
+
+            if not self.get_value(index, 2):
+                self.setCellWidget(index, 2,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_corg)))
+
+            if not self.get_value(index, 3):
+                self.setCellWidget(index, 3,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_init_moisture)))
+
+            if not self.get_value(index, 4):
+                self.setCellWidget(index, 4,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_roughness)))
+
+            if not self.get_value(index, 5):
+                self.setCellWidget(index, 5,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_canopy_cover)))
+
+            if not self.get_value(index, 6):
+                self.setCellWidget(index, 6,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_skinfactor)))
+
+            if not self.get_value(index, 7):
+                self.setCellWidget(index, 7,
+                                   self.add_cell_value(feature.attribute(TextConstants.field_name_erodibility)))
 
     def add_data(self, layer: QgsVectorLayer):
 
