@@ -9,7 +9,8 @@ from qgis.core import (QgsVectorLayer,
                        QgsFeature,
                        QgsFields,
                        QgsField,
-                       QgsRasterLayer)
+                       QgsRasterLayer,
+                       NULL)
 
 from qgis import processing
 
@@ -285,7 +286,7 @@ def landuse_with_crops(layer_input: QgsVectorLayer,
         result = feature.attribute(fieldname_landuse)
 
         if fieldname_crop:
-            if feature.attribute(fieldname_crop):
+            if feature.attribute(fieldname_crop) != NULL:
                 result = "{}_{}".format(result, recode_2_ascii(feature.attribute(fieldname_crop)))
 
         layer_input.changeAttributeValue(feature.id(),
