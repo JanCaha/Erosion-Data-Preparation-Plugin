@@ -158,8 +158,8 @@ class TextConstants:
     label_ka5_class ="KA5 class:"
     label_soil_id = "Soil ID:"
 
-    label_crop_field = "Landuse field:"
-    label_landuse_field = "Crop field:"
+    label_crop_field = "Crop field:"
+    label_landuse_field = "Landuse field:"
 
     label_initmoisture = "Initial moisture attribute field:"
     label_initmoisture_layer = "Initial moistre layer:"
