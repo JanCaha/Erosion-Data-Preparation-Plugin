@@ -569,6 +569,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.fcb_initmoisture_layer.removeItem(i)
 
         # self.fcb_initmoisture_layer
+        self.fcb_initmoisture_layer.clear()
+        self.fcb_initmoisture_layer.addItem("")
         self.fcb_initmoisture_layer.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
         self.fcb_initmoisture_layer.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
 
@@ -606,9 +608,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
 
-        self.fcb_initmoisture.setFields(fields)
-        self.fcb_initmoisture.setFilters(QgsFieldProxyModel.Numeric)
-        self.fcb_initmoisture.setCurrentIndex(0)
+        else:
+            fields = None
+
+        if fields:
+            self.fcb_initmoisture.setFields(fields)
+            self.fcb_initmoisture.setFilters(QgsFieldProxyModel.Numeric)
+            self.fcb_initmoisture.setCurrentIndex(0)
 
     def rename_corg(self):
 
