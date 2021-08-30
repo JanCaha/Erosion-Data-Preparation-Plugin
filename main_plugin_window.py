@@ -620,21 +620,17 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.fcb_corg.currentText()):
 
-            if "Soil" in self.fcb_initmoisture_layer.currentText():
+            if "Soil" in self.fcb_corg_layer.currentText():
 
                 rename_field(self.layer_soil,
                              self.fcb_corg.currentText(),
                              TextConstants.field_name_corg)
 
-                QgsProject.instance().addMapLayer(self.layer_soil)
-
-            elif "Landuse" in self.fcb_initmoisture_layer.currentText():
+            elif "Landuse" in self.fcb_corg_layer.currentText():
 
                 rename_field(self.layer_landuse,
                              self.fcb_corg.currentText(),
                              TextConstants.field_name_corg)
-
-                QgsProject.instance().addMapLayer(self.layer_landuse)
 
     def rename_initmoisture(self):
 
