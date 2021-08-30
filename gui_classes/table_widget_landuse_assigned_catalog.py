@@ -10,8 +10,7 @@ from PyQt5 import QtCore
 from qgis.core import (QgsVectorLayer,
                        QgsFields,
                        QgsFeature,
-                       QgsVectorDataProvider,
-                       QgsProject)
+                       QgsVectorDataProvider)
 
 from ..classes.catalog import E3dCatalog
 from ..constants import TextConstants
@@ -196,6 +195,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         field_index = fields.lookupField(field)
 
         unique_values = list(data.uniqueValues(field_index))
+        unique_values = sorted(unique_values)
 
         if self.rows_list != unique_values:
 
