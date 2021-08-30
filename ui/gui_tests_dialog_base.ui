@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1125</width>
-    <height>826</height>
+    <width>1248</width>
+    <height>864</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>200</y>
-     <width>1101</width>
+     <y>230</y>
+     <width>1231</width>
      <height>451</height>
     </rect>
    </property>
@@ -321,7 +321,7 @@
        <x>21</x>
        <y>20</y>
        <width>1021</width>
-       <height>63</height>
+       <height>96</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3" columnstretch="5,7,2,5,7">
@@ -740,8 +740,8 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>580</x>
-     <y>680</y>
+     <x>700</x>
+     <y>700</y>
      <width>531</width>
      <height>30</height>
     </rect>
@@ -780,7 +780,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>680</y>
+     <y>700</y>
      <width>262</width>
      <height>26</height>
     </rect>
@@ -827,8 +827,8 @@
     <rect>
      <x>20</x>
      <y>60</y>
-     <width>1091</width>
-     <height>101</height>
+     <width>1201</width>
+     <height>151</height>
     </rect>
    </property>
    <property name="text">
@@ -842,8 +842,8 @@
    <property name="geometry">
     <rect>
      <x>-10</x>
-     <y>180</y>
-     <width>1171</width>
+     <y>210</y>
+     <width>1261</width>
      <height>20</height>
     </rect>
    </property>
@@ -855,8 +855,8 @@
    <property name="geometry">
     <rect>
      <x>-10</x>
-     <y>710</y>
-     <width>1151</width>
+     <y>740</y>
+     <width>1261</width>
      <height>20</height>
     </rect>
    </property>
@@ -867,8 +867,8 @@
   <widget class="QLabel" name="label_created">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>730</y>
+     <x>130</x>
+     <y>760</y>
      <width>1101</width>
      <height>21</height>
     </rect>
@@ -889,8 +889,8 @@
   <widget class="QLabel" name="label_project">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>760</y>
+     <x>130</x>
+     <y>790</y>
      <width>1101</width>
      <height>51</height>
     </rect>
@@ -908,7 +908,7 @@
   <widget class="QLabel" name="qlabel_steps">
    <property name="geometry">
     <rect>
-     <x>890</x>
+     <x>1000</x>
      <y>10</y>
      <width>231</width>
      <height>41</height>
