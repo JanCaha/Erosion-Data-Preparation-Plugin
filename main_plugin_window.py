@@ -487,10 +487,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             fields = self.layer_landuse_cb.currentLayer().fields()
 
             self.fcb_landuse.setFields(fields)
+
             if "LandUse" in fields.names():
                 self.fcb_landuse.setField("LandUse")
 
             self.fcb_crop.setFields(fields)
+
             if "plodina" in fields.names():
                 self.fcb_crop.setField("plodina")
 
