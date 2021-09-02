@@ -321,38 +321,17 @@
        <x>21</x>
        <y>20</y>
        <width>1021</width>
-       <height>96</height>
+       <height>172</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3" columnstretch="5,7,2,5,7">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_initmoisture_layer">
-        <property name="text">
-         <string>Initial moistre layer:</string>
-        </property>
-       </widget>
-      </item>
+      <property name="verticalSpacing">
+       <number>15</number>
+      </property>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_initmoisture_layer_2">
+       <widget class="QLabel" name="label_corg_layer">
         <property name="text">
          <string>Corg layer:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="fcb_corg_layer"/>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="label_initmoisture">
-        <property name="text">
-         <string>Initial moisture attribute field:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QLabel" name="label_initmoisture_2">
-        <property name="text">
-         <string>Corg attribute field:</string>
         </property>
        </widget>
       </item>
@@ -363,15 +342,34 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
-       <widget class="QgsFieldComboBox" name="fcb_initmoisture">
-        <property name="allowEmptyFieldName">
-         <bool>true</bool>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-       </widget>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="fcb_initmoisture_layer"/>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="fcb_corg_layer"/>
+      </item>
+      <item row="3" column="2">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
       <item row="0" column="2">
        <spacer name="horizontalSpacer">
@@ -385,6 +383,135 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="2" column="2">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="label_corg_field">
+        <property name="text">
+         <string>Corg attribute field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_initmoisture_layer">
+        <property name="text">
+         <string>Initial moistre layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="fcb_initmoisture_layer"/>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLabel" name="label_initmoisture_field">
+        <property name="text">
+         <string>Initial moisture attribute field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QgsFieldComboBox" name="fcb_initmoisture">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_bulk_density_layer">
+        <property name="text">
+         <string>Bulk density layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="fcb_bulk_density_layer"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_bulk_density_field">
+        <property name="text">
+         <string>Bulk density attribute field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QgsFieldComboBox" name="fcb_bulk_density">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_roughness_layer">
+        <property name="text">
+         <string>Roughness  layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="fcb_roughness_layer"/>
+      </item>
+      <item row="3" column="3">
+       <widget class="QLabel" name="label_roughness_field">
+        <property name="text">
+         <string>Roughness attribute field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QgsFieldComboBox" name="fcb_roughness">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_surface_cover_layer">
+        <property name="text">
+         <string>Surface cover layer:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QLabel" name="label_surface_cover_field">
+        <property name="text">
+         <string>Surface cover attribute field:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="4">
+       <widget class="QgsFieldComboBox" name="fcb_surface_cover">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="fcb_surface_cover_layer"/>
       </item>
      </layout>
     </widget>

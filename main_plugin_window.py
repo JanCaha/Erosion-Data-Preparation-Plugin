@@ -72,6 +72,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     landuse_select_widget_index = 4
     corg_widget_index = 6
+    bulkdensity_widget_index = corg_widget_index + 1
+    canopycover_widget_index = corg_widget_index + 2
+    roughness_widget_index = corg_widget_index + 3
 
     qlabel_main: QtWidgets.QLabel
     qlabel_step_description: QtWidgets.QLabel
@@ -134,13 +137,30 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     label_data_status: QtWidgets.QLabel
 
     # widget initmoisture
-    label_initmoisture: QtWidgets.QLabel
-    fcb_initmoisture: QgsFieldComboBox
     label_initmoisture_layer: QtWidgets.QLabel
+    label_initmoisture_field: QtWidgets.QLabel
+    fcb_initmoisture: QgsFieldComboBox
     fcb_initmoisture_layer: QtWidgets.QComboBox
 
+    label_bulk_density_layer: QtWidgets.QLabel
+    label_bulk_density_field: QtWidgets.QLabel
+    fcb_bulk_density_layer: QtWidgets.QComboBox
+    fcb_bulk_density: QgsFieldComboBox
+
+    label_corg_layer: QtWidgets.QLabel
+    label_corg_field: QtWidgets.QLabel
     fcb_corg_layer: QtWidgets.QComboBox
     fcb_corg: QgsFieldComboBox
+
+    label_roughness_layer: QtWidgets.QLabel
+    label_roughness_field: QtWidgets.QLabel
+    fcb_roughness_layer: QtWidgets.QComboBox
+    fcb_roughness: QgsFieldComboBox
+
+    label_surface_cover_layer: QtWidgets.QLabel
+    label_surface_cover_field: QtWidgets.QLabel
+    fcb_surface_cover_layer: QtWidgets.QComboBox
+    fcb_surface_cover: QgsFieldComboBox
 
     # widget optional
     layer_channel_elements_cb: QgsMapLayerComboBox
@@ -271,11 +291,25 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.label_crop_field.setText(TextConstants.label_crop_field)
         self.label_landuse_field.setText(TextConstants.label_landuse_field)
 
-        self.label_initmoisture.setText(TextConstants.label_initmoisture)
+        self.label_bulk_density_field.setText(TextConstants.label_bulkdensity)
+        self.label_bulk_density_layer.setText(TextConstants.label_bulkdensity_layer)
+        self.fcb_bulk_density_layer.currentIndexChanged.connect(self.update_bulkdensity_fields)
+
+        self.label_corg_field.setText(TextConstants.label_corg)
+        self.label_corg_layer.setText(TextConstants.label_corg_layer)
+        self.fcb_corg_layer.currentIndexChanged.connect(self.update_corg_fields)
+
+        self.label_initmoisture_field.setText(TextConstants.label_initmoisture)
         self.label_initmoisture_layer.setText(TextConstants.label_initmoisture_layer)
         self.fcb_initmoisture_layer.currentIndexChanged.connect(self.update_initmoisture_fields)
 
-        self.fcb_corg_layer.currentIndexChanged.connect(self.update_corg_fields)
+        self.label_roughness_field.setText(TextConstants.label_roughness)
+        self.label_roughness_layer.setText(TextConstants.label_roughness_layer)
+        self.fcb_roughness_layer.currentIndexChanged.connect(self.update_roughness_fields)
+
+        self.label_surface_cover_field.setText(TextConstants.label_surfacecover)
+        self.label_surface_cover_layer.setText(TextConstants.label_surfacecover_layer)
+        self.fcb_surface_cover_layer.currentIndexChanged.connect(self.update_surfacecover_fields)
 
         # widget optional
 
@@ -334,19 +368,19 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.stackedWidget.insertWidget(self.corg_widget_index, self.table_corg)
 
         self.table_bulk_density = TableWidgetBulkDensity(TextConstants.header_table_bulkdensity)
-        widget = self.stackedWidget.widget(self.corg_widget_index+1)
+        widget = self.stackedWidget.widget(self.bulkdensity_widget_index)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.corg_widget_index+1, self.table_bulk_density)
+        self.stackedWidget.insertWidget(self.bulkdensity_widget_index, self.table_bulk_density)
 
         self.table_canopy_cover = TableWidgetCanopyCover(TextConstants.header_table_canopycover)
-        widget = self.stackedWidget.widget(self.corg_widget_index+2)
+        widget = self.stackedWidget.widget(self.canopycover_widget_index)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.corg_widget_index+2, self.table_canopy_cover)
+        self.stackedWidget.insertWidget(self.canopycover_widget_index, self.table_canopy_cover)
 
         self.table_roughness = TableWidgetRoughness(TextConstants.header_table_roughness)
-        widget = self.stackedWidget.widget(self.corg_widget_index+3)
+        widget = self.stackedWidget.widget(self.roughness_widget_index)
         self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.corg_widget_index+3, self.table_roughness)
+        self.stackedWidget.insertWidget(self.roughness_widget_index, self.table_roughness)
 
         self.table_erodibility = TableWidgetErodibility(TextConstants.header_table_erodibility)
         widget = self.stackedWidget.widget(self.corg_widget_index+4)
@@ -563,21 +597,39 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             else:
                 self.fcb_gsc.setField("GS")
 
-    def update_initmisture_layer(self):
+    def update_value_layers(self):
 
         for i in range(self.fcb_initmoisture_layer.count()):
             self.fcb_initmoisture_layer.removeItem(i)
 
-        # self.fcb_initmoisture_layer
-        self.fcb_initmoisture_layer.clear()
-        self.fcb_initmoisture_layer.addItem("")
-        self.fcb_initmoisture_layer.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
-        self.fcb_initmoisture_layer.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
+        fcbs = [self.fcb_initmoisture_layer, self.fcb_corg_layer, self.fcb_bulk_density_layer,
+                self.fcb_roughness_layer, self.fcb_surface_cover_layer]
 
-        self.fcb_corg_layer.clear()
-        self.fcb_corg_layer.addItem("")
-        self.fcb_corg_layer.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
-        self.fcb_corg_layer.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
+        for fcb in fcbs:
+
+            fcb.clear()
+            fcb.addItem("")
+            fcb.addItem(f"Soil layer: {self.layer_soil_cb.currentLayer().name()}")
+            fcb.addItem(f"Landuse layer: {self.layer_landuse_cb.currentLayer().name()}")
+
+    def update_bulkdensity_fields(self):
+
+        if 0 < len(self.fcb_bulk_density_layer.currentText()):
+
+            if "Soil" in self.fcb_bulk_density_layer.currentText():
+
+                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
+
+            elif "Landuse" in self.fcb_bulk_density_layer.currentText():
+
+                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+
+            self.fcb_bulk_density.setFields(fields)
+            self.fcb_bulk_density.setFilters(QgsFieldProxyModel.Numeric)
+            self.fcb_bulk_density.setCurrentIndex(0)
+
+        else:
+            self.fcb_bulk_density.setFields(QgsFields())
 
     def update_corg_fields(self):
 
@@ -598,23 +650,62 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
             self.fcb_corg.setFields(QgsFields())
 
-    def update_initmoisture_fields(self):
+    def update_roughness_fields(self):
 
-        if "Soil" in self.fcb_initmoisture_layer.currentText():
+        if 0 < len(self.fcb_roughness_layer.currentText()):
 
-            fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
+            if "Soil" in self.fcb_roughness_layer.currentText():
 
-        elif "Landuse" in self.fcb_initmoisture_layer.currentText():
+                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
 
-            fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+            elif "Landuse" in self.fcb_roughness_layer.currentText():
+
+                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+
+            self.fcb_roughness.setFields(fields)
+            self.fcb_roughness.setFilters(QgsFieldProxyModel.Numeric)
+            self.fcb_roughness.setCurrentIndex(0)
 
         else:
-            fields = None
+            self.fcb_roughness.setFields(QgsFields())
 
-        if fields:
+    def update_surfacecover_fields(self):
+
+        if 0 < len(self.fcb_surface_cover_layer.currentText()):
+
+            if "Soil" in self.fcb_surface_cover_layer.currentText():
+
+                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
+
+            elif "Landuse" in self.fcb_surface_cover_layer.currentText():
+
+                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+
+            self.fcb_surface_cover.setFields(fields)
+            self.fcb_surface_cover.setFilters(QgsFieldProxyModel.Numeric)
+            self.fcb_surface_cover.setCurrentIndex(0)
+
+        else:
+            self.fcb_surface_cover.setFields(QgsFields())
+
+    def update_initmoisture_fields(self):
+
+        if 0 < len(self.fcb_initmoisture_layer.currentText()):
+
+            if "Soil" in self.fcb_initmoisture_layer.currentText():
+
+                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
+
+            elif "Landuse" in self.fcb_initmoisture_layer.currentText():
+
+                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+
             self.fcb_initmoisture.setFields(fields)
             self.fcb_initmoisture.setFilters(QgsFieldProxyModel.Numeric)
             self.fcb_initmoisture.setCurrentIndex(0)
+
+        else:
+            self.fcb_initmoisture.setFields(QgsFields())
 
     def rename_corg(self):
 
@@ -631,6 +722,54 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 rename_field(self.layer_landuse,
                              self.fcb_corg.currentText(),
                              TextConstants.field_name_corg)
+
+    def rename_bulkdensity(self):
+
+        if 0 < len(self.fcb_bulk_density.currentText()):
+
+            if "Soil" in self.fcb_bulk_density_layer.currentText():
+
+                rename_field(self.layer_soil,
+                             self.fcb_bulk_density.currentText(),
+                             TextConstants.field_name_bulk_density)
+
+            elif "Landuse" in self.fcb_bulk_density_layer.currentText():
+
+                rename_field(self.layer_landuse,
+                             self.fcb_bulk_density.currentText(),
+                             TextConstants.field_name_bulk_density)
+
+    def rename_roughness(self):
+
+        if 0 < len(self.fcb_roughness.currentText()):
+
+            if "Soil" in self.fcb_roughness_layer.currentText():
+
+                rename_field(self.layer_soil,
+                             self.fcb_roughness.currentText(),
+                             TextConstants.field_name_roughness)
+
+            elif "Landuse" in self.fcb_roughness_layer.currentText():
+
+                rename_field(self.layer_landuse,
+                             self.fcb_roughness.currentText(),
+                             TextConstants.field_name_roughness)
+
+    def rename_cover(self):
+
+        if 0 < len(self.fcb_surface_cover.currentText()):
+
+            if "Soil" in self.fcb_surface_cover_layer.currentText():
+
+                rename_field(self.layer_soil,
+                             self.fcb_surface_cover.currentText(),
+                             TextConstants.field_name_canopy_cover)
+
+            elif "Landuse" in self.fcb_surface_cover_layer.currentText():
+
+                rename_field(self.layer_landuse,
+                             self.fcb_surface_cover.currentText(),
+                             TextConstants.field_name_canopy_cover)
 
     def rename_initmoisture(self):
 
@@ -820,7 +959,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                      TextConstants.field_name_landuse_crops,
                                                      self.progressBar)
 
-                    self.update_initmisture_layer()
+                    self.update_value_layers()
 
                     self.layer_soil_interstep = self.layer_soil
                     self.layer_landuse_interstep = self.layer_landuse
@@ -858,11 +997,29 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                  TextConstants.field_name_surface_conditions,
                                  TextConstants.field_name_init_moisture]
 
-                if self.step_table_corg_skip():
+                if self.skip_step_table_corg():
 
                     self.rename_corg()
 
                     dissolve_list = dissolve_list + [TextConstants.field_name_corg]
+
+                if self.skip_step_table_bulkdensity():
+
+                    self.rename_bulkdensity()
+
+                    dissolve_list = dissolve_list + [TextConstants.field_name_bulk_density]
+
+                if self.skip_step_table_roughness():
+
+                    self.rename_roughness()
+
+                    dissolve_list = dissolve_list + [TextConstants.field_name_roughness]
+
+                if self.skip_step_table_surfacecover():
+
+                    self.rename_cover()
+
+                    dissolve_list = dissolve_list + [TextConstants.field_name_canopy_cover]
 
                 self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
                                                                       self.layer_landuse,
@@ -876,7 +1033,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                               TextConstants.field_name_month,
                                               self.date_month)
 
-                if not self.step_table_corg_skip():
+                if not self.skip_step_table_corg():
 
                     self.table_corg.add_data(self.layer_intersected_dissolved)
 
@@ -886,27 +1043,47 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if i == 6:
 
-                if not self.step_table_corg_skip():
+                if not self.skip_step_table_corg():
 
                     self.layer_intersected_dissolved = self.table_corg.join_data(self.layer_intersected_dissolved)
 
-                self.table_bulk_density.add_data(self.layer_intersected_dissolved)
+                if not self.skip_step_table_bulkdensity():
+
+                    self.table_bulk_density.add_data(self.layer_intersected_dissolved)
+
+                else:
+
+                    i += 1
 
             if i == 7:
 
-                self.layer_intersected_dissolved = self.table_bulk_density.join_data(self.layer_intersected_dissolved)
+                if not self.skip_step_table_bulkdensity():
+                    self.layer_intersected_dissolved = self.table_bulk_density.join_data(self.layer_intersected_dissolved)
 
-                self.table_canopy_cover.add_data(self.layer_intersected_dissolved)
+                if not self.skip_step_table_surfacecover():
 
+                    self.table_canopy_cover.add_data(self.layer_intersected_dissolved)
+
+                else:
+
+                    i += 1
             if i == 8:
 
-                self.layer_intersected_dissolved = self.table_canopy_cover.join_data(self.layer_intersected_dissolved)
+                if not self.skip_step_table_surfacecover():
+                    self.layer_intersected_dissolved = self.table_canopy_cover.join_data(self.layer_intersected_dissolved)
 
-                self.table_roughness.add_data(self.layer_intersected_dissolved)
+                if not self.skip_step_table_corg():
+
+                    self.table_roughness.add_data(self.layer_intersected_dissolved)
+
+                else:
+
+                    i += 1
 
             if i == 9:
 
-                self.layer_intersected_dissolved = self.table_roughness.join_data(self.layer_intersected_dissolved)
+                if not self.skip_step_table_corg():
+                    self.layer_intersected_dissolved = self.table_roughness.join_data(self.layer_intersected_dissolved)
 
                 self.table_erodibility.add_data(self.layer_intersected_dissolved)
 
@@ -1054,8 +1231,22 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         i = self.stackedWidget.currentIndex()
 
-        if self.step_table_corg_skip() and i == self.corg_widget_index + 1:
+        log(f"Current index: {i}")
+
+        if self.skip_step_table_roughness() and i == self.roughness_widget_index + 1:
             i = i - 1
+
+        if self.skip_step_table_surfacecover() and i == self.canopycover_widget_index + 1:
+            i = i - 1
+
+        if self.skip_step_table_bulkdensity() and i == self.bulkdensity_widget_index + 1:
+            i = i - 1
+
+        if self.skip_step_table_corg() and i == self.corg_widget_index + 1:
+            i = i - 1
+
+        log(f"Index to set: {i-1}")
+        log("*" * 20)
 
         self.stackedWidget.setCurrentIndex(i - 1)
 
@@ -1064,6 +1255,18 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
-    def step_table_corg_skip(self) -> bool:
+    def skip_step_table_bulkdensity(self) -> bool:
+
+        return 0 < len(self.fcb_bulk_density.currentText())
+
+    def skip_step_table_corg(self) -> bool:
 
         return 0 < len(self.fcb_corg.currentText())
+
+    def skip_step_table_roughness(self) -> bool:
+
+        return 0 < len(self.fcb_roughness.currentText())
+
+    def skip_step_table_surfacecover(self) -> bool:
+
+        return 0 < len(self.fcb_surface_cover.currentText())
