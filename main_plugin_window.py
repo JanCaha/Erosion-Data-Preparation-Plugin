@@ -221,6 +221,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
+        self.set_steps_label()
+
+        self.next_pb.setText(TextConstants.text_next)
+        self.previous_pb.setText(TextConstants.text_previous)
+
+        self.label_step_processing.setText(TextConstants.text_current_step_progress)
+
         self.next_pb.clicked.connect(self.__next__)
         self.previous_pb.clicked.connect(self.prev)
 
@@ -1231,8 +1238,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         i = self.stackedWidget.currentIndex()
 
-        log(f"Current index: {i}")
-
         if self.skip_step_table_roughness() and i == self.roughness_widget_index + 1:
             i = i - 1
 
@@ -1245,13 +1250,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         if self.skip_step_table_corg() and i == self.corg_widget_index + 1:
             i = i - 1
 
-        log(f"Index to set: {i-1}")
-        log("*" * 20)
-
         self.stackedWidget.setCurrentIndex(i - 1)
 
         if i != self.stackedWidget.count() - 1:
-            self.next_pb.setText('Next >')
+            self.next_pb.setText(TextConstants.text_next)
 
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
