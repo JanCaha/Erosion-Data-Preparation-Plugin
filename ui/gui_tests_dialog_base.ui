@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1248</width>
-    <height>864</height>
+    <height>886</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>11</x>
-     <y>230</y>
+     <y>260</y>
      <width>1231</width>
      <height>451</height>
     </rect>
@@ -868,7 +868,7 @@
    <property name="geometry">
     <rect>
      <x>700</x>
-     <y>700</y>
+     <y>740</y>
      <width>531</width>
      <height>30</height>
     </rect>
@@ -907,14 +907,14 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>700</y>
+     <y>740</y>
      <width>262</width>
      <height>26</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
-     <widget class="QLabel" name="label_5">
+     <widget class="QLabel" name="label_step_processing">
       <property name="text">
        <string>Current step processing:</string>
       </property>
@@ -953,9 +953,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>60</y>
+     <y>70</y>
      <width>1201</width>
-     <height>151</height>
+     <height>181</height>
     </rect>
    </property>
    <property name="text">
@@ -969,7 +969,7 @@
    <property name="geometry">
     <rect>
      <x>-10</x>
-     <y>210</y>
+     <y>240</y>
      <width>1261</width>
      <height>20</height>
     </rect>
@@ -982,7 +982,7 @@
    <property name="geometry">
     <rect>
      <x>-10</x>
-     <y>740</y>
+     <y>770</y>
      <width>1261</width>
      <height>20</height>
     </rect>
@@ -995,7 +995,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>760</y>
+     <y>790</y>
      <width>1101</width>
      <height>21</height>
     </rect>
@@ -1017,7 +1017,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>790</y>
+     <y>820</y>
      <width>1101</width>
      <height>51</height>
     </rect>
