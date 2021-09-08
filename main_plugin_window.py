@@ -543,6 +543,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             fields = self.layer_soil.fields()
 
+            fields_to_remove = ["fid", "objectid", "shape_length", "shape_area"]
+
+            for field_to_remove in fields_to_remove:
+                index = fields.lookupField(field_to_remove)
+                if index != -1:
+                    fields.remove(index)
+
             if not self.field_soilid_cb.currentText():
                 self.field_soilid_cb.setFields(fields)
 
@@ -553,55 +560,55 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.fcb_ftc.setFields(fields)
             if "ka5_ft" in fields.names():
                 self.fcb_ftc.setField("ka5_ft")
-            else:
+            elif "FT" in fields.names():
                 self.fcb_ftc.setField("FT")
 
             self.fcb_mtc.setFields(fields)
             if "ka5_mt" in fields.names():
                 self.fcb_mtc.setField("ka5_mt")
-            else:
+            elif "MT" in fields.names():
                 self.fcb_mtc.setField("MT")
 
             self.fcb_gtc.setFields(fields)
             if "ka5_gt" in fields.names():
                 self.fcb_gtc.setField("ka5_gt")
-            else:
+            elif "GT" in fields.names():
                 self.fcb_gtc.setField("GT")
 
             self.fcb_fuc.setFields(fields)
             if "ka5_fu" in fields.names():
                 self.fcb_fuc.setField("ka5_fu")
-            else:
+            elif "FU" in fields.names():
                 self.fcb_fuc.setField("FU")
 
             self.fcb_muc.setFields(fields)
             if "ka5_mu" in fields.names():
                 self.fcb_muc.setField("ka5_mu")
-            else:
+            elif "MU" in fields.names():
                 self.fcb_muc.setField("MU")
 
             self.fcb_guc.setFields(fields)
             if "ka5_gu" in fields.names():
                 self.fcb_guc.setField("ka5_gu")
-            else:
+            elif "GU" in fields.names():
                 self.fcb_guc.setField("GU")
 
             self.fcb_fsc.setFields(fields)
             if "ka5_fs" in fields.names():
                 self.fcb_fsc.setField("ka5_fs")
-            else:
+            elif "FS" in fields.names():
                 self.fcb_fsc.setField("FS")
 
             self.fcb_msc.setFields(fields)
             if "ka5_ms" in fields.names():
                 self.fcb_msc.setField("ka5_ms")
-            else:
+            elif "MS" in fields.names():
                 self.fcb_msc.setField("MS")
 
             self.fcb_gsc.setFields(fields)
             if "ka5_gs" in fields.names():
                 self.fcb_gsc.setField("ka5_gs")
-            else:
+            elif "GS" in fields.names():
                 self.fcb_gsc.setField("GS")
 
     def update_value_layers(self):
