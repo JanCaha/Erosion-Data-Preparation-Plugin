@@ -44,6 +44,7 @@ from .algorithms.algorithms_layers import (join_tables,
 from .algorithms.extract_elements_from_dicts import (extract_elements_without_values,
                                                      extract_elements_with_values)
 from .algorithms.utils import (log,
+                               add_maplayer_to_project,
                                evaluate_result_layer,
                                eval_string_with_variables)
 
