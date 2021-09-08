@@ -24,6 +24,8 @@ class TableWidgetEditNumericValues(QTableWidget):
 
         self.any_cell_empty = False
 
+        self.setSortingEnabled(True)
+
         self.setColumnCount(9)
 
         self.setHorizontalHeaderItem(0, self.header_column(TextConstants.field_name_poly_id))

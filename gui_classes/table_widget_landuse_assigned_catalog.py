@@ -28,6 +28,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
         QTableWidget.__init__(self, parent)
 
+        self.setSortingEnabled(True)
+
         self.name_subcategory = name_subcategory
 
         self.rows_list = []

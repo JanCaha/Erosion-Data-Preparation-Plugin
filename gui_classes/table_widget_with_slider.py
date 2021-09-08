@@ -38,6 +38,8 @@ class TableWidgetWithSlider(QTableWidget):
 
         QTableWidget.__init__(self, parent)
 
+        self.setSortingEnabled(True)
+
         self.any_cell_empty = False
 
         self.setColumnCount(len(column_names) + 1)
