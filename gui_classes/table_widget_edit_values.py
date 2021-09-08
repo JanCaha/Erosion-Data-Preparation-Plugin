@@ -12,6 +12,7 @@ from qgis.core import (QgsVectorLayer,
 
 from ..constants import TextConstants
 from ..algorithms.utils import log
+from .table_widget_item import TableItemNotEditable
 
 
 class TableWidgetEditNumericValues(QTableWidget):
@@ -108,8 +109,8 @@ class TableWidgetEditNumericValues(QTableWidget):
             row_to_put = self.rowCount()
             self.insertRow(self.rowCount())
 
-            self.setItem(row_to_put, 0, QTableWidgetItem(feature.attribute(TextConstants.field_name_poly_id)))
-            self.setItem(row_to_put, 8, QTableWidgetItem(str(feature.id())))
+            self.setItem(row_to_put, 0, TableItemNotEditable(feature.attribute(TextConstants.field_name_poly_id)))
+            self.setItem(row_to_put, 8, TableItemNotEditable(str(feature.id())))
             self.setCellWidget(row_to_put, 1, self.add_cell_value(feature.attribute(TextConstants.field_name_bulk_density)))
             self.setCellWidget(row_to_put, 2, self.add_cell_value(feature.attribute(TextConstants.field_name_corg)))
             self.setCellWidget(row_to_put, 3, self.add_cell_value(feature.attribute(TextConstants.field_name_init_moisture)))

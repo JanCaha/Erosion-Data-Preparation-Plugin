@@ -9,6 +9,7 @@ from PyQt5.QtGui import QFont, QRegExpValidator
 
 from ..constants import TextConstants
 from ..classes.definition_landuse_values import LanduseValues
+from .table_widget_item import TableItemNotEditable
 
 
 class TableWidgetLanduseAssignedValues(QTableWidget):
@@ -56,7 +57,7 @@ class TableWidgetLanduseAssignedValues(QTableWidget):
 
         self.setRowCount(self.rowCount()+1)
 
-        self.setItem(row_to_put, 0, QTableWidgetItem(value))
+        self.setItem(row_to_put, 0, TableItemNotEditable(value))
 
         for i in range(1, 7):
             self.setCellWidget(row_to_put, i, self.add_cell_item_number())

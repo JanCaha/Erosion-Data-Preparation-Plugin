@@ -15,6 +15,7 @@ from qgis.core import (QgsVectorLayer,
 from ..classes.catalog import E3dCatalog
 from ..constants import TextConstants
 from ..algorithms.utils import log
+from .table_widget_item import TableItemNotEditable
 
 
 class TableWidgetLanduseAssignedCatalog(QTableWidget):
@@ -205,7 +206,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
             for i in range(self.rowCount()):
 
-                self.setItem(i, 0, QTableWidgetItem(unique_values[i]))
+                self.setItem(i, 0, TableItemNotEditable(unique_values[i]))
 
                 self.setCellWidget(i, 1, self.build_menu())
 

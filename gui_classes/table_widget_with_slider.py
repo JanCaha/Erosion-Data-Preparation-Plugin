@@ -18,6 +18,7 @@ from ..classes.catalog import E3dCatalog
 from ..algorithms.utils import (get_unique_fields_combinations, eval_string_with_variables)
 from ..algorithms.algorithms_layers import join_tables
 from ..algorithms.algs import delete_fields
+from .table_widget_item import TableItemNotEditable
 
 
 class TableWidgetWithSlider(QTableWidget):
@@ -117,7 +118,7 @@ class TableWidgetWithSlider(QTableWidget):
             self.insertRow(self.rowCount())
 
             for i in range(len(value)):
-                self.setItem(row_to_put, i, QTableWidgetItem(value[i]))
+                self.setItem(row_to_put, i, TableItemNotEditable(value[i]))
 
             min, max, mean, count = self.get_slider_values(value)
 
@@ -132,7 +133,7 @@ class TableWidgetWithSlider(QTableWidget):
 
             self.setCellWidget(row_to_put, self.value_col, self.add_cell_item_number())
 
-            self.setItem(row_to_put, self.stat_col, QTableWidgetItem(statistics_str))
+            self.setItem(row_to_put, self.stat_col, TableItemNotEditable(statistics_str))
 
             if not (min is None and max is None):
 
