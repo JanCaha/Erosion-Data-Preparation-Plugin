@@ -102,6 +102,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     poly_nr_additons: List[Tuple[int, str]] = []
 
+    next_pb: QtWidgets.QPushButton
+
     # widget0
     layer_soil_cb: QgsMapLayerComboBox
     layer_landuse_cb: QgsMapLayerComboBox
@@ -1239,6 +1241,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 if self.ok_result_layer or self.checkbox_export_empty_data.isChecked():
                     self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
 
+                self.next_pb.setVisible(False)
+
             if ok:
                 self.stackedWidget.setCurrentIndex(i + 1)
                 self.progressBar.setMaximum(1)
@@ -1269,6 +1273,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         if i != self.stackedWidget.count() - 1:
             self.next_pb.setText(TextConstants.text_next)
 
+        self.next_pb.setVisible(True)
         self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
 
     def skip_step_table_bulkdensity(self) -> bool:
