@@ -83,6 +83,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # process parameters
     layer_soil: QgsVectorLayer = None
     layer_landuse: QgsVectorLayer = None
+    layer_landuse_fields_backup: QgsFields = None
 
     layer_soil_interstep: QgsVectorLayer = None
     layer_landuse_interstep: QgsVectorLayer = None
@@ -956,6 +957,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                  self.fcb_crop.currentText(),
                                                  self.progressBar)
 
+                    self.layer_landuse_fields_backup = self.layer_landuse.fields()
+
                 self.table_landuse_assign_catalog.add_data(self.layer_landuse,
                                                            TextConstants.field_name_landuse_crops)
 
@@ -966,6 +969,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 if ok:
 
                     table = self.table_landuse_assign_catalog.get_data_as_layer(TextConstants.field_name_landuse_crops)
+
+                    self.layer_landuse = retain_only_fields(self.layer_landuse,
+                                                            self.layer_landuse_fields_backup.names())
 
                     self.layer_landuse = join_tables(self.layer_landuse,
                                                      TextConstants.field_name_landuse_crops,
