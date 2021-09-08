@@ -72,9 +72,7 @@ def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
                              'INIT': None,
                              'INVERT': False,
                              'EXTRA': '',
-                             'OUTPUT': 'TEMPORARY_OUTPUT'},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                             'OUTPUT': 'TEMPORARY_OUTPUT'})
 
     progress_bar.setValue(3)
 
@@ -85,9 +83,7 @@ def copy_layer_fix_geoms(layer_input: QgsMapLayer, layer_name: str) -> QgsVector
 
     result = processing.run("native:fixgeometries",
                             {'INPUT': layer_input,
-                             'OUTPUT': f"memory:{layer_name}"},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                             'OUTPUT': f"memory:{layer_name}"})
 
     return result["OUTPUT"]
 
@@ -205,9 +201,7 @@ def join_tables(layer_data: QgsVectorLayer,
                              'FIELD': layer_data_field_name_join,
                              'INPUT_2': layer_table,
                              'FIELD_2': layer_table_field_name_join,
-                             'OUTPUT': f"memory:{layer_data.name()}"},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                             'OUTPUT': f"memory:{layer_data.name()}"})
 
     progress_bar.setValue(3)
 
@@ -216,9 +210,7 @@ def join_tables(layer_data: QgsVectorLayer,
         result = processing.run("native:deletecolumn",
                                 {'INPUT': result['OUTPUT'],
                                  'COLUMN': [layer_data_field_name_join, layer_table_field_name_join],
-                                 'OUTPUT': f"memory:{layer_data.name()}"},
-                                context=QgsProcessingContext(),
-                                feedback=QgsProcessingFeedback())
+                                 'OUTPUT': f"memory:{layer_data.name()}"},)
 
     progress_bar.setValue(4)
 
@@ -240,9 +232,7 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
                                                     'INPUT_FIELDS': [],
                                                     'OVERLAY_FIELDS': [],
                                                     'OVERLAY_FIELDS_PREFIX': '',
-                                                    'OUTPUT': 'memory:intersection'},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                                                    'OUTPUT': 'memory:intersection'})
 
     layer_intersection: QgsVectorLayer = result["OUTPUT"]
 
@@ -277,17 +267,13 @@ def intersect_dissolve(layer_input_1: QgsVectorLayer,
 
     result = processing.run("native:retainfields", {'INPUT': layer_intersection,
                                                     'FIELDS': dissolve_fields,
-                                                    'OUTPUT': 'memory:removed_fields'},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                                                    'OUTPUT': 'memory:removed_fields'})
 
     progress_bar.setValue(3)
 
     result = processing.run("native:dissolve", {'INPUT': result["OUTPUT"],
                                                 'FIELD': dissolve_fields,
-                                                'OUTPUT': 'memory:dissolve'},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                                                'OUTPUT': 'memory:dissolve'})
 
     progress_bar.setValue(4)
 
@@ -386,9 +372,7 @@ def retain_only_fields(layer: QgsVectorLayer,
     result = processing.run("native:retainfields",
                             {'INPUT': layer,
                              'FIELDS': fields_to_retain,
-                             'OUTPUT': layer_name},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                             'OUTPUT': layer_name})
 
     return result["OUTPUT"]
 
@@ -405,9 +389,7 @@ def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
                             {'INPUT': raster_new_values,
                              'BAND': 1,
                              'FILL_VALUE': 0,
-                             'OUTPUT': 'TEMPORARY_OUTPUT'},
-                            context=QgsProcessingContext(),
-                            feedback=QgsProcessingFeedback())
+                             'OUTPUT': 'TEMPORARY_OUTPUT'})
 
     raster_new_values = QgsRasterLayer(result["OUTPUT"])
 
