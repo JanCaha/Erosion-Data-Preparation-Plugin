@@ -1,5 +1,5 @@
 [general]
-name = Erosion 3D Data Preparation Plugin
+name = E3D+GIS input parameters preparation
 qgisminimumversion = 3.16
 description = Plugin which handles process of data preparation and export from QGIS to Erosion 3D.
 version = 0.6.2

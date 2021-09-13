@@ -8,11 +8,11 @@ class TextConstantsCZ:
 
     # Plugin constants
 
-    plugin_name = "Erosion-3D Data Preparation"
-    plugin_toolbar_name = "Erosion-3D Data Preparation Toolbar"
+    plugin_name = "E3D+GIS nástroj pro přípravu vstupních parametrů"
+    plugin_toolbar_name = "E3D+GIS nástroj pro přípravu vstupních parametrů Toolbar"
     plugin_toolbar_name_id = "Erosion3DDataPreparationToolbar"
 
-    plugin_main_tool_name = "Erosion-3D Data Preparation Wizard"
+    plugin_main_tool_name = "E3D+GIS nástroj pro přípravu vstupních parametrů Wizard"
 
     plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
