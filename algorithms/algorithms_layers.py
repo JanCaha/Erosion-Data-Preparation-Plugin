@@ -48,18 +48,15 @@ def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
     raster_data_provider: QgsRasterDataProvider = raster_template.dataProvider()
     no_data = raster_data_provider.sourceNoDataValue(1)
 
-    width_size = extent.width() / raster_template.width()
-    height_size = extent.height() / raster_template.height()
-
     progress_bar.setValue(2)
 
     result = processing.run("gdal:rasterize",
                             {'INPUT': vector_layer,
                              'FIELD': field_name_vectorize,
                              'BURN': 0,
-                             'UNITS': 1,
-                             'WIDTH': width_size,
-                             'HEIGHT': height_size,
+                             'UNITS': 0,
+                             'WIDTH': raster_template.width(),
+                             'HEIGHT': raster_template.height(),
                              'EXTENT': extent_string,
                              'NODATA': no_data,
                              'OPTIONS': '',
