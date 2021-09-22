@@ -5,24 +5,19 @@ from qgis.PyQt.QtCore import QVariant
 
 from qgis import processing
 
-from qgis.core import (QgsVectorLayer,
-                       QgsVectorDataProvider,
+from qgis.core import (QgsVectorDataProvider,
                        QgsFields,
                        QgsField,
                        QgsFeature,
                        QgsMapLayer,
                        QgsVectorLayer,
                        QgsRasterDataProvider,
-                       NULL,
-                       QgsProject,
                        QgsRectangle,
                        QgsCoordinateReferenceSystem,
                        QgsRasterLayer,
                        QgsRasterBandStats,
                        QgsProcessingUtils,
-                       QgsCoordinateTransformContext,
-                       QgsProcessingContext,
-                       QgsProcessingFeedback)
+                       QgsCoordinateTransformContext)
 
 from processing.algs.gdal.GdalUtils import GdalUtils
 
