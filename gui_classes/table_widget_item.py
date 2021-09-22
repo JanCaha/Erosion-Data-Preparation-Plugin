@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
-from PyQt5 import QtCore
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem
+from qgis.PyQt import QtCore
 
 
 class TableItemNotEditable(QTableWidgetItem):

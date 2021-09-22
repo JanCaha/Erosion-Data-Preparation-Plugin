@@ -1,10 +1,10 @@
 import abc
 from typing import Dict, Any, List, Optional, Tuple, NoReturn
 
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
-from PyQt5 import QtCore
-from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QFont, QRegExpValidator, QColor
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
+from qgis.PyQt import QtCore
+from qgis.PyQt.QtCore import QRegExp
+from qgis.PyQt.QtGui import QFont, QRegExpValidator, QColor
 
 from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,

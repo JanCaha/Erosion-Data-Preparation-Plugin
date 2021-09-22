@@ -1,7 +1,7 @@
 from typing import List, Dict, Union, Optional
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QVariant
+from qgis.PyQt import QtWidgets
+from qgis.PyQt.QtCore import QVariant
 
 from qgis import processing
 

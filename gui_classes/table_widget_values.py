@@ -2,10 +2,10 @@ from typing import Dict, Any, List, Optional
 
 from pathlib import Path
 
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit
-from PyQt5 import QtCore
-from PyQt5.QtCore import QRegExp
-from PyQt5.QtGui import QFont, QRegExpValidator
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit
+from qgis.PyQt import QtCore
+from qgis.PyQt.QtCore import QRegExp
+from qgis.PyQt.QtGui import QFont, QRegExpValidator
 
 from ..constants import TextConstants
 from ..classes.definition_landuse_values import LanduseValues

@@ -3,9 +3,9 @@ from typing import Dict
 from pathlib import Path
 
 
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QMenu
-from PyQt5.QtGui import QFont
-from PyQt5 import QtCore
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QMenu
+from qgis.PyQt.QtGui import QFont
+from qgis.PyQt import QtCore
 
 from qgis.core import (QgsVectorLayer,
                        QgsFields,

@@ -2,8 +2,8 @@ from pathlib import Path
 
 from qgis.PyQt import uic
 
-from PyQt5.QtWidgets import QWidget, QSlider, QLabel
-from PyQt5 import QtCore
+from qgis.PyQt.QtWidgets import QWidget, QSlider, QLabel
+from qgis.PyQt import QtCore
 
 
 class QWidgetSliderValues(QWidget):

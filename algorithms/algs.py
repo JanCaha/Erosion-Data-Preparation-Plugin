@@ -1,8 +1,8 @@
 from typing import Tuple, Dict, NoReturn, Union, List, Any
 import math
 
-from PyQt5.QtCore import QVariant
-from PyQt5 import QtWidgets
+from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt import QtWidgets
 
 from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,
