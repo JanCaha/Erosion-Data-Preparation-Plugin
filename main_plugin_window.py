@@ -23,7 +23,8 @@ from .algorithms.algs import (calculate_garbrecht_roughness,
                               add_fid_field,
                               rename_field,
                               max_value_in_field,
-                              add_row_without_geom)
+                              add_row_without_geom,
+                              delete_features_with_values)
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
@@ -79,6 +80,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     layer_landuse_interstep: QgsVectorLayer = None
 
     layer_intersected_dissolved: QgsVectorLayer = None
+    layer_intersected_dissolved_backup: QgsVectorLayer = None
     layer_raster_dtm: QgsRasterLayer = None
     layer_pour_points_rasterized: QgsRasterLayer = None
     layer_raster_rasterized: QgsRasterLayer = None
@@ -1137,6 +1139,20 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
 
             if i == 12:
+
+                # if there are some values already existing, delete them
+
+                if not len(self.poly_nr_additons) == 0:
+
+                    fids_to_delete = []
+
+                    for fid_value, poly_id in self.poly_nr_additons:
+
+                        fids_to_delete.append(fid_value)
+
+                    delete_features_with_values(self.layer_intersected_dissolved,
+                                                TextConstants.field_name_fid,
+                                                fids_to_delete)
 
                 # add "POLY_NR" field
 

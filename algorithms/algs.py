@@ -511,3 +511,19 @@ def add_row_without_geom(layer: QgsVectorLayer,
     layer.addFeature(feature)
 
     layer.commitChanges()
+
+
+def delete_features_with_values(layer: QgsVectorLayer,
+                                field_name: str,
+                                field_values: List[Any]) -> NoReturn:
+
+    layer.startEditing()
+
+    feature: QgsFeature
+
+    for feature in layer.getFeatures():
+
+        if feature.attribute(field_name) in field_values:
+            layer.deleteFeature(feature.id())
+
+    layer.commitChanges()
