@@ -91,6 +91,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     layer_intersected_dissolved: QgsVectorLayer = None
     layer_raster_dtm: QgsRasterLayer = None
+    layer_pour_points_rasterized: QgsRasterLayer = None
     layer_raster_rasterized: QgsRasterLayer = None
     date_month: int = None
     layer_export_parameters: QgsVectorLayer = None
@@ -189,6 +190,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     lineEdit_lookup_table: QtWidgets.QLineEdit
     toolButton_lookup_table: QtWidgets.QFileDialog
 
+    label_pour_points_raster: QtWidgets.QLabel
+    lineEdit_pour_points_raster: QtWidgets.QLineEdit
+    toolButton_pour_points_raster: QtWidgets.QFileDialog
+
     # main window
     stackedWidget: QtWidgets.QStackedWidget
     progressBar: QtWidgets.QProgressBar
@@ -211,6 +216,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     table_skinfactor: TableWidgetSkinFactor
 
     table_edit_values: TableWidgetEditNumericValues
+
+    field_pour_points_cb: QgsFieldComboBox
 
     def __init__(self, iface, parent=None):
 
@@ -340,7 +347,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.layer_pour_points_cb.layerChanged.connect(self.update_layer_pour_points)
         self.layer_pour_points_cb.setCurrentIndex(0)
 
-        # widget last
+        self.label_pour_points_identifier.setText(TextConstants.label_pour_points_identifier)
+        self.field_pour_points_cb.setFilters(QgsFieldProxyModel.Int)
+
+        # widget lasts
         self.label_data_status_confirm.setText(TextConstants.label_data_status_confirm)
 
         self.label_landuse_raster.setText(TextConstants.label_landuse_raster)
@@ -350,6 +360,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.toolButton_landuse_raster.clicked.connect(self.select_file_landuse_raster)
         self.toolButton_lookup_table.clicked.connect(self.select_file_lookup_table)
         self.toolButton_parameter_table.clicked.connect(self.select_file_parameter_table)
+        self.toolButton_pour_points_raster.clicked.connect(self.select_file_pour_points_raster)
 
         project_path = QgsProject.instance().absolutePath()
 
@@ -359,11 +370,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.lineEdit_landuse_raster.setText(str(project_path / "landuse_raster.asc"))
             self.lineEdit_parameter_table.setText(str(project_path / "parameter_table.csv"))
             self.lineEdit_lookup_table.setText(str(project_path / "lookup_table.csv"))
+            self.lineEdit_pour_points_raster.setText(str(project_path / "pour.asc"))
 
         else:
             self.lineEdit_landuse_raster.setText(QgsProcessingUtils.generateTempFilename("landuse_raster.asc"))
             self.lineEdit_parameter_table.setText(QgsProcessingUtils.generateTempFilename("parameter_table.csv"))
             self.lineEdit_lookup_table.setText(QgsProcessingUtils.generateTempFilename("lookup_table.csv"))
+            self.lineEdit_pour_points_raster.setText(QgsProcessingUtils.generateTempFilename("pour.asc"))
 
         self.fcb_landuse.setFilters(QgsFieldProxyModel.String)
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
@@ -409,6 +422,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.stackedWidget.insertWidget(self.corg_widget_index + 7, self.table_edit_values)
 
         self.checkbox_export_empty_data.stateChanged.connect(self.allow_ok_button)
+
+    def select_file_pour_points_raster(self):
+        filter = "asc (*.asc)"
+        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
+        self.lineEdit_pour_points_raster.setText(file_name)
 
     def select_file_landuse_raster(self):
         filter = "asc (*.asc)"
@@ -516,6 +535,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def update_layer_pour_points(self):
         self.layer_pour_points = self.layer_pour_points_cb.currentLayer()
+
+        fields = self.layer_pour_points.fields()
+
+        self.field_pour_points_cb.setFields(fields)
+        self.field_pour_points_cb.setCurrentIndex(0)
 
     def update_month(self):
         self.date_month = self.calendar.selectedDate().month()
@@ -1197,6 +1221,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.table_edit_values.add_data(self.layer_intersected_dissolved)
 
             if i == 13:
+
+                if self.layer_pour_points and self.field_pour_points_cb.currentText():
+
+                    self.layer_pour_points_rasterized = rasterize_layer_by_example(self.layer_pour_points,
+                                                                                   self.field_pour_points_cb.currentText(),
+                                                                                   self.layer_raster_dtm,
+                                                                                   progress_bar=self.progressBar)
 
                 self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
 
