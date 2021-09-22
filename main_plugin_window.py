@@ -1,20 +1,14 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 from typing import Dict, List, Tuple
-import datetime
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
-
-from PyQt5 import QtWidgets, QtCore
 
 from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox
 from qgis.core import (QgsMapLayerProxyModel,
                        QgsVectorLayer,
                        QgsRasterLayer,
-                       QgsMapLayer,
-                       Qgis,
-                       QgsRasterFileWriter,
                        QgsFields,
                        QgsFieldProxyModel,
                        QgsProject,
@@ -25,7 +19,6 @@ from .algorithms.algs import (calculate_garbrecht_roughness,
                               landuse_with_crops,
                               validate_KA5,
                               classify_KA5,
-                              add_fields_to_landuse,
                               add_field_with_constant_value,
                               add_fid_field,
                               rename_field,
@@ -34,29 +27,25 @@ from .algorithms.algs import (calculate_garbrecht_roughness,
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
-                                           create_table_to_join,
                                            copy_layer_fix_geoms,
                                            create_table_KA5_to_join,
                                            rasterize_layer_by_example,
                                            retain_only_fields,
                                            replace_raster_values_by_raster)
 
-from .algorithms.extract_elements_from_dicts import (extract_elements_without_values,
-                                                     extract_elements_with_values)
+
 from .algorithms.utils import (log,
                                add_maplayer_to_project,
                                evaluate_result_layer,
                                eval_string_with_variables)
 
 from .gui_classes.table_widget_landuse_assigned_catalog import TableWidgetLanduseAssignedCatalog
-from .gui_classes.table_widget_values import TableWidgetLanduseAssignedValues
 from .gui_classes.table_widget_with_slider import (TableWidgetBulkDensity,
                                                    TableWidgetCorg,
                                                    TableWidgetCanopyCover,
                                                    TableWidgetRoughness,
                                                    TableWidgetErodibility,
-                                                   TableWidgetSkinFactor,
-                                                   TableWidgetInitMoisture)
+                                                   TableWidgetSkinFactor)
 from .gui_classes.table_widget_edit_values import TableWidgetEditNumericValues
 
 from .classes.definition_landuse_values import LanduseValues
