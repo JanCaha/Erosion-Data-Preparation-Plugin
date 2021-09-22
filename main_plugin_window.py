@@ -274,7 +274,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         # widget 2
         self.label_ka5_class.setText(TextConstants.label_ka5_class)
         self.label_soil_id.setText(TextConstants.label_soil_id)
-        self.field_soilid_cb.setFilters(QgsFieldProxyModel.String)
+        self.field_soilid_cb.setFilters(QgsFieldProxyModel.String | QgsFieldProxyModel.Int)
         self.field_ka5_cb.setFilters(QgsFieldProxyModel.String)
 
         # widget 3
