@@ -10,6 +10,7 @@ from qgis.core import (QgsVectorLayer,
                        QgsFields,
                        QgsField,
                        QgsRasterLayer,
+                       QgsRasterDataProvider,
                        NULL)
 
 from qgis import processing
@@ -478,16 +479,21 @@ def max_value_in_field(layer: QgsVectorLayer,
 
 
 def save_raster_as_asc(raster: QgsRasterLayer,
-                       path: str) -> NoReturn:
+                       path: str,
+                       out_type: int = 2) -> NoReturn:
+
+    raster_data_provider: QgsRasterDataProvider = raster.dataProvider()
+
+    no_data = raster_data_provider.sourceNoDataValue(1)
 
     processing.run("gdal:translate", {
         'INPUT': raster,
-        'TARGET_CRS': None,
-        'NODATA': None,
+        'TARGET_CRS': raster.crs(),
+        'NODATA': no_data,
         'COPY_SUBDATASETS': False,
         'OPTIONS': '',
         'EXTRA': '',
-        'DATA_TYPE': 0,
+        'DATA_TYPE': out_type,
         'OUTPUT': path})
 
 
