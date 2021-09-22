@@ -194,7 +194,7 @@ class TextConstantsEN:
     label_lookup_table = "Lookup table:"
 
     label_created = "Developed by <a href=\"https://www.cahik.cz/o-mne/\">Jan Caha</a> for Department of Landscape Water Conservation, Faculty of Civil Engineering, Czech Technical University in Prague in 2021."
-    label_project = "Development of this plug-in was financed by project No. QK1810341 „Creating a national database of parameters for the mathematical simulation model EROSION-3D and its standardization for routine use in the Czech Republic“ of the National Agency of Agricultural Research of Czech Republic."
+    label_project = "Development of this plug-in was financed by project No. QK1810341 „Creating a national database of parameters\nfor the mathematical simulation model EROSION-3D and its standardization for routine use in the Czech Republic“ of the National Agency of Agricultural Research of Czech Republic."
 
     # Tables with widgets
 
