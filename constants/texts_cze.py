@@ -133,7 +133,7 @@ class TextConstantsCZ:
                    "Skinfactor",
                    "Volitelné vstupy",
                    "Kontrola a doplnění hodnot",
-                   "Export input datasets for Erosion-3D"
+                   "Uložit vstupní datasety pro Erosion-3D"
                    ]
 
     step_description_labels = [
