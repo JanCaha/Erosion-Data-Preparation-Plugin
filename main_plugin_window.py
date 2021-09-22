@@ -367,6 +367,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.lineEdit_lookup_table.setText(QgsProcessingUtils.generateTempFilename("lookup_table.csv"))
             self.lineEdit_pour_points_raster.setText(QgsProcessingUtils.generateTempFilename("pour.asc"))
 
+        self.lineEdit_pour_points_raster.setEnabled(False)
+        self.toolButton_pour_points_raster.setEnabled(False)
+
         self.fcb_landuse.setFilters(QgsFieldProxyModel.String)
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
 
@@ -1217,6 +1220,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                                    self.field_pour_points_cb.currentText(),
                                                                                    self.layer_raster_dtm,
                                                                                    progress_bar=self.progressBar)
+
+                    self.lineEdit_pour_points_raster.setEnabled(True)
+                    self.toolButton_pour_points_raster.setEnabled(True)
 
                 self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
 
