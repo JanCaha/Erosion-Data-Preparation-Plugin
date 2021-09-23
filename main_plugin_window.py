@@ -1154,6 +1154,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                 TextConstants.field_name_fid,
                                                 fids_to_delete)
 
+                    self.poly_nr_additons = []
+
                 # add "POLY_NR" field
 
                 add_fid_field(self.layer_intersected_dissolved)
@@ -1240,7 +1242,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.lineEdit_pour_points_raster.setEnabled(True)
                     self.toolButton_pour_points_raster.setEnabled(True)
 
-                self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
+                # self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
 
                 self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
 
