@@ -11,7 +11,9 @@ from qgis.core import (QgsVectorLayer,
                        QgsField,
                        QgsRasterLayer,
                        QgsRasterDataProvider,
-                       NULL)
+                       NULL,
+                       edit,
+                       QgsFeatureRequest)
 
 from qgis import processing
 
@@ -524,15 +526,19 @@ def add_row_without_geom(layer: QgsVectorLayer,
 
 def delete_features_with_values(layer: QgsVectorLayer,
                                 field_name: str,
-                                field_values: List[Any]) -> NoReturn:
-
-    layer.startEditing()
+                                field_values: List[int]) -> NoReturn:
 
     feature: QgsFeature
 
-    for feature in layer.getFeatures():
+    for value in field_values:
 
-        if feature.attribute(field_name) in field_values:
+        request = QgsFeatureRequest().setFilterExpression(f'"{field_name}" = {value}')
+
+        layer.startEditing()
+
+        for feature in layer.getFeatures(request):
+
             layer.deleteFeature(feature.id())
 
-    layer.commitChanges()
+        layer.commitChanges()
+
