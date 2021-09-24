@@ -13,6 +13,8 @@ from ..constants import TextConstants
 from ..algorithms.utils import log
 from .table_widget_item import TableItemNotEditable
 
+ROUND_PLACES = 4
+
 
 class TableWidgetEditNumericValues(QTableWidget):
 
@@ -63,6 +65,7 @@ class TableWidgetEditNumericValues(QTableWidget):
 
         if value:
             value = float(value.replace(",", "."))
+            value = round(value, ROUND_PLACES)
 
         return value
 
@@ -99,7 +102,7 @@ class TableWidgetEditNumericValues(QTableWidget):
         cell_item.setAlignment(QtCore.Qt.AlignRight)
 
         if value:
-            cell_item.setText(str(value))
+            cell_item.setText(str(round(value, ROUND_PLACES)))
 
         validator = QRegExpValidator(QRegExp(r'^-?[0-9]+[\.,]?[0-9]{0,14}$'))
         cell_item.setValidator(validator)
