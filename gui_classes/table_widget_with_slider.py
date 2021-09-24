@@ -29,7 +29,7 @@ class TableWidgetWithSlider(QTableWidget):
     temp_data_stored: List
     temp_data_show: List
 
-    COLOR_RED = QColor(255, 170, 130)
+    COLOR_HIGHLIGHT = QColor(255, 200, 180)
     COLOR_WHITE = QColor(255, 255, 255)
 
     def __init__(self,
@@ -110,7 +110,7 @@ class TableWidgetWithSlider(QTableWidget):
         if 0 < len(sender.text()):
             self.set_row_color(row, self.COLOR_WHITE)
         else:
-            self.set_row_color(row, self.COLOR_RED)
+            self.set_row_color(row, self.COLOR_HIGHLIGHT)
 
     def add_row(self, value: List[str]):
 
@@ -147,7 +147,7 @@ class TableWidgetWithSlider(QTableWidget):
 
             else:
                 # TODO this can be removed to stop coloring
-                self.set_row_color(row_to_put, self.COLOR_RED)
+                self.set_row_color(row_to_put, self.COLOR_HIGHLIGHT)
 
     def set_value_from_slider(self):
 
