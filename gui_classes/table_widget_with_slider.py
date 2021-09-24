@@ -29,7 +29,7 @@ class TableWidgetWithSlider(QTableWidget):
     temp_data_stored: List
     temp_data_show: List
 
-    COLOR_RED = QColor(255, 155, 155)
+    COLOR_RED = QColor(255, 170, 130)
     COLOR_WHITE = QColor(255, 255, 255)
 
     def __init__(self,
