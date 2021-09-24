@@ -3,7 +3,7 @@ from typing import Optional, NoReturn, Tuple
 from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
 from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QRegExp, QObject
-from qgis.PyQt.QtGui import QFont, QRegExpValidator, QColor
+from qgis.PyQt.QtGui import QFont, QRegExpValidator
 
 from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,
@@ -101,7 +101,7 @@ class TableWidgetEditNumericValues(QTableWidget):
         cell_item.setPlaceholderText('No value')
         cell_item.setAlignment(QtCore.Qt.AlignRight)
 
-        if value:
+        if value or value == 0.0:
             cell_item.setText(str(round(value, ROUND_PLACES)))
 
         validator = QRegExpValidator(QRegExp(r'^-?[0-9]+[\.,]?[0-9]{0,14}$'))
