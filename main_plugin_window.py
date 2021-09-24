@@ -59,6 +59,13 @@ from .constants import TextConstants
 path_ui = Path(__file__).parent / "ui" / "gui_tests_dialog_base.ui"
 FORM_CLASS, _ = uic.loadUiType(str(path_ui))
 
+DEFAULT_EXPORT_VALUES = {TextConstants.field_name_bulk_density: 1,
+                         TextConstants.field_name_corg: 1,
+                         TextConstants.field_name_roughness: 1,
+                         TextConstants.field_name_canopy_cover: 1,
+                         TextConstants.field_name_skinfactor: 1,
+                         TextConstants.field_name_erodibility: 1}
+
 
 class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
@@ -1214,9 +1221,14 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 # add rows for channel elements and drain elements
                 for fid_value, poly_id in self.poly_nr_additons:
-                    add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: fid_value,
-                                                                            TextConstants.field_name_init_moisture: 0,
-                                                                            TextConstants.field_name_poly_id: poly_id})
+
+                    values = {TextConstants.field_name_fid: fid_value,
+                              TextConstants.field_name_init_moisture: 0.0,
+                              TextConstants.field_name_poly_id: poly_id}
+
+                    values.update(DEFAULT_EXPORT_VALUES)
+
+                    add_row_without_geom(self.layer_intersected_dissolved, values)
 
                 self.progressBar.setValue(2)
 
