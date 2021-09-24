@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 from typing import Dict, List, Tuple
+import math
 
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
@@ -827,7 +828,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             add_field_with_constant_value(self.layer_soil,
                                           TextConstants.field_name_init_moisture,
-                                          "")
+                                          math.nan)
 
     def update_prev_next_buttons(self):
         i = self.stackedWidget.currentIndex()
