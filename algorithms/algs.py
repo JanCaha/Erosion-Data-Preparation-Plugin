@@ -401,11 +401,14 @@ def add_field_with_constant_value(layer: QgsVectorLayer,
 
     add_fields = QgsFields()
 
+    skip_value_insertion = False
+
     if isinstance(value, int):
         field = QgsField(fieldname, QVariant.Double)
     elif isinstance(value, float):
         field = QgsField(fieldname, QVariant.Double)
-
+        if math.isnan(value):
+            skip_value_insertion = True
     else:
         field = QgsField(fieldname, QVariant.String, "", 255)
 
@@ -421,11 +424,13 @@ def add_field_with_constant_value(layer: QgsVectorLayer,
 
     field_index = layer_dp.fieldNameIndex(fieldname)
 
-    for feature in layer.getFeatures():
+    if not skip_value_insertion:
 
-        layer.changeAttributeValue(feature.id(),
-                                   field_index,
-                                   value)
+        for feature in layer.getFeatures():
+
+            layer.changeAttributeValue(feature.id(),
+                                       field_index,
+                                       value)
 
     layer.commitChanges()
 
