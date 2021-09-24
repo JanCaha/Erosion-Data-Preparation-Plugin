@@ -1075,7 +1075,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                               self.date_month)
 
                 if not self.skip_step_table_corg():
-
                     self.table_corg.add_data(self.layer_intersected_dissolved)
 
                 else:
@@ -1085,11 +1084,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 6:
 
                 if not self.skip_step_table_corg():
-
                     self.layer_intersected_dissolved = self.table_corg.join_data(self.layer_intersected_dissolved)
 
                 if not self.skip_step_table_bulkdensity():
-
                     self.table_bulk_density.add_data(self.layer_intersected_dissolved)
 
                 else:
@@ -1102,7 +1099,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.layer_intersected_dissolved = self.table_bulk_density.join_data(self.layer_intersected_dissolved)
 
                 if not self.skip_step_table_surfacecover():
-
                     self.table_canopy_cover.add_data(self.layer_intersected_dissolved)
 
                 else:
@@ -1113,8 +1109,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 if not self.skip_step_table_surfacecover():
                     self.layer_intersected_dissolved = self.table_canopy_cover.join_data(self.layer_intersected_dissolved)
 
-                if not self.skip_step_table_corg():
-
+                if not self.skip_step_table_roughness():
                     self.table_roughness.add_data(self.layer_intersected_dissolved)
 
                 else:
@@ -1123,7 +1118,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if i == 9:
 
-                if not self.skip_step_table_corg():
+                if not self.skip_step_table_roughness():
                     self.layer_intersected_dissolved = self.table_roughness.join_data(self.layer_intersected_dissolved)
 
                 self.table_erodibility.add_data(self.layer_intersected_dissolved)
