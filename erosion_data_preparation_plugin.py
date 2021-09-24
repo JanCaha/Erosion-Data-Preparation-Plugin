@@ -5,7 +5,10 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
-from qgis.core import (Qgis, QgsProject, QgsApplication, QgsFileUtils, QgsVectorFileWriter, QgsCoordinateTransformContext)
+from qgis.core import (QgsApplication,
+                       QgsVectorFileWriter,
+                       QgsCoordinateTransformContext)
+
 from qgis.gui import (QgisInterface)
 
 import processing
