@@ -26,10 +26,14 @@ class ErosionDataPreparationPlugin:
 
     garbrech_roughness_action: QAction
 
+    dlg: MainPluginDialog
+
     def __init__(self, iface):
 
         # Save reference to the QGIS interface
         self.iface: QgisInterface = iface
+
+        self.dlg = None
 
         # initialize plugin directory
         self.path_plugin = Path(__file__).parent
@@ -171,7 +175,8 @@ class ErosionDataPreparationPlugin:
     def run(self):
         """Run method that performs all the real work"""
 
-        self.dlg = MainPluginDialog(self.iface)
+        if self.dlg is None:
+            self.dlg = MainPluginDialog(self.iface)
 
         self.dlg.show()
         result = self.dlg.exec_()
