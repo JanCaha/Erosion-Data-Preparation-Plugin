@@ -197,6 +197,7 @@ class ErosionDataPreparationPlugin:
             options = QgsVectorFileWriter.SaveVectorOptions()
             options.driverName = "CSV"
             options.fileEncoding = "UTF-8"
+            options.layerOptions = ["STRING_QUOTING=IF_NEEDED"]
 
             QgsVectorFileWriter.writeAsVectorFormatV2(self.dlg.layer_export_lookup,
                                                       self.dlg.lineEdit_lookup_table.text(),
