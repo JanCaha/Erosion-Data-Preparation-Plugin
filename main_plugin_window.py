@@ -1210,11 +1210,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                                    raster,
                                                                                    progress_bar=self.progressBar)
 
+                self.progressBar.setMaximum(5)
+
                 # add rows for channel elements and drain elements
                 for fid_value, poly_id in self.poly_nr_additons:
                     add_row_without_geom(self.layer_intersected_dissolved, {TextConstants.field_name_fid: fid_value,
                                                                             TextConstants.field_name_init_moisture: 0,
                                                                             TextConstants.field_name_poly_id: poly_id})
+
+                self.progressBar.setValue(2)
 
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_layer_id,
@@ -1224,7 +1228,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                               TextConstants.field_name_layer_thick,
                                               10000)
 
+                self.progressBar.setValue(3)
+
                 self.table_edit_values.add_data(self.layer_intersected_dissolved)
+
+                self.progressBar.setValue(5)
 
             if i == 13:
 
