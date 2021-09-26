@@ -3,7 +3,7 @@ from typing import Optional, NoReturn, Tuple
 from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
 from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QRegExp, QObject
-from qgis.PyQt.QtGui import QFont, QRegExpValidator
+from qgis.PyQt.QtGui import QFont, QRegExpValidator, QColor
 
 from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,
@@ -18,6 +18,11 @@ ROUND_PLACES = 4
 
 class TableWidgetEditNumericValues(QTableWidget):
 
+    COLOR_RED = QColor(255, 155, 155)
+    COLOR_WHITE = QColor(255, 255, 255)
+
+    FONT_SIZE = 15
+
     data_layer: QgsVectorLayer
     data_layer: QgsVectorDataProvider
 
@@ -29,7 +34,16 @@ class TableWidgetEditNumericValues(QTableWidget):
                          TextConstants.field_name_canopy_cover: 5,
                          TextConstants.field_name_skinfactor: 6,
                          TextConstants.field_name_erodibility: 7,
-                         TextConstants.field_name_fid: 8}
+                         TextConstants.field_name_fid: 8,
+                         TextConstants.field_name_FT: 9,
+                         TextConstants.field_name_MT: 10,
+                         TextConstants.field_name_GT: 11,
+                         TextConstants.field_name_FU: 12,
+                         TextConstants.field_name_MU: 13,
+                         TextConstants.field_name_GU: 14,
+                         TextConstants.field_name_FS: 15,
+                         TextConstants.field_name_MS: 16,
+                         TextConstants.field_name_GS: 17}
 
     cols = list(fields_names_cols.keys())
 
@@ -42,7 +56,7 @@ class TableWidgetEditNumericValues(QTableWidget):
 
         self.setSortingEnabled(True)
 
-        self.setColumnCount(9)
+        self.setColumnCount(18)
 
         self.setHorizontalHeaderItem(0, self.header_column(TextConstants.field_name_poly_id))
         self.setHorizontalHeaderItem(1, self.header_column(TextConstants.field_name_bulk_density))
@@ -55,6 +69,16 @@ class TableWidgetEditNumericValues(QTableWidget):
         self.setHorizontalHeaderItem(8, self.header_column(TextConstants.field_name_fid))
 
         self.setColumnHidden(8, True)
+
+        self.setHorizontalHeaderItem(9, self.header_column(TextConstants.field_name_FT))
+        self.setHorizontalHeaderItem(10, self.header_column(TextConstants.field_name_MT))
+        self.setHorizontalHeaderItem(11, self.header_column(TextConstants.field_name_GT))
+        self.setHorizontalHeaderItem(12, self.header_column(TextConstants.field_name_FU))
+        self.setHorizontalHeaderItem(13, self.header_column(TextConstants.field_name_MU))
+        self.setHorizontalHeaderItem(14, self.header_column(TextConstants.field_name_GU))
+        self.setHorizontalHeaderItem(15, self.header_column(TextConstants.field_name_FS))
+        self.setHorizontalHeaderItem(16, self.header_column(TextConstants.field_name_MS))
+        self.setHorizontalHeaderItem(17, self.header_column(TextConstants.field_name_GS))
 
     def get_value(self, row: int, column: int) -> Optional[float]:
 
@@ -83,6 +107,23 @@ class TableWidgetEditNumericValues(QTableWidget):
         self.setCellWidget(row_to_put, 5, self.add_cell_value(feature.attribute(TextConstants.field_name_canopy_cover)))
         self.setCellWidget(row_to_put, 6, self.add_cell_value(feature.attribute(TextConstants.field_name_skinfactor)))
         self.setCellWidget(row_to_put, 7, self.add_cell_value(feature.attribute(TextConstants.field_name_erodibility)))
+
+        self.setCellWidget(row_to_put, 9, self.add_cell_value(feature.attribute(TextConstants.field_name_FT)))
+        self.setCellWidget(row_to_put, 10, self.add_cell_value(feature.attribute(TextConstants.field_name_MT)))
+        self.setCellWidget(row_to_put, 11, self.add_cell_value(feature.attribute(TextConstants.field_name_GT)))
+        self.setCellWidget(row_to_put, 12, self.add_cell_value(feature.attribute(TextConstants.field_name_FU)))
+        self.setCellWidget(row_to_put, 13, self.add_cell_value(feature.attribute(TextConstants.field_name_MU)))
+        self.setCellWidget(row_to_put, 14, self.add_cell_value(feature.attribute(TextConstants.field_name_GU)))
+        self.setCellWidget(row_to_put, 15, self.add_cell_value(feature.attribute(TextConstants.field_name_FS)))
+        self.setCellWidget(row_to_put, 16, self.add_cell_value(feature.attribute(TextConstants.field_name_MS)))
+        self.setCellWidget(row_to_put, 17, self.add_cell_value(feature.attribute(TextConstants.field_name_GS)))
+
+        color = self.COLOR_WHITE
+
+        if not self.validate_feature(feature_id=feature.id()):
+            color = self.COLOR_RED
+
+        self.change_row_color(row_to_put, color)
 
     def add_data(self, layer: QgsVectorLayer):
 
@@ -154,13 +195,41 @@ class TableWidgetEditNumericValues(QTableWidget):
         if next_row <= self.rowCount() - 1:
             self.cellWidget(next_row, next_column).setFocus()
 
+    def validate_feature(self, feature_id: int) -> bool:
+
+        feature = self.data_layer.getFeature(feature_id)
+
+        value = float(feature.attribute(TextConstants.field_name_FT)) + \
+                float(feature.attribute(TextConstants.field_name_MT)) + \
+                float(feature.attribute(TextConstants.field_name_GT)) + \
+                float(feature.attribute(TextConstants.field_name_FU)) + \
+                float(feature.attribute(TextConstants.field_name_MU)) + \
+                float(feature.attribute(TextConstants.field_name_GU)) + \
+                float(feature.attribute(TextConstants.field_name_FS)) + \
+                float(feature.attribute(TextConstants.field_name_MS)) + \
+                float(feature.attribute(TextConstants.field_name_GS))
+
+        if value == 100.0:
+            return True
+
+        return False
+
     def change_data_value(self):
 
         row, column = self.get_row_column(self.sender())
 
-        self.change_data(int(self.item(row, self.fields_names_cols[TextConstants.field_name_fid]).text()),
+        feature_id = int(self.item(row, self.fields_names_cols[TextConstants.field_name_fid]).text())
+
+        self.change_data(feature_id,
                          self.cols[column],
                          self.get_value(row, column))
+
+        color = self.COLOR_WHITE
+
+        if not self.validate_feature(feature_id=feature_id):
+            color = self.COLOR_RED
+
+        self.change_row_color(row, color)
 
     def change_data(self, feature_fid: int, column: str, value: float):
 
@@ -175,3 +244,16 @@ class TableWidgetEditNumericValues(QTableWidget):
         self.data_layer.updateFeature(feature)
 
         self.data_layer.commitChanges()
+
+    def change_row_color(self, row: int, color: QColor):
+
+        self.item(row, 0).setBackground(color)
+        self.item(row, 8).setBackground(color)
+
+        for i in range(self.columnCount()):
+            if i != 0 and i != 8:
+                # TODO font somehow changes after first edit
+                self.cellWidget(row, i).setStyleSheet(f"QLineEdit{{"
+                                                      f"font-size: {self.FONT_SIZE}px; "
+                                                      f"background-color: {color.name()};"
+                                                      f"}}")
