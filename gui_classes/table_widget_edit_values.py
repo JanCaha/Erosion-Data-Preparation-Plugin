@@ -1,17 +1,15 @@
-from typing import Optional, NoReturn, Tuple
+from typing import Optional
 
-from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
 from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QRegExp, QObject
 from qgis.PyQt.QtGui import QFont, QRegExpValidator, QColor
-
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit
 from qgis.core import (QgsVectorLayer,
                        QgsVectorDataProvider,
                        QgsFeature)
 
-from ..constants import TextConstants
-from ..algorithms.utils import log
 from .table_widget_item import TableItemNotEditable
+from ..constants import TextConstants
 
 ROUND_PLACES = 4
 
@@ -22,6 +20,11 @@ class TableWidgetEditNumericValues(QTableWidget):
     COLOR_WHITE = QColor(255, 255, 255)
 
     FONT_SIZE = 15
+
+    DEFAULT_STYLE_SHEET = f"QLineEdit{{" \
+                          f"font-size: {FONT_SIZE}px; " \
+                          f"background-color: {COLOR_RED.name()};" \
+                          f"}}"
 
     data_layer: QgsVectorLayer
     data_layer: QgsVectorDataProvider
@@ -141,6 +144,7 @@ class TableWidgetEditNumericValues(QTableWidget):
         cell_item = QLineEdit()
         cell_item.setPlaceholderText('No value')
         cell_item.setAlignment(QtCore.Qt.AlignRight)
+        cell_item.setStyleSheet(self.DEFAULT_STYLE_SHEET)
 
         if value or value == 0.0:
             cell_item.setText(str(round(value, ROUND_PLACES)))
