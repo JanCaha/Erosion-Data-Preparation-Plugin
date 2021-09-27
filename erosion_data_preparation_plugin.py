@@ -123,14 +123,14 @@ class ErosionDataPreparationPlugin:
 
         QgsApplication.processingRegistry().addProvider(self.provider)
 
-        self.add_action(icon_path=str(self.path_plugin / "icon.png"),
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "main.png"),
                         text=TextConstants.plugin_main_tool_name,
                         callback=self.run,
                         add_to_toolbar=True,
                         add_to_menu=TextConstants.plugin_name,
                         add_to_specific_toolbar=self.toolbar)
 
-        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icon.png"),
+        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "roughness.png"),
                                            action_name=TextConstants.plugin_action_name_garbrech_roughness,
                                            action_id=TextConstants.plugin_action_id_garbrech_roughness,
                                            callback=self.GarbrechRoughnessTool,
