@@ -3,6 +3,7 @@ from qgis.core import QgsProcessingProvider
 from qgis.PyQt.QtGui import QIcon
 
 from .tools.tool_garbrecht_roughness import GarbrechtRougnessProcessingAlgorithm
+from .constants import TextConstants
 
 
 class ErosionDataPluginProvider(QgsProcessingProvider):
@@ -14,14 +15,14 @@ class ErosionDataPluginProvider(QgsProcessingProvider):
         self.addAlgorithm(GarbrechtRougnessProcessingAlgorithm())
 
     def icon(self):
-        icon_path = Path(__file__).parent / "icon.png"
+        icon_path = Path(__file__).parent / "icons" / "main.png"
         return QIcon(str(icon_path))
 
     def id(self):
-        return "erosiondataplugin"
+        return TextConstants.tool_group_id
 
     def name(self):
-        return "Erosion-3D Data Plugin"
+        return TextConstants.tool_group_name
 
     def longName(self):
         return self.name()
