@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtGui import QIcon
 
 from qgis.core import (QgsProcessingAlgorithm,
                        QgsProcessingParameterString,
@@ -50,6 +53,10 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
 
     def shortHelpString(self):
         return "Calculate Garbrech roughness based on D90 diameter"
+
+    def icon(self) -> QIcon:
+        path = Path(__file__).parent.parent / "icons" / "roughness.png"
+        return QIcon(str(path))
 
     def initAlgorithm(self, config=None):
         self.addParameter(
