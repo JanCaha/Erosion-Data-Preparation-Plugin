@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>14</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="page_0">
     <widget class="QWidget" name="layoutWidget">
@@ -146,117 +146,90 @@
         <property name="text">
          <string>FT:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_ftc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_ftc"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_MT">
         <property name="text">
          <string>MT:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_mtc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_mtc"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_GT">
         <property name="text">
          <string>GT: </string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_gtc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_gtc"/>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_FU">
         <property name="text">
          <string>FU:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_fuc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_fuc"/>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_MU">
         <property name="text">
          <string>MU:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_muc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_muc"/>
       </item>
       <item row="5" column="0">
        <widget class="QLabel" name="label_GU">
         <property name="text">
          <string>GU:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_guc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="5" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_guc"/>
       </item>
       <item row="6" column="0">
        <widget class="QLabel" name="label_FS">
         <property name="text">
          <string>FS:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_fsc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_fsc"/>
       </item>
       <item row="7" column="0">
        <widget class="QLabel" name="label_MS">
         <property name="text">
          <string>MS:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_msc</cstring>
-        </property>
        </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_msc"/>
       </item>
       <item row="8" column="0">
        <widget class="QLabel" name="label_GS">
         <property name="text">
          <string>GS:</string>
         </property>
-        <property name="buddy">
-         <cstring>fcb_gsc</cstring>
-        </property>
        </widget>
       </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="fcb_ftc"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="fcb_mtc"/>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="fcb_gtc"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="fcb_fuc"/>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="fcb_muc"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QComboBox" name="fcb_guc"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QComboBox" name="fcb_fsc"/>
+      </item>
+      <item row="7" column="1">
+       <widget class="QComboBox" name="fcb_msc"/>
+      </item>
       <item row="8" column="1">
-       <widget class="QgsFieldComboBox" name="fcb_gsc"/>
+       <widget class="QComboBox" name="fcb_gsc"/>
       </item>
      </layout>
     </widget>
@@ -1118,15 +1091,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>fcb_ftc</tabstop>
-  <tabstop>fcb_mtc</tabstop>
-  <tabstop>fcb_gtc</tabstop>
-  <tabstop>fcb_fuc</tabstop>
-  <tabstop>fcb_muc</tabstop>
-  <tabstop>fcb_guc</tabstop>
-  <tabstop>fcb_fsc</tabstop>
-  <tabstop>fcb_msc</tabstop>
-  <tabstop>fcb_gsc</tabstop>
   <tabstop>previous_pb</tabstop>
   <tabstop>next_pb</tabstop>
   <tabstop>layer_soil_cb</tabstop>
