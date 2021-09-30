@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, NoReturn
 import math
 
 from qgis.PyQt import uic, QtWidgets
@@ -487,6 +487,17 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         if not status:
             msg = TextConstants.msg_select_all_fields
 
+        if status:
+
+            boxes = [self.fcb_ftc, self.fcb_mtc, self.fcb_gtc,
+                     self.fcb_fuc, self.fcb_muc, self.fcb_guc,
+                     self.fcb_fsc, self.fcb_msc, self.fcb_gsc]
+
+            status = self.cb_unique_values(boxes) == (9 - self.cb_number_empty(boxes))
+
+            if not status:
+                msg = TextConstants.msg_unique_fields
+
         return status, msg
 
     def validate_widget_3(self):
@@ -578,23 +589,29 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.field_ka5_cb.setFields(fields)
                 self.field_ka5_cb.setField("ka5")
 
-            self.fcb_ftc.addItems(field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_ftc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_mtc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_gtc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_fuc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_muc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_guc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_fsc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_msc, field_names)
+            self.add_field_names_and_set_selected_back(self.fcb_gsc, field_names)
 
-            self.fcb_mtc.addItems(field_names)
+    @staticmethod
+    def add_field_names_and_set_selected_back(combo_box: QtWidgets.QComboBox,
+                                              items: List[str]) -> NoReturn:
+        index = None
 
-            self.fcb_gtc.addItems(field_names)
+        if combo_box.currentText() != "":
+            index = items.index(combo_box.currentText())
 
-            self.fcb_fuc.addItems(field_names)
+        combo_box.clear()
+        combo_box.addItems(items)
 
-            self.fcb_muc.addItems(field_names)
-
-            self.fcb_guc.addItems(field_names)
-
-            self.fcb_fsc.addItems(field_names)
-
-            self.fcb_msc.addItems(field_names)
-
-            self.fcb_gsc.addItems(field_names)
+        if index:
+            combo_box.setCurrentIndex(index)
 
     def update_value_layers(self):
 
@@ -844,6 +861,20 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 1:
 
                 ok, msg = self.validate_widget_1()
+
+                if self.field_ka5_cb.currentText():
+
+                    layer_ka5 = create_table_KA5_to_join()
+
+                    self.layer_soil = join_tables(self.layer_soil,
+                                                  self.field_ka5_cb.currentText(),
+                                                  layer_ka5,
+                                                  TextConstants.field_name_ka5_code,
+                                                  progress_bar=self.progressBar)
+
+                    self.update_layer_soil()
+
+                    self.layer_soil_input = self.layer_soil
 
             if i == 2:
 
@@ -1339,6 +1370,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         i = self.stackedWidget.currentIndex()
 
+        if i == 3:
+            self.layer_soil = self.layer_soil_input
+            self.update_layer_soil()
+
         if self.skip_step_table_roughness() and i == self.roughness_widget_index + 1:
             i = i - 1
 
@@ -1374,3 +1409,25 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def skip_step_table_surfacecover(self) -> bool:
 
         return 0 < len(self.fcb_surface_cover.currentText())
+
+    @staticmethod
+    def cb_unique_values(combo_boxes: List[QtWidgets.QComboBox]) -> int:
+
+        l = []
+
+        for combo_box in combo_boxes:
+            if combo_box.currentText() != "":
+                l.append(combo_box.currentText())
+
+        return len(set(l))
+
+    @staticmethod
+    def cb_number_empty(combo_boxes: List[QtWidgets.QComboBox]) -> int:
+
+        empty = 0
+
+        for combo_box in combo_boxes:
+            if combo_box.currentText() == "":
+                empty += 1
+
+        return empty
