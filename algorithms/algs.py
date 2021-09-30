@@ -85,15 +85,15 @@ def classify_KA5(layer_input: QgsVectorLayer,
     for number, feature in enumerate(layer_input.getFeatures()):
 
         feature_data = KA5Class(None, None, None, None,
-                                feature.attribute(fieldname_FT),
-                                feature.attribute(fieldname_MT),
-                                feature.attribute(fieldname_GT),
-                                feature.attribute(fieldname_FU),
-                                feature.attribute(fieldname_MU),
-                                feature.attribute(fieldname_GU),
-                                feature.attribute(fieldname_FS),
-                                feature.attribute(fieldname_MS),
-                                feature.attribute(fieldname_GS))
+                                float(feature.attribute(fieldname_FT)),
+                                float(feature.attribute(fieldname_MT)),
+                                float(feature.attribute(fieldname_GT)),
+                                float(feature.attribute(fieldname_FU)),
+                                float(feature.attribute(fieldname_MU)),
+                                float(feature.attribute(fieldname_GU)),
+                                float(feature.attribute(fieldname_FS)),
+                                float(feature.attribute(fieldname_MS)),
+                                float(feature.attribute(fieldname_GS)))
 
         min_rmse = math.inf
         min_rmse_code = None
@@ -386,7 +386,9 @@ def delete_fields(layer: QgsVectorLayer,
     fields_to_delete = []
 
     for field_name in fields:
-        fields_to_delete.append(layer_dp.fieldNameIndex(field_name))
+        field_index = layer_dp.fieldNameIndex(field_name)
+        if field_index != -1:
+            fields_to_delete.append(field_index)
 
     layer.startEditing()
     layer.deleteAttributes(fields_to_delete)
