@@ -88,7 +88,7 @@ class TableWidgetEditNumericValues(QTableWidget):
         value = self.cellWidget(row, column).text()
 
         if value == "":
-            value = None
+            value = 0
 
         if value:
             value = float(value.replace(",", "."))
