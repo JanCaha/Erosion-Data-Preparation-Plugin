@@ -16,8 +16,7 @@ from qgis.core import (QgsMapLayerProxyModel,
                        QgsFileUtils,
                        QgsProcessingUtils)
 
-from .algorithms.algs import (calculate_garbrecht_roughness,
-                              landuse_with_crops,
+from .algorithms.algs import (landuse_with_crops,
                               validate_KA5,
                               classify_KA5,
                               add_field_with_constant_value,
@@ -908,23 +907,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 2:
 
                 ok, msg = self.validate_widget_2()
-
-                if ok:
-
-                    ok, msg = calculate_garbrecht_roughness(self.layer_soil,
-                                                            True,
-                                                            TextConstants.field_name_d90,
-                                                            TextConstants.field_name_GB,
-                                                            self.fcb_ftc.currentText(),
-                                                            self.fcb_mtc.currentText(),
-                                                            self.fcb_gtc.currentText(),
-                                                            self.fcb_fuc.currentText(),
-                                                            self.fcb_muc.currentText(),
-                                                            self.fcb_guc.currentText(),
-                                                            self.fcb_fsc.currentText(),
-                                                            self.fcb_msc.currentText(),
-                                                            self.fcb_gsc.currentText(),
-                                                            self.progressBar)
 
                 if ok:
 
