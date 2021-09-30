@@ -223,6 +223,7 @@ class TextConstantsCZ:
                                "Hodnoty `{missing_values}` nelze najít mezi KA5 třídami v katalogu."
 
     msg_select_all_fields = "Je nutné vybrat pole MT, MU, MS."
+    msg_unique_fields = "Každé vybrané pole musí být unikátní."
 
     msg_select_all_files = "Je nutné zadat všechny cesty pro soubory."
 

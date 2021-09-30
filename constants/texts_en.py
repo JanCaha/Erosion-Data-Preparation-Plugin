@@ -224,6 +224,7 @@ class TextConstantsEN:
                                "Values `{missing_values}` are not found amongst KA5 classes in catalog."
 
     msg_select_all_fields = "Field MT, MU, MS must be selected."
+    msg_unique_fields = "Every selected field must be unique."
 
     msg_select_all_files = "All file paths must be specified."
 
