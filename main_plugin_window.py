@@ -888,18 +888,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 ok, msg = self.validate_widget_1()
 
-                if self.field_ka5_cb.currentText():
-
-                    layer_ka5 = create_table_KA5_to_join()
-
-                    self.layer_soil = join_tables(self.layer_soil,
-                                                  self.field_ka5_cb.currentText(),
-                                                  layer_ka5,
-                                                  TextConstants.field_name_ka5_code,
-                                                  progress_bar=self.progressBar)
-
-                    self.update_layer_soil()
-
                 rename_field(self.layer_soil,
                              self.field_soilid_cb.currentText(),
                              TextConstants.field_name_soil_id)
