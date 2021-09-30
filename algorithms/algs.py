@@ -13,7 +13,12 @@ from qgis.core import (QgsVectorLayer,
                        QgsRasterDataProvider,
                        NULL,
                        edit,
-                       QgsFeatureRequest)
+                       QgsFeatureRequest,
+                       QgsMessageLog,
+                       QgsProcessingException,
+                       Qgis)
+
+from qgis.gui import QgsErrorDialog
 
 from qgis import processing
 
@@ -82,7 +87,19 @@ def classify_KA5(layer_input: QgsVectorLayer,
 
     feature: QgsFeature
 
+    validate_attributes = [fieldname_FT, fieldname_MT, fieldname_GT,
+                           fieldname_FU, fieldname_MU, fieldname_GU,
+                           fieldname_FS, fieldname_MS, fieldname_GS]
+
     for number, feature in enumerate(layer_input.getFeatures()):
+
+        try:
+            feature_not_null(feature, validate_attributes, algorithm_name="classify_KA5")
+        except QgsProcessingException as e:
+            QgsMessageLog.logMessage(str(e), TextConstants.plugin_name, Qgis.Critical)
+            layer_input.rollBack()
+            layer_input.endEditCommand()
+            break
 
         feature_data = KA5Class(None, None, None, None,
                                 float(feature.attribute(fieldname_FT)),
@@ -133,6 +150,14 @@ def classify_KA5(layer_input: QgsVectorLayer,
     layer_input.commitChanges()
 
     return True, ""
+
+
+def feature_not_null(feature: QgsFeature, attributes: List[str], algorithm_name: str) -> NoReturn:
+
+    for attribute in attributes:
+        if feature.attribute(attribute) == NULL:
+            raise QgsProcessingException(f"Attribute `{attribute}` is NULL for feature with id `{feature.id()}`. "
+                                         f"Cannot process this feature in algorithm: `{algorithm_name}`.")
 
 
 def calculate_garbrecht_roughness(layer_input: QgsVectorLayer,
