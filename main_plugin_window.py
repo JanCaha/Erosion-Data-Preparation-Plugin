@@ -579,7 +579,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             for field in fields:
                 if field.name() not in fields_to_remove:
-                    if field.type() == QVariant.Int or field.type() == QVariant.Double:
+                    if field.isNumeric():
                         field_names.append(field.name())
 
             if not self.field_soilid_cb.currentText():
