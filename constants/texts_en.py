@@ -223,7 +223,7 @@ class TextConstantsEN:
     msg_validate_ka5_classes = "Provided column does not contain valid values.\n" \
                                "Values `{missing_values}` are not found amongst KA5 classes in catalog."
 
-    msg_select_all_fields = "All fields must be selected."
+    msg_select_all_fields = "Field MT, MU, MS must be selected."
 
     msg_select_all_files = "All file paths must be specified."
 

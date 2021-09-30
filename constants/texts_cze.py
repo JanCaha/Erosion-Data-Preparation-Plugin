@@ -222,7 +222,7 @@ class TextConstantsCZ:
     msg_validate_ka5_classes = "Zvolený sloupec neobsahuje validní hodnoty.\n" \
                                "Hodnoty `{missing_values}` nelze najít mezi KA5 třídami v katalogu."
 
-    msg_select_all_fields = "Je nutné vybrat všechny pole."
+    msg_select_all_fields = "Je nutné vybrat pole MT, MU, MS."
 
     msg_select_all_files = "Je nutné zadat všechny cesty pro soubory."
 
