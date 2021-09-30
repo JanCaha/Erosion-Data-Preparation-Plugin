@@ -97,9 +97,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
             feature_not_null(feature, validate_attributes, algorithm_name="classify_KA5")
         except QgsProcessingException as e:
             QgsMessageLog.logMessage(str(e), TextConstants.plugin_name, Qgis.Critical)
-            layer_input.rollBack()
-            layer_input.endEditCommand()
-            break
+            continue
 
         feature_data = KA5Class(None, None, None, None,
                                 float(feature.attribute(fieldname_FT)),
