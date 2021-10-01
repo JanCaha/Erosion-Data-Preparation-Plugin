@@ -84,7 +84,10 @@ def join_tables(layer_data: QgsVectorLayer,
                 layer_data_field_name_join: Union[str, List[str]],
                 layer_table: QgsVectorLayer,
                 layer_table_field_name_join: Union[str, List[str]],
-                progress_bar: QtWidgets.QProgressBar = QtWidgets.QProgressBar()) -> QgsVectorLayer:
+                progress_bar: QtWidgets.QProgressBar = None) -> QgsVectorLayer:
+
+    if not progress_bar:
+        progress_bar = QtWidgets.QProgressBar()
 
     merge_field_1 = "temp_merge_field_1"
     merge_field_2 = "temp_merge_field_2"
