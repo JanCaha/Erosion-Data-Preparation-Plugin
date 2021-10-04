@@ -65,9 +65,8 @@ jobs:
       - name: Zip plugin
         run: |
           make zip_cz
-          mv zip_build/Erosion3DDataPreparationPlugin.zip zip_build/Erosion3DDataPreparationPlugin_CZ.zip
+          mv zip_build/Erosion3DDataPreparationPlugin.zip Erosion3DDataPreparationPlugin_CZ.zip
           make zip
-
 
       - name: Get Version
         id: version
@@ -80,7 +79,7 @@ jobs:
           tag_name: ${{ steps.version.outputs.VERSION }}
           files: |
             zip_build/Erosion3DDataPreparationPlugin.zip
-            zip_build/Erosion3DDataPreparationPlugin_CZ.zip
+            Erosion3DDataPreparationPlugin_CZ.zip
           name: ver. ${{ steps.version.outputs.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
