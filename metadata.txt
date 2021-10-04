@@ -2,7 +2,7 @@
 name = E3D+GIS input parameters preparation
 qgisminimumversion = 3.16
 description = Plugin which handles process of data preparation and export from QGIS to Erosion 3D.
-version = 0.6.4
+version = 0.6.5
 author = Jan Caha
 email = jan.caha@outlook.com
 about = Plugin which handles process of data preparation and export from QGIS to Erosion 3D.
