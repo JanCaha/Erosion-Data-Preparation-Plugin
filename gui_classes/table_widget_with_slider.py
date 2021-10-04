@@ -215,7 +215,11 @@ class TableWidgetWithSlider(QTableWidget):
 
             for j in range(self.slider_col):
 
-                row.append(self.item(i, j).text())
+                # TODO make sure it does not fall
+                if self.item(i, j):
+                    row.append(self.item(i, j).text())
+                else:
+                    row.append(None)
 
             data_list.append(row)
 
