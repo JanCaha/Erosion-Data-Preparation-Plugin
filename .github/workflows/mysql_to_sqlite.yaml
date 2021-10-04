@@ -64,7 +64,10 @@ jobs:
 
       - name: Zip plugin
         run: |
-          pb_tool zip
+          make zip_cz
+          mv zip_build/Erosion3DDataPreparationPlugin.zip zip_build/Erosion3DDataPreparationPlugin_CZ.zip
+          make zip
+
 
       - name: Get Version
         id: version
@@ -75,7 +78,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.version.outputs.VERSION }}
-          files: zip_build/Erosion3DDataPreparationPlugin.zip
+          files: |
+            zip_build/Erosion3DDataPreparationPlugin.zip
+            zip_build/Erosion3DDataPreparationPlugin_CZ.zip
           name: ver. ${{ steps.version.outputs.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
