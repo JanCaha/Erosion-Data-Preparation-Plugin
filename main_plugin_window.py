@@ -892,6 +892,28 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.progressBar.setValue(1)
 
                     # this three columns exists so rename them
+
+                    fields_to_delete = []
+
+                    if self.fcb_mtc.currentText() != TextConstants.field_name_MT and \
+                            TextConstants.field_name_MT in self.layer_soil.fields().names():
+
+                        fields_to_delete.append(TextConstants.field_name_MT)
+
+                    if self.fcb_muc.currentText() != TextConstants.field_name_MU and \
+                            TextConstants.field_name_MU in self.layer_soil.fields().names():
+
+                        fields_to_delete.append(TextConstants.field_name_MU)
+
+                    if self.fcb_msc.currentText() != TextConstants.field_name_MS and \
+                            TextConstants.field_name_MS in self.layer_soil.fields().names():
+
+                        fields_to_delete.append(TextConstants.field_name_MS)
+
+                    if 0 < len(fields_to_delete):
+                        delete_fields(self.layer_soil,
+                                      fields_to_delete)
+
                     rename_field(self.layer_soil,
                                  self.fcb_mtc.currentText(),
                                  TextConstants.field_name_MT)
@@ -910,14 +932,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.fcb_ftc.currentText()):
 
-                        if TextConstants.field_name_FT != self.fcb_ftc.currentText():
+                        delete_fields(self.layer_soil,
+                                      TextConstants.field_name_FT)
 
-                            delete_fields(self.layer_soil,
-                                          TextConstants.field_name_FT)
-
-                            rename_field(self.layer_soil,
-                                         self.fcb_ftc.currentText(),
-                                         TextConstants.field_name_FT)
+                        rename_field(self.layer_soil,
+                                     self.fcb_ftc.currentText(),
+                                     TextConstants.field_name_FT)
 
                     else:
 
@@ -927,14 +947,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.fcb_gtc.currentText()):
 
-                        if TextConstants.field_name_GT != self.fcb_gtc.currentText():
+                        delete_fields(self.layer_soil,
+                                      TextConstants.field_name_GT)
 
-                            delete_fields(self.layer_soil,
-                                          TextConstants.field_name_GT)
-
-                            rename_field(self.layer_soil,
-                                         self.fcb_gtc.currentText(),
-                                         TextConstants.field_name_GT)
+                        rename_field(self.layer_soil,
+                                     self.fcb_gtc.currentText(),
+                                     TextConstants.field_name_GT)
 
                     else:
 
@@ -944,14 +962,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.fcb_fuc.currentText()):
 
-                        if TextConstants.field_name_FU != self.fcb_fuc.currentText():
+                        delete_fields(self.layer_soil,
+                                      TextConstants.field_name_FU)
 
-                            delete_fields(self.layer_soil,
-                                          TextConstants.field_name_FU)
-
-                            rename_field(self.layer_soil,
-                                         self.fcb_fuc.currentText(),
-                                         TextConstants.field_name_FU)
+                        rename_field(self.layer_soil,
+                                     self.fcb_fuc.currentText(),
+                                     TextConstants.field_name_FU)
 
                     else:
 
@@ -961,14 +977,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.fcb_guc.currentText()):
 
-                        if TextConstants.field_name_GU != self.fcb_guc.currentText():
+                        delete_fields(self.layer_soil,
+                                      TextConstants.field_name_GU)
 
-                            delete_fields(self.layer_soil,
-                                          TextConstants.field_name_GU)
-
-                            rename_field(self.layer_soil,
-                                         self.fcb_guc.currentText(),
-                                         TextConstants.field_name_GU)
+                        rename_field(self.layer_soil,
+                                     self.fcb_guc.currentText(),
+                                     TextConstants.field_name_GU)
                     else:
 
                         add_field_with_constant_value(self.layer_soil,
@@ -977,14 +991,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.fcb_fsc.currentText()):
 
-                        if TextConstants.field_name_FS != self.fcb_fsc.currentText():
+                        delete_fields(self.layer_soil,
+                                      TextConstants.field_name_FS)
 
-                            delete_fields(self.layer_soil,
-                                          TextConstants.field_name_FS)
-
-                            rename_field(self.layer_soil,
-                                         self.fcb_fsc.currentText(),
-                                         TextConstants.field_name_FS)
+                        rename_field(self.layer_soil,
+                                     self.fcb_fsc.currentText(),
+                                     TextConstants.field_name_FS)
                     else:
 
                         add_field_with_constant_value(self.layer_soil,
@@ -993,14 +1005,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     if 0 < len(self.fcb_gsc.currentText()):
 
-                        if TextConstants.field_name_GS != self.fcb_gsc.currentText():
+                        delete_fields(self.layer_soil,
+                                      TextConstants.field_name_GS)
 
-                            delete_fields(self.layer_soil,
-                                          TextConstants.field_name_GS)
-
-                            rename_field(self.layer_soil,
-                                         self.fcb_gsc.currentText(),
-                                         TextConstants.field_name_GS)
+                        rename_field(self.layer_soil,
+                                     self.fcb_gsc.currentText(),
+                                     TextConstants.field_name_GS)
 
                     else:
 
@@ -1009,8 +1019,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                       0)
 
                     self.progressBar.setValue(3)
-
-                    add_maplayer_to_project(self.layer_soil)
 
                     ok, msg = classify_KA5(self.layer_soil,
                                            TextConstants.field_name_FT,
