@@ -413,9 +413,11 @@ def delete_fields(layer: QgsVectorLayer,
         if field_index != -1:
             fields_to_delete.append(field_index)
 
-    layer.startEditing()
-    layer.deleteAttributes(fields_to_delete)
-    layer.commitChanges()
+    if 0 < len(fields_to_delete):
+        layer.startEditing()
+        layer.deleteAttributes(fields_to_delete)
+        layer.commitChanges()
+        layer.endEditCommand()
 
 
 def add_field_with_constant_value(layer: QgsVectorLayer,
@@ -500,6 +502,7 @@ def rename_field(layer: QgsVectorLayer,
     layer.renameAttribute(field_name_original_index, field_name_new)
 
     layer.commitChanges()
+    layer.endEditCommand()
 
 
 def max_value_in_field(layer: QgsVectorLayer,
