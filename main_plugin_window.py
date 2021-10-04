@@ -1288,7 +1288,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_layer_id,
-                                              1)
+                                              0)
 
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_layer_thick,
