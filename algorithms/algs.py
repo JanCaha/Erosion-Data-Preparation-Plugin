@@ -417,7 +417,6 @@ def delete_fields(layer: QgsVectorLayer,
         layer.startEditing()
         layer.deleteAttributes(fields_to_delete)
         layer.commitChanges()
-        layer.endEditCommand()
 
 
 def add_field_with_constant_value(layer: QgsVectorLayer,
@@ -495,14 +494,15 @@ def rename_field(layer: QgsVectorLayer,
                  field_name_original: str,
                  field_name_new: str) -> NoReturn:
 
-    layer.startEditing()
-
     field_name_original_index = layer.fields().lookupField(field_name_original)
 
-    layer.renameAttribute(field_name_original_index, field_name_new)
+    if field_name_original == field_name_new:
+        field_name_original_index = -1
 
-    layer.commitChanges()
-    layer.endEditCommand()
+    if field_name_original_index != -1:
+        layer.startEditing()
+        layer.renameAttribute(field_name_original_index, field_name_new)
+        layer.commitChanges()
 
 
 def max_value_in_field(layer: QgsVectorLayer,
