@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QRegExp, QObject
@@ -166,7 +166,7 @@ class TableWidgetEditNumericValues(QTableWidget):
 
         return item
 
-    def get_row_column(self, sender: QObject) -> tuple[int, int]:
+    def get_row_column(self, sender: QObject) -> Tuple[int, int]:
 
         row = 0
         column = 0
