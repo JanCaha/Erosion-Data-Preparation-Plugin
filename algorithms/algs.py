@@ -404,12 +404,10 @@ def delete_fields(layer: QgsVectorLayer,
     if not isinstance(fields, List):
         fields = [fields]
 
-    layer_dp: QgsVectorDataProvider = layer.dataProvider()
-
     fields_to_delete = []
 
     for field_name in fields:
-        field_index = layer_dp.fieldNameIndex(field_name)
+        field_index = layer.fields().lookupField(field_name)
         if field_index != -1:
             fields_to_delete.append(field_index)
 
