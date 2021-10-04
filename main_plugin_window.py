@@ -1374,6 +1374,14 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.layer_soil = self.layer_soil_input
             self.update_layer_soil()
 
+        if i == 5:
+            # TODO make sure this makes sense!!!!!!
+            # TODO make sure this makes sense!!!!!!
+            # TODO make sure this makes sense!!!!!!
+            # TODO make sure this makes sense!!!!!!
+            self.layer_landuse = self.layer_landuse_interstep
+            self.layer_soil = self.layer_soil_interstep
+
         if self.skip_step_table_roughness() and i == self.roughness_widget_index + 1:
             i = i - 1
 
