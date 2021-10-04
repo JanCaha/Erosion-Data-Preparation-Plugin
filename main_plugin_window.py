@@ -892,7 +892,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.progressBar.setValue(1)
 
                     # this three columns exists so rename them
-
                     fields_to_delete = []
 
                     if self.fcb_mtc.currentText() != TextConstants.field_name_MT and \
