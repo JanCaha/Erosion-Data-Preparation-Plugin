@@ -1173,6 +1173,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 else:
 
                     i += 1
+
             if i == 8:
 
                 if not self.skip_step_table_surfacecover():
