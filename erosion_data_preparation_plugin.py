@@ -20,6 +20,7 @@ from .constants import TextConstants
 from .resources import *
 # Import the code for the dialog
 from .main_plugin_window import MainPluginDialog
+from .gui_classes.dialog_result import DialogResult
 import os.path
 
 from .erosion_data_plugin_provider import ErosionDataPluginProvider
@@ -190,9 +191,13 @@ class ErosionDataPreparationPlugin:
 
         if result:
 
+            path_pour_points = None
+
             if self.dlg.layer_pour_points_rasterized:
                 save_raster_as_asc(self.dlg.layer_pour_points_rasterized,
                                    self.dlg.lineEdit_pour_points_raster.text())
+
+                path_pour_points = self.dlg.lineEdit_pour_points_raster.text()
 
             save_raster_as_asc(self.dlg.layer_raster_rasterized,
                                self.dlg.lineEdit_landuse_raster.text())
@@ -211,3 +216,10 @@ class ErosionDataPreparationPlugin:
                                                       self.dlg.lineEdit_parameter_table.text(),
                                                       transformContext=QgsCoordinateTransformContext(),
                                                       options=options)
+
+            dialog = DialogResult(path_landuse_raster=self.dlg.lineEdit_landuse_raster.text(),
+                                  path_parameter_table=self.dlg.lineEdit_parameter_table.text(),
+                                  path_lookup_table=self.dlg.lineEdit_lookup_table.text(),
+                                  path_pour_points_raster=path_pour_points)
+            dialog.show()
+            dialog.exec_()
