@@ -244,3 +244,7 @@ class TextConstantsEN:
     label_FS = "Fine sand (FS):"
     label_MS = "Medium sand (MS):"
     label_GS = "Coarse sand (GS):"
+
+    dialog_export_label_exported = "Data successfully exported."
+
+    dialog_export_label_not_exported = "Dataset not set up for export."
