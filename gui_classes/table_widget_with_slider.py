@@ -577,7 +577,7 @@ class TableWidgetRoughness(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_landuse_lv2_id}:string",
                   F"field={TextConstants.field_name_landuse_lv1_id}:string",
                   F"field={TextConstants.field_name_crop_name}:string",
-                  F"field={TextConstants.field_name_month}:string",
+                  F"field={TextConstants.field_name_month}:integer",
                   F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_surface_conditions}:string",
                   F"field={TextConstants.field_name_vegetation_conditions}:string",
@@ -589,7 +589,7 @@ class TableWidgetRoughness(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], value]
+        return [row[0], row[1], row[2], row[3], int(row[4]), row[5], row[6], row[7], row[8], value]
 
 
 class TableWidgetErodibility(TableWidgetWithSlider):
@@ -714,7 +714,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_id}:string",
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
-                  F"field={TextConstants.field_name_month}:string",
+                  F"field={TextConstants.field_name_month}:integer",
                   F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_protection_measure}:string",
                   F"field={TextConstants.field_name_surface_conditions}:string",
@@ -725,7 +725,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], int(row[7]), row[8], row[9], row[10], value]
 
 
 class TableWidgetInitMoisture(TableWidgetWithSlider):
