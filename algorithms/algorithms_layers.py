@@ -123,9 +123,7 @@ def join_tables(layer_data: QgsVectorLayer,
                 if not value:
                     value = ""
 
-                attributes.append(value)
-
-            attributes = [str(x) for x in attributes]
+                attributes.append(str(value))
 
             if not all(x == "" for x in attributes):
                 attributes = "_".join(attributes)
@@ -169,7 +167,7 @@ def join_tables(layer_data: QgsVectorLayer,
                 if not value:
                     value = ""
 
-                attributes.append(value)
+                attributes.append(str(value))
 
             if not all(x == "" for x in attributes):
                 attributes = "_".join(attributes)
