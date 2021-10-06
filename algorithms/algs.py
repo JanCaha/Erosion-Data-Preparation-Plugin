@@ -420,7 +420,8 @@ def delete_fields(layer: QgsVectorLayer,
 
 def add_field_with_constant_value(layer: QgsVectorLayer,
                                   fieldname: str,
-                                  value: Any) -> NoReturn:
+                                  value: Any,
+                                  data_type=None) -> NoReturn:
 
     layer_dp: QgsVectorDataProvider = layer.dataProvider()
 
@@ -428,14 +429,18 @@ def add_field_with_constant_value(layer: QgsVectorLayer,
 
     skip_value_insertion = False
 
-    if isinstance(value, int):
-        field = QgsField(fieldname, QVariant.Double)
-    elif isinstance(value, float):
-        field = QgsField(fieldname, QVariant.Double)
-        if math.isnan(value):
-            skip_value_insertion = True
+    if data_type is None:
+        if isinstance(value, int):
+            field = QgsField(fieldname, QVariant.Double)
+        elif isinstance(value, float):
+            field = QgsField(fieldname, QVariant.Double)
+            if math.isnan(value):
+                skip_value_insertion = True
+        else:
+            field = QgsField(fieldname, QVariant.String, "", 255)
+
     else:
-        field = QgsField(fieldname, QVariant.String, "", 255)
+        field = QgsField(fieldname, data_type)
 
     add_fields.append(field)
 
