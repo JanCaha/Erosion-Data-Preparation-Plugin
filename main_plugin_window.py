@@ -1061,7 +1061,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 add_field_with_constant_value(self.layer_intersected_dissolved,
                                               TextConstants.field_name_month,
-                                              self.date_month)
+                                              self.date_month,
+                                              data_type=QVariant.Int)
 
                 if not self.skip_step_table_corg():
                     self.table_corg.add_data(self.layer_intersected_dissolved)
