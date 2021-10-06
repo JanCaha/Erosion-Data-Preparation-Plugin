@@ -937,8 +937,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     self.progressBar.setValue(3)
 
-                    # add_maplayer_to_project(self.layer_soil)
-
                     ok, msg = classify_KA5(self.layer_soil,
                                            TextConstants.field_name_FT,
                                            TextConstants.field_name_MT,
