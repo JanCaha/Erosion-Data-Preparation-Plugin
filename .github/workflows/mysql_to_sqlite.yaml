@@ -1,10 +1,13 @@
-name: SQL to SQLite
+name: Release new version of the plugin
 
 on:
   push:
      paths:
       - .github/workflows/**
       - dev_files/e3dcatalog_current_database.sql
+      - metadata.txt
+     tags:
+       - v*
 
 jobs:
 
