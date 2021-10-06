@@ -413,7 +413,7 @@ def delete_fields(layer: QgsVectorLayer,
 
     if 0 < len(fields_to_delete):
         layer.startEditing()
-        layer.deleteAttributes(fields_to_delete)
+        layer.dataProvider().deleteAttributes(fields_to_delete)
         layer.commitChanges()
         layer.updateFields()
 
