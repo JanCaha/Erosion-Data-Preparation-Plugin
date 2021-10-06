@@ -894,38 +894,18 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                     self.progressBar.setValue(1)
 
                     # this three columns exists so rename them
-                    fields_to_delete = []
 
-                    if self.fcb_mtc.currentText() != TextConstants.field_name_MT and \
-                            TextConstants.field_name_MT in self.layer_soil.fields().names():
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_MT,
+                                                     self.fcb_mtc)
 
-                        fields_to_delete.append(TextConstants.field_name_MT)
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_MU,
+                                                     self.fcb_muc)
 
-                    if self.fcb_muc.currentText() != TextConstants.field_name_MU and \
-                            TextConstants.field_name_MU in self.layer_soil.fields().names():
-
-                        fields_to_delete.append(TextConstants.field_name_MU)
-
-                    if self.fcb_msc.currentText() != TextConstants.field_name_MS and \
-                            TextConstants.field_name_MS in self.layer_soil.fields().names():
-
-                        fields_to_delete.append(TextConstants.field_name_MS)
-
-                    if 0 < len(fields_to_delete):
-                        delete_fields(self.layer_soil,
-                                      fields_to_delete)
-
-                    rename_field(self.layer_soil,
-                                 self.fcb_mtc.currentText(),
-                                 TextConstants.field_name_MT)
-
-                    rename_field(self.layer_soil,
-                                 self.fcb_muc.currentText(),
-                                 TextConstants.field_name_MU)
-
-                    rename_field(self.layer_soil,
-                                 self.fcb_msc.currentText(),
-                                 TextConstants.field_name_MS)
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_MS,
+                                                     self.fcb_msc)
 
                     self.progressBar.setValue(2)
 
@@ -956,6 +936,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                      self.fcb_gsc)
 
                     self.progressBar.setValue(3)
+
+                    # add_maplayer_to_project(self.layer_soil)
 
                     ok, msg = classify_KA5(self.layer_soil,
                                            TextConstants.field_name_FT,
