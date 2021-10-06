@@ -411,14 +411,14 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_agrotechnology}:string",
-                  F"field={TextConstants.field_name_bulk_density}:double"]
+                  F"field={TextConstants.field_name_bulk_density}:integer"]
 
         fields = "&".join(fields)
 
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], int(value)]
 
 
 class TableWidgetCorg(TableWidgetWithSlider):
@@ -518,14 +518,14 @@ class TableWidgetCanopyCover(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_landuse_lv2_id}:string",
                   F"field={TextConstants.field_name_landuse_lv1_id}:string",
                   F"field={TextConstants.field_name_crop_name}:string",
-                  F"field={TextConstants.field_name_canopy_cover}:double"]
+                  F"field={TextConstants.field_name_canopy_cover}:integer"]
 
         fields = "&".join(fields)
 
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], value]
+        return [row[0], row[1], row[2], row[3], int(value)]
 
 
 class TableWidgetRoughness(TableWidgetWithSlider):
