@@ -573,3 +573,9 @@ def delete_features_with_values(layer: QgsVectorLayer,
 
         layer.commitChanges()
 
+
+def field_contains_null_values(layer: QgsVectorLayer, field_name: str) -> bool:
+
+    layer.selectByExpression(f'"{field_name}" is NULL')
+
+    return 0 < layer.selectedFeatureCount()
