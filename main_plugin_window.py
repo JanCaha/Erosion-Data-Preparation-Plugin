@@ -4,6 +4,7 @@ from typing import Dict, List, Tuple, NoReturn
 import math
 
 from qgis.PyQt import uic, QtWidgets
+from qgis.PyQt.QtWidgets import QComboBox
 from qgis.PyQt.QtCore import QVariant
 
 from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox
@@ -25,7 +26,8 @@ from .algorithms.algs import (landuse_with_crops,
                               max_value_in_field,
                               add_row_without_geom,
                               delete_features_with_values,
-                              delete_fields)
+                              delete_fields,
+                              field_contains_null_values)
 
 from .algorithms.algorithms_layers import (join_tables,
                                            intersect_dissolve,
@@ -579,7 +581,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             for field in fields:
                 if field.name() not in fields_to_remove:
-                    if field.isNumeric():
+                    if field.isNumeric() and not field_contains_null_values(self.layer_soil, field.name()):
                         field_names.append(field.name())
 
             if not self.field_soilid_cb.currentText():
@@ -929,93 +931,29 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     # these six columns may or may not be set, so either rename or create with 0 value
 
-                    if 0 < len(self.fcb_ftc.currentText()):
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_FT,
+                                                     self.fcb_ftc)
 
-                        delete_fields(self.layer_soil,
-                                      TextConstants.field_name_FT)
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_GT,
+                                                     self.fcb_gtc)
 
-                        rename_field(self.layer_soil,
-                                     self.fcb_ftc.currentText(),
-                                     TextConstants.field_name_FT)
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_FU,
+                                                     self.fcb_fuc)
 
-                    else:
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_GU,
+                                                     self.fcb_guc)
 
-                        add_field_with_constant_value(self.layer_soil,
-                                                      TextConstants.field_name_FT,
-                                                      0)
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_FS,
+                                                     self.fcb_fsc)
 
-                    if 0 < len(self.fcb_gtc.currentText()):
-
-                        delete_fields(self.layer_soil,
-                                      TextConstants.field_name_GT)
-
-                        rename_field(self.layer_soil,
-                                     self.fcb_gtc.currentText(),
-                                     TextConstants.field_name_GT)
-
-                    else:
-
-                        add_field_with_constant_value(self.layer_soil,
-                                                      TextConstants.field_name_GT,
-                                                      0)
-
-                    if 0 < len(self.fcb_fuc.currentText()):
-
-                        delete_fields(self.layer_soil,
-                                      TextConstants.field_name_FU)
-
-                        rename_field(self.layer_soil,
-                                     self.fcb_fuc.currentText(),
-                                     TextConstants.field_name_FU)
-
-                    else:
-
-                        add_field_with_constant_value(self.layer_soil,
-                                                      TextConstants.field_name_FU,
-                                                      0)
-
-                    if 0 < len(self.fcb_guc.currentText()):
-
-                        delete_fields(self.layer_soil,
-                                      TextConstants.field_name_GU)
-
-                        rename_field(self.layer_soil,
-                                     self.fcb_guc.currentText(),
-                                     TextConstants.field_name_GU)
-                    else:
-
-                        add_field_with_constant_value(self.layer_soil,
-                                                      TextConstants.field_name_GU,
-                                                      0)
-
-                    if 0 < len(self.fcb_fsc.currentText()):
-
-                        delete_fields(self.layer_soil,
-                                      TextConstants.field_name_FS)
-
-                        rename_field(self.layer_soil,
-                                     self.fcb_fsc.currentText(),
-                                     TextConstants.field_name_FS)
-                    else:
-
-                        add_field_with_constant_value(self.layer_soil,
-                                                      TextConstants.field_name_FS,
-                                                      0)
-
-                    if 0 < len(self.fcb_gsc.currentText()):
-
-                        delete_fields(self.layer_soil,
-                                      TextConstants.field_name_GS)
-
-                        rename_field(self.layer_soil,
-                                     self.fcb_gsc.currentText(),
-                                     TextConstants.field_name_GS)
-
-                    else:
-
-                        add_field_with_constant_value(self.layer_soil,
-                                                      TextConstants.field_name_GS,
-                                                      0)
+                    self.handle_particle_size_fields(self.layer_soil,
+                                                     TextConstants.field_name_GS,
+                                                     self.fcb_gsc)
 
                     self.progressBar.setValue(3)
 
@@ -1447,3 +1385,20 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 empty += 1
 
         return empty
+
+    @staticmethod
+    def handle_particle_size_fields(layer: QgsVectorLayer,
+                                    field_name: str,
+                                    field_cb: QComboBox):
+
+        if field_cb.currentText() != field_name:
+
+            delete_fields(layer, field_name)
+
+        if 0 < len(field_cb.currentText()):
+
+            rename_field(layer, field_cb.currentText(), field_name)
+
+        else:
+
+            add_field_with_constant_value(layer, field_name, 0)
