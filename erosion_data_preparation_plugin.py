@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 
-from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from qgis.PyQt.QtCore import (QSettings,
+                              QTranslator,
+                              QCoreApplication,
+                              QThreadPool)
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
-from qgis.core import (QgsApplication,
-                       QgsVectorFileWriter,
-                       QgsCoordinateTransformContext)
+from qgis.core import (QgsApplication)
 
 from qgis.gui import (QgisInterface)
 
 import processing
 
-from .algorithms.algs import save_raster_as_asc
+from .export.export_worker import ExportWorker
 from .constants import TextConstants
 
 # Initialize Qt resources from file resources.py
@@ -32,12 +33,16 @@ class ErosionDataPreparationPlugin:
 
     dlg: MainPluginDialog
 
+    dialog: DialogResult
+
     def __init__(self, iface):
 
         # Save reference to the QGIS interface
         self.iface: QgisInterface = iface
 
         self.dlg = None
+
+        self.threadpool = QThreadPool()
 
         # initialize plugin directory
         self.path_plugin = Path(__file__).parent
@@ -194,32 +199,39 @@ class ErosionDataPreparationPlugin:
             path_pour_points = None
 
             if self.dlg.layer_pour_points_rasterized:
-                save_raster_as_asc(self.dlg.layer_pour_points_rasterized,
-                                   self.dlg.lineEdit_pour_points_raster.text())
-
                 path_pour_points = self.dlg.lineEdit_pour_points_raster.text()
 
-            save_raster_as_asc(self.dlg.layer_raster_rasterized,
-                               self.dlg.lineEdit_landuse_raster.text())
+            self.dialog = DialogResult(path_landuse_raster=self.dlg.lineEdit_landuse_raster.text(),
+                                       path_parameter_table=self.dlg.lineEdit_parameter_table.text(),
+                                       path_lookup_table=self.dlg.lineEdit_lookup_table.text(),
+                                       path_pour_points_raster=path_pour_points)
 
-            options = QgsVectorFileWriter.SaveVectorOptions()
-            options.driverName = "CSV"
-            options.fileEncoding = "UTF-8"
-            options.layerOptions = ["STRING_QUOTING=IF_NEEDED"]
+            worker = ExportWorker()
 
-            QgsVectorFileWriter.writeAsVectorFormatV2(self.dlg.layer_export_lookup,
-                                                      self.dlg.lineEdit_lookup_table.text(),
-                                                      transformContext=QgsCoordinateTransformContext(),
-                                                      options=options)
+            worker.set_export_lookup(self.dlg.layer_export_lookup,
+                                     self.dlg.lineEdit_lookup_table.text())
 
-            QgsVectorFileWriter.writeAsVectorFormatV2(self.dlg.layer_export_parameters,
-                                                      self.dlg.lineEdit_parameter_table.text(),
-                                                      transformContext=QgsCoordinateTransformContext(),
-                                                      options=options)
+            worker.set_export_parameters(self.dlg.layer_export_parameters,
+                                         self.dlg.lineEdit_parameter_table.text())
 
-            dialog = DialogResult(path_landuse_raster=self.dlg.lineEdit_landuse_raster.text(),
-                                  path_parameter_table=self.dlg.lineEdit_parameter_table.text(),
-                                  path_lookup_table=self.dlg.lineEdit_lookup_table.text(),
-                                  path_pour_points_raster=path_pour_points)
-            dialog.show()
-            dialog.exec_()
+            worker.set_export_rasterized(self.dlg.layer_raster_rasterized,
+                                         self.dlg.lineEdit_landuse_raster.text())
+
+            worker.set_export_pour_points(self.dlg.layer_pour_points_rasterized,
+                                          self.dlg.lineEdit_pour_points_raster.text())
+
+            self.dialog.set_progress_bar(worker.steps)
+
+            worker.signals.progress.connect(self.dialog_update_progress)
+            worker.signals.result.connect(self.dialog_set_finished)
+
+            self.threadpool.start(worker)
+
+            self.dialog.show()
+            self.dialog.exec_()
+
+    def dialog_update_progress(self, value: int):
+        self.dialog.update_progress_bar(value)
+
+    def dialog_set_finished(self):
+        self.dialog.export_finished()
