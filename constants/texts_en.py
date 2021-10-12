@@ -247,4 +247,6 @@ class TextConstantsEN:
 
     dialog_export_label_exported = "Data successfully exported."
 
+    dialog_export_label_exporting = "Exporting data..."
+
     dialog_export_label_not_exported = "Dataset not set up for export."

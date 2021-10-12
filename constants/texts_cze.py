@@ -246,4 +246,6 @@ class TextConstantsCZ:
 
     dialog_export_label_exported = "Data úspěšně exportována."
 
+    dialog_export_label_exporting = "Data se exportují..."
+
     dialog_export_label_not_exported = "Data nebyla nastavena k exportu."
