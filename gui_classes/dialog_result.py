@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog, QLabel, QLineEdit
+from qgis.PyQt.QtWidgets import QDialog, QLabel, QLineEdit, QProgressBar
 
 from ..constants import TextConstants
 
@@ -20,6 +20,8 @@ class DialogResult(QDialog):
     lineEdit_lookup_table: QLineEdit
     lineEdit_pour_points_raster: QLineEdit
 
+    progressBar: QProgressBar
+
     def __init__(self,
                  path_landuse_raster: str,
                  path_parameter_table: str,
@@ -34,7 +36,7 @@ class DialogResult(QDialog):
 
         self.setWindowTitle(TextConstants.dialog_export_label_exported)
 
-        self.label_data_exported.setText(TextConstants.dialog_export_label_exported)
+        self.label_data_exported.setText(TextConstants.dialog_export_label_exporting)
 
         self.label_lookup_table.setText(TextConstants.label_landuse_raster)
         self.label_parameter_table.setText(TextConstants.label_parameter_table)
@@ -56,4 +58,12 @@ class DialogResult(QDialog):
 
         self.lineEdit_pour_points_raster.setEnabled(False)
 
+    def export_finished(self):
+        self.progressBar.hide()
+        self.label_data_exported.setText(TextConstants.dialog_export_label_exported)
 
+    def update_progress_bar(self, value: int):
+        self.progressBar.setValue(value)
+
+    def set_progress_bar(self, max: int):
+        self.progressBar.setMaximum(max)
