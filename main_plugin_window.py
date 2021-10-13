@@ -1246,15 +1246,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 # self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
 
-                self.ok_result_layer, msg = evaluate_result_layer(self.layer_intersected_dissolved)
-
-                self.label_data_status.setText(msg)
-
-                if self.ok_result_layer:
-                    self.label_data_status.setStyleSheet("color : black;")
-                else:
-                    self.label_data_status.setStyleSheet("color : red;")
-
                 self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
                                                                   [TextConstants.field_name_poly_id,
                                                                    TextConstants.field_name_layer_id,
@@ -1276,6 +1267,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                    TextConstants.field_name_skinfactor,
                                                                    TextConstants.field_name_erodibility],
                                                                   "parameters")
+
+                self.ok_result_layer, msg = evaluate_result_layer(self.layer_export_parameters)
+
+                self.label_data_status.setText(msg)
+
+                if self.ok_result_layer:
+                    self.label_data_status.setStyleSheet("color : black;")
+                else:
+                    self.label_data_status.setStyleSheet("color : red;")
 
                 self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
                                                               [TextConstants.field_name_poly_id,
