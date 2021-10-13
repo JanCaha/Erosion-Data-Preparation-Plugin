@@ -249,3 +249,5 @@ class TextConstantsCZ:
     dialog_export_label_exporting = "Data se exportují..."
 
     dialog_export_label_not_exported = "Data nebyla nastavena k exportu."
+
+    dialog_export_label_not_valid_path = "Cesta pro tento soubor není validní. Data se nexportují."

@@ -250,3 +250,5 @@ class TextConstantsEN:
     dialog_export_label_exporting = "Exporting data..."
 
     dialog_export_label_not_exported = "Dataset not set up for export."
+
+    dialog_export_label_not_valid_path = "Path for this dataset is not valid. Data not exported."
