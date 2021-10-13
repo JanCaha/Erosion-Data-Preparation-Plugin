@@ -1,9 +1,11 @@
+from typing import NoReturn
 from pathlib import Path
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QLabel, QLineEdit, QProgressBar
 
 from ..constants import TextConstants
+from ..algorithms.utils import is_valid_path_for_file
 
 
 class DialogResult(QDialog):
@@ -42,21 +44,27 @@ class DialogResult(QDialog):
         self.label_parameter_table.setText(TextConstants.label_parameter_table)
         self.label_lookup_table.setText(TextConstants.label_lookup_table)
 
-        self.lineEdit_landuse_raster.setText(path_landuse_raster)
-        self.lineEdit_landuse_raster.setEnabled(False)
+        self.set_text_for_path(self.lineEdit_landuse_raster, path_landuse_raster)
+        self.set_text_for_path(self.lineEdit_parameter_table, path_parameter_table)
+        self.set_text_for_path(self.lineEdit_lookup_table, path_lookup_table)
+        self.set_text_for_path(self.lineEdit_pour_points_raster, path_pour_points_raster)
 
-        self.lineEdit_parameter_table.setText(path_parameter_table)
-        self.lineEdit_parameter_table.setEnabled(False)
+    @staticmethod
+    def set_text_for_path(line_edit: QLineEdit,
+                          path: str) -> NoReturn:
 
-        self.lineEdit_lookup_table.setText(path_lookup_table)
-        self.lineEdit_lookup_table.setEnabled(False)
+        if path is not None and path != "":
 
-        if path_pour_points_raster is not None and path_pour_points_raster != "":
-            self.lineEdit_pour_points_raster.setText(path_pour_points_raster)
+            if is_valid_path_for_file(path):
+                line_edit.setText(path)
+            else:
+                line_edit.setText(TextConstants.dialog_export_label_not_valid_path)
+
         else:
-            self.lineEdit_pour_points_raster.setText(TextConstants.dialog_export_label_not_exported)
 
-        self.lineEdit_pour_points_raster.setEnabled(False)
+            line_edit.setText(TextConstants.dialog_export_label_not_exported)
+
+        line_edit.setEnabled(False)
 
     def export_finished(self):
         self.progressBar.hide()
@@ -65,5 +73,5 @@ class DialogResult(QDialog):
     def update_progress_bar(self, value: int):
         self.progressBar.setValue(value)
 
-    def set_progress_bar(self, max: int):
-        self.progressBar.setMaximum(max)
+    def set_progress_bar(self, maximal_value: int):
+        self.progressBar.setMaximum(maximal_value)
