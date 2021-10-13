@@ -224,6 +224,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # lineEdit_soil_layer: QtWidgets.QLineEdit
     # toolButton_soil_layer: QtWidgets.QToolButton
 
+    label_data_status_confirm: QtWidgets.QLabel
+    checkbox_export_empty_data: QtWidgets.QCheckBox
+
     def __init__(self, iface, parent=None):
 
         super(MainPluginDialog, self).__init__(parent)
@@ -1234,6 +1237,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if i == 13:
 
+                add_maplayer_to_project(self.layer_intersected_dissolved)
+
                 if self.layer_pour_points and self.field_pour_points_cb.currentText():
 
                     self.layer_pour_points_rasterized = rasterize_layer_by_example(self.layer_pour_points,
@@ -1274,8 +1279,12 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 if self.ok_result_layer:
                     self.label_data_status.setStyleSheet("color : black;")
+                    self.label_data_status_confirm.hide()
+                    self.checkbox_export_empty_data.hide()
                 else:
                     self.label_data_status.setStyleSheet("color : red;")
+                    self.label_data_status_confirm.show()
+                    self.checkbox_export_empty_data.show()
 
                 self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
                                                               [TextConstants.field_name_poly_id,
