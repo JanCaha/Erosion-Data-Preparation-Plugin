@@ -5,7 +5,7 @@ from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QLabel, QLineEdit, QProgressBar
 
 from ..constants import TextConstants
-from ..algorithms.utils import is_valid_path_for_file
+from ..algorithms.utils import is_valid_path_for_file, log
 
 
 class DialogResult(QDialog):
@@ -47,13 +47,14 @@ class DialogResult(QDialog):
         self.set_text_for_path(self.lineEdit_landuse_raster, path_landuse_raster)
         self.set_text_for_path(self.lineEdit_parameter_table, path_parameter_table)
         self.set_text_for_path(self.lineEdit_lookup_table, path_lookup_table)
-        self.set_text_for_path(self.lineEdit_pour_points_raster, path_pour_points_raster)
+        self.set_text_for_path(self.lineEdit_pour_points_raster, path_pour_points_raster, is_optional=True)
 
     @staticmethod
     def set_text_for_path(line_edit: QLineEdit,
-                          path: str) -> NoReturn:
+                          path: str,
+                          is_optional: bool = False) -> NoReturn:
 
-        if path is not None and path != "":
+        if not is_optional:
 
             if is_valid_path_for_file(path):
                 line_edit.setText(path)
