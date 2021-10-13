@@ -813,7 +813,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             add_field_with_constant_value(self.layer_soil,
                                           TextConstants.field_name_init_moisture,
-                                          math.nan)
+                                          0.0,
+                                          data_type=QVariant.Double)
 
     def update_prev_next_buttons(self):
         i = self.stackedWidget.currentIndex()
