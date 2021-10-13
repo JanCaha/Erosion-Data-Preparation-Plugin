@@ -7,7 +7,8 @@ from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtWidgets import QComboBox
 from qgis.PyQt.QtCore import QVariant
 
-from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox
+from qgis.gui import (QgsMapLayerComboBox,
+                      QgsFieldComboBox)
 from qgis.core import (QgsMapLayerProxyModel,
                        QgsVectorLayer,
                        QgsRasterLayer,
@@ -58,7 +59,7 @@ from .constants import TextConstants
 
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
-path_ui = Path(__file__).parent / "ui" / "gui_tests_dialog_base.ui"
+path_ui = Path(__file__).parent / "ui" / "main_wizard_dialog_base.ui"
 FORM_CLASS, _ = uic.loadUiType(str(path_ui))
 
 DEFAULT_EXPORT_VALUES = {TextConstants.field_name_bulk_density: 1,
@@ -219,6 +220,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     table_edit_values: TableWidgetEditNumericValues
 
     field_pour_points_cb: QgsFieldComboBox
+
+    # lineEdit_soil_layer: QtWidgets.QLineEdit
+    # toolButton_soil_layer: QtWidgets.QToolButton
 
     def __init__(self, iface, parent=None):
 

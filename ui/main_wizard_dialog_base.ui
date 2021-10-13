@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>14</number>
    </property>
    <widget class="QWidget" name="page_0">
     <widget class="QWidget" name="layoutWidget">
@@ -721,20 +721,35 @@
       <rect>
        <x>20</x>
        <y>180</y>
-       <width>521</width>
-       <height>131</height>
+       <width>671</width>
+       <height>165</height>
       </rect>
      </property>
-     <layout class="QGridLayout" name="gridLayout" columnstretch="40,50,0" columnminimumwidth="0,0,0">
-      <item row="1" column="2">
-       <widget class="QToolButton" name="toolButton_parameter_table">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="40,75,0">
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lineEdit_pour_points_raster">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>...</string>
+         <string/>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_parameter_table">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Parameters table:</string>
         </property>
        </widget>
       </item>
@@ -750,8 +765,20 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_parameter_table">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_lookup_table">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Lookup table: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="lineEdit_landuse_raster">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -777,57 +804,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QToolButton" name="toolButton_landuse_raster">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_parameter_table">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Parameters table:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_landuse_raster">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_lookup_table">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Lookup table: </string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <widget class="QLineEdit" name="lineEdit_lookup_table">
         <property name="font">
@@ -843,20 +819,20 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_pour_points_raster">
+      <item row="3" column="2">
+       <widget class="QToolButton" name="toolButton_pour_points_raster">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
          </font>
         </property>
         <property name="text">
-         <string>Pour points raster: </string>
+         <string>...</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="lineEdit_pour_points_raster">
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEdit_parameter_table">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
@@ -870,8 +846,32 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="2">
-       <widget class="QToolButton" name="toolButton_pour_points_raster">
+      <item row="0" column="2">
+       <widget class="QToolButton" name="toolButton_landuse_raster">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_pour_points_raster">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>Pour points raster: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QToolButton" name="toolButton_parameter_table">
         <property name="font">
          <font>
           <pointsize>10</pointsize>
