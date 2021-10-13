@@ -1,6 +1,7 @@
-from typing import Tuple, List, Any
+from typing import Tuple, List, Any, Union, Optional
 import inspect
 import unicodedata
+from pathlib import Path
 
 
 from qgis.core import (QgsMessageLog,
@@ -121,3 +122,30 @@ def get_unique_fields_combinations(layer: QgsVectorLayer,
             list_of_unique_combinations.append(feature_list)
 
     return list_of_unique_combinations
+
+
+def is_valid_path_for_file(path: Union[str, Path],
+                           required_suffix: Optional[str] = None) -> bool:
+
+    if required_suffix:
+
+        if not required_suffix.startswith("."):
+            required_suffix = f".{required_suffix}"
+
+    path = Path(path)
+
+    if path.suffix != "":
+
+        if required_suffix:
+
+            if path.suffix.lower() == required_suffix.lower():
+                return True
+
+            else:
+                return False
+
+        else:
+            return True
+
+    else:
+        return False
