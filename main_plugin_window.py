@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
 from typing import Dict, List, Tuple, NoReturn
-import math
 
 from qgis.PyQt import uic, QtWidgets
 from qgis.PyQt.QtWidgets import QComboBox
@@ -1237,8 +1236,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if i == 13:
 
-                add_maplayer_to_project(self.layer_intersected_dissolved)
-
                 if self.layer_pour_points and self.field_pour_points_cb.currentText():
 
                     self.layer_pour_points_rasterized = rasterize_layer_by_example(self.layer_pour_points,
@@ -1248,8 +1245,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     self.lineEdit_pour_points_raster.setEnabled(True)
                     self.toolButton_pour_points_raster.setEnabled(True)
-
-                # self.table_edit_values.update_values_in_layer(self.layer_intersected_dissolved)
 
                 self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
                                                                   [TextConstants.field_name_poly_id,
