@@ -16,6 +16,7 @@ import processing
 
 from .export.export_worker import ExportWorker
 from .constants import TextConstants
+from .algorithms.utils import add_maplayer_to_project
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -200,6 +201,8 @@ class ErosionDataPreparationPlugin:
 
             if self.dlg.layer_pour_points_rasterized:
                 path_pour_points = self.dlg.lineEdit_pour_points_raster.text()
+
+            add_maplayer_to_project(self.dlg.layer_export_e3d)
 
             self.dialog = DialogResult(path_landuse_raster=self.dlg.lineEdit_landuse_raster.text(),
                                        path_parameter_table=self.dlg.lineEdit_parameter_table.text(),
