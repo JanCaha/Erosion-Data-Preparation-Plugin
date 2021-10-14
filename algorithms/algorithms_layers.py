@@ -375,7 +375,10 @@ def retain_only_fields(layer: QgsVectorLayer,
 
 def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
                                     raster_new_values: QgsRasterLayer,
-                                    progress_bar: QtWidgets.QProgressBar) -> QgsRasterLayer:
+                                    progress_bar: Optional[QtWidgets.QProgressBar] = None) -> QgsRasterLayer:
+
+    if not progress_bar:
+        progress_bar = QtWidgets.QProgressBar()
 
     progress_bar.setMaximum(5)
 
