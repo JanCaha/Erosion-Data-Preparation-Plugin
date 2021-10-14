@@ -97,6 +97,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     date_month: int = None
     layer_export_parameters: QgsVectorLayer = None
     layer_export_lookup: QgsVectorLayer = None
+    layer_export_e3d: QgsVectorLayer = None
 
     layer_channel_elements: QgsVectorLayer = None
     layer_drain_elements: QgsVectorLayer = None
@@ -1132,20 +1133,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 12:
 
                 # if there are some values already existing, delete them
-
-                if not len(self.poly_nr_additons) == 0:
-
-                    fids_to_delete = []
-
-                    for fid_value, poly_id in self.poly_nr_additons:
-
-                        fids_to_delete.append(fid_value)
-
-                    delete_features_with_values(self.layer_intersected_dissolved,
-                                                TextConstants.field_name_fid,
-                                                fids_to_delete)
-
-                    self.poly_nr_additons = []
+                self.remove_additions_fids_if_exist()
 
                 # add "POLY_NR" field
 
@@ -1157,66 +1145,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                                                                           TextConstants.field_name_fid,
                                                                           self.layer_raster_dtm,
                                                                           progress_bar=self.progressBar)
+                self.add_channel_elements()
 
-                if 0 < len(self.layer_channel_elements_cb.currentText()):
-                    value = max_value_in_field(self.layer_intersected_dissolved,
-                                               TextConstants.field_name_fid)
-
-                    value = int(value + 1)
-
-                    self.poly_nr_additons.append((value, "channel_elements"))
-
-                    add_field_with_constant_value(self.layer_channel_elements,
-                                                  TextConstants.field_name_fid,
-                                                  value)
-
-                    raster = rasterize_layer_by_example(self.layer_channel_elements,
-                                                        TextConstants.field_name_fid,
-                                                        self.layer_raster_dtm,
-                                                        progress_bar=self.progressBar)
-
-                    self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
-                                                                                   raster,
-                                                                                   progress_bar=self.progressBar)
-
-                if 0 < len(self.layer_drain_elements_cb.currentText()):
-
-                    value = max_value_in_field(self.layer_intersected_dissolved,
-                                               TextConstants.field_name_fid)
-
-                    value += 1
-
-                    if 0 < len(self.poly_nr_additons):
-                        value = self.poly_nr_additons[-1]
-                        value = int(value[0] + 1)
-
-                    self.poly_nr_additons.append((value, "drain_elements"))
-
-                    add_field_with_constant_value(self.layer_drain_elements,
-                                                  TextConstants.field_name_fid,
-                                                  value)
-
-                    raster = rasterize_layer_by_example(self.layer_drain_elements,
-                                                        TextConstants.field_name_fid,
-                                                        self.layer_raster_dtm,
-                                                        progress_bar=self.progressBar)
-
-                    self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
-                                                                                   raster,
-                                                                                   progress_bar=self.progressBar)
+                self.add_drain_elements()
 
                 self.progressBar.setMaximum(5)
 
-                # add rows for channel elements and drain elements
-                for fid_value, poly_id in self.poly_nr_additons:
-
-                    values = {TextConstants.field_name_fid: fid_value,
-                              TextConstants.field_name_init_moisture: 0.0,
-                              TextConstants.field_name_poly_id: poly_id}
-
-                    values.update(DEFAULT_EXPORT_VALUES)
-
-                    add_row_without_geom(self.layer_intersected_dissolved, values)
+                self.add_poly_nr_rows()
 
                 self.progressBar.setValue(2)
 
@@ -1236,55 +1171,27 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if i == 13:
 
-                if self.layer_pour_points and self.field_pour_points_cb.currentText():
+                self.progressBar.setMaximum(5)
 
-                    self.layer_pour_points_rasterized = rasterize_layer_by_example(self.layer_pour_points,
-                                                                                   self.field_pour_points_cb.currentText(),
-                                                                                   self.layer_raster_dtm,
-                                                                                   progress_bar=self.progressBar)
+                self.prepare_layer_pour_points()
 
-                    self.lineEdit_pour_points_raster.setEnabled(True)
-                    self.toolButton_pour_points_raster.setEnabled(True)
+                self.progressBar.setValue(1)
 
-                self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
-                                                                  [TextConstants.field_name_poly_id,
-                                                                   TextConstants.field_name_layer_id,
-                                                                   TextConstants.field_name_layer_thick,
-                                                                   TextConstants.field_name_FT,
-                                                                   TextConstants.field_name_MT,
-                                                                   TextConstants.field_name_GT,
-                                                                   TextConstants.field_name_FU,
-                                                                   TextConstants.field_name_MU,
-                                                                   TextConstants.field_name_GU,
-                                                                   TextConstants.field_name_FS,
-                                                                   TextConstants.field_name_GS,
-                                                                   TextConstants.field_name_MS,
-                                                                   TextConstants.field_name_bulk_density,
-                                                                   TextConstants.field_name_corg,
-                                                                   TextConstants.field_name_init_moisture,
-                                                                   TextConstants.field_name_roughness,
-                                                                   TextConstants.field_name_canopy_cover,
-                                                                   TextConstants.field_name_skinfactor,
-                                                                   TextConstants.field_name_erodibility],
-                                                                  "parameters")
+                self.prepare_layer_parameters()
 
-                self.ok_result_layer, msg = evaluate_result_layer(self.layer_export_parameters)
+                self.progressBar.setValue(2)
 
-                self.label_data_status.setText(msg)
+                self.evaluate_result_layer_set_message()
 
-                if self.ok_result_layer:
-                    self.label_data_status.setStyleSheet("color : black;")
-                    self.label_data_status_confirm.hide()
-                    self.checkbox_export_empty_data.hide()
-                else:
-                    self.label_data_status.setStyleSheet("color : red;")
-                    self.label_data_status_confirm.show()
-                    self.checkbox_export_empty_data.show()
+                self.progressBar.setValue(3)
 
-                self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
-                                                              [TextConstants.field_name_poly_id,
-                                                               TextConstants.field_name_fid],
-                                                              "lookup")
+                self.prepare_layer_lookup()
+
+                self.progressBar.setValue(4)
+
+                self.prepare_layer_export_e3d()
+
+                self.progressBar.setValue(5)
 
             if i + 1 == self.stackedWidget.count() - 1:
 
@@ -1392,3 +1299,159 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         else:
 
             add_field_with_constant_value(layer, field_name, 0)
+
+    def prepare_layer_export_e3d(self):
+
+        self.layer_export_e3d = retain_only_fields(self.layer_intersected_dissolved,
+                                                   [TextConstants.field_name_fid,
+                                                    TextConstants.field_name_poly_id,
+                                                    TextConstants.field_name_layer_id,
+                                                    TextConstants.field_name_layer_thick,
+                                                    TextConstants.field_name_FT,
+                                                    TextConstants.field_name_MT,
+                                                    TextConstants.field_name_GT,
+                                                    TextConstants.field_name_FU,
+                                                    TextConstants.field_name_MU,
+                                                    TextConstants.field_name_GU,
+                                                    TextConstants.field_name_FS,
+                                                    TextConstants.field_name_GS,
+                                                    TextConstants.field_name_MS,
+                                                    TextConstants.field_name_bulk_density,
+                                                    TextConstants.field_name_corg,
+                                                    TextConstants.field_name_init_moisture,
+                                                    TextConstants.field_name_roughness,
+                                                    TextConstants.field_name_canopy_cover,
+                                                    TextConstants.field_name_skinfactor,
+                                                    TextConstants.field_name_erodibility],
+                                                   "E3D export layer")
+
+    def prepare_layer_lookup(self):
+
+        self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
+                                                      [TextConstants.field_name_poly_id,
+                                                       TextConstants.field_name_fid],
+                                                      "lookup")
+
+    def prepare_layer_parameters(self):
+
+        self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
+                                                          [TextConstants.field_name_poly_id,
+                                                           TextConstants.field_name_layer_id,
+                                                           TextConstants.field_name_layer_thick,
+                                                           TextConstants.field_name_FT,
+                                                           TextConstants.field_name_MT,
+                                                           TextConstants.field_name_GT,
+                                                           TextConstants.field_name_FU,
+                                                           TextConstants.field_name_MU,
+                                                           TextConstants.field_name_GU,
+                                                           TextConstants.field_name_FS,
+                                                           TextConstants.field_name_GS,
+                                                           TextConstants.field_name_MS,
+                                                           TextConstants.field_name_bulk_density,
+                                                           TextConstants.field_name_corg,
+                                                           TextConstants.field_name_init_moisture,
+                                                           TextConstants.field_name_roughness,
+                                                           TextConstants.field_name_canopy_cover,
+                                                           TextConstants.field_name_skinfactor,
+                                                           TextConstants.field_name_erodibility],
+                                                          "parameters")
+
+    def prepare_layer_pour_points(self):
+
+        if self.layer_pour_points and self.field_pour_points_cb.currentText():
+            self.layer_pour_points_rasterized = rasterize_layer_by_example(self.layer_pour_points,
+                                                                           self.field_pour_points_cb.currentText(),
+                                                                           self.layer_raster_dtm)
+
+            self.lineEdit_pour_points_raster.setEnabled(True)
+            self.toolButton_pour_points_raster.setEnabled(True)
+
+    def evaluate_result_layer_set_message(self):
+
+        self.ok_result_layer, msg = evaluate_result_layer(self.layer_export_parameters)
+
+        self.label_data_status.setText(msg)
+
+        if self.ok_result_layer:
+            self.label_data_status.setStyleSheet("color : black;")
+            self.label_data_status_confirm.hide()
+            self.checkbox_export_empty_data.hide()
+        else:
+            self.label_data_status.setStyleSheet("color : red;")
+            self.label_data_status_confirm.show()
+            self.checkbox_export_empty_data.show()
+
+    def remove_additions_fids_if_exist(self):
+
+        if not len(self.poly_nr_additons) == 0:
+
+            fids_to_delete = []
+
+            for fid_value, poly_id in self.poly_nr_additons:
+                fids_to_delete.append(fid_value)
+
+            delete_features_with_values(self.layer_intersected_dissolved,
+                                        TextConstants.field_name_fid,
+                                        fids_to_delete)
+
+            self.poly_nr_additons = []
+
+    def add_channel_elements(self):
+
+        if 0 < len(self.layer_channel_elements_cb.currentText()):
+
+            value = max_value_in_field(self.layer_intersected_dissolved,
+                                       TextConstants.field_name_fid)
+
+            value = int(value + 1)
+
+            self.poly_nr_additons.append((value, "channel_elements"))
+
+            add_field_with_constant_value(self.layer_channel_elements,
+                                          TextConstants.field_name_fid,
+                                          value)
+
+            raster = rasterize_layer_by_example(self.layer_channel_elements,
+                                                TextConstants.field_name_fid,
+                                                self.layer_raster_dtm)
+
+            self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
+                                                                           raster)
+
+    def add_drain_elements(self):
+
+        if 0 < len(self.layer_drain_elements_cb.currentText()):
+
+            value = max_value_in_field(self.layer_intersected_dissolved,
+                                       TextConstants.field_name_fid)
+
+            value += 1
+
+            if 0 < len(self.poly_nr_additons):
+                value = self.poly_nr_additons[-1]
+                value = int(value[0] + 1)
+
+            self.poly_nr_additons.append((value, "drain_elements"))
+
+            add_field_with_constant_value(self.layer_drain_elements,
+                                          TextConstants.field_name_fid,
+                                          value)
+
+            raster = rasterize_layer_by_example(self.layer_drain_elements,
+                                                TextConstants.field_name_fid,
+                                                self.layer_raster_dtm)
+
+            self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
+                                                                           raster)
+
+    def add_poly_nr_rows(self):
+
+        # add rows for channel elements and drain elements
+        for fid_value, poly_id in self.poly_nr_additons:
+            values = {TextConstants.field_name_fid: fid_value,
+                      TextConstants.field_name_init_moisture: 0.0,
+                      TextConstants.field_name_poly_id: poly_id}
+
+            values.update(DEFAULT_EXPORT_VALUES)
+
+            add_row_without_geom(self.layer_intersected_dissolved, values)
