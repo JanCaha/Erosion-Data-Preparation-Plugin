@@ -34,7 +34,10 @@ from ..algorithms.utils import log, add_maplayer_to_project
 def rasterize_layer_by_example(vector_layer: QgsVectorLayer,
                                field_name_vectorize: str,
                                raster_template: QgsRasterLayer,
-                               progress_bar: QtWidgets.QProgressBar) -> QgsRasterLayer:
+                               progress_bar: Optional[QtWidgets.QProgressBar] = None) -> QgsRasterLayer:
+
+    if not progress_bar:
+        progress_bar = QtWidgets.QProgressBar()
 
     progress_bar.setMaximum(3)
     progress_bar.setValue(1)
