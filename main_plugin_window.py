@@ -24,7 +24,8 @@ from qgis.core import (QgsMapLayerProxyModel,
                        QgsFieldProxyModel,
                        QgsProject,
                        QgsFileUtils,
-                       QgsProcessingUtils)
+                       QgsProcessingUtils,
+                       QgsRasterLayer)
 
 from .e3d_wizard_process import E3DWizardProcess
 from .algorithms.algs import (validate_KA5)
@@ -291,7 +292,7 @@ class MainPluginDialog(QDialog, FORM_CLASS):
         self.label_drain_elements.setText(TextConstants.label_drain_elements)
         self.label_channel_elements.setText(TextConstants.label_channel_elements)
 
-        self.layer_channel_elements_cb.setFilters(QgsMapLayerProxyModel.LineLayer)
+        self.layer_channel_elements_cb.setFilters(QgsMapLayerProxyModel.RasterLayer)
         self.layer_channel_elements_cb.layerChanged.connect(self.update_layer_channel_elements)
         self.layer_channel_elements_cb.setCurrentIndex(0)
 
@@ -475,6 +476,27 @@ class MainPluginDialog(QDialog, FORM_CLASS):
 
         if not status:
             msg = TextConstants.mgs_select_landuse_field
+
+        return status, msg
+
+    def validate_rasters(self):
+
+        msg = ""
+
+        status = True
+
+        if self.raster_dtm_cb.currentLayer() and self.layer_channel_elements_cb.currentLayer():
+
+            original_raster = self.raster_dtm_cb.currentLayer()
+            compared_raster = self.layer_channel_elements_cb.currentLayer()
+
+            status = original_raster.crs().srsid() == compared_raster.crs().srsid() and \
+                     original_raster.height() == compared_raster.height() and \
+                     original_raster.width() == compared_raster.width() and \
+                     original_raster.extent().toString(4) == compared_raster.extent().toString(4)
+
+            if not status:
+                msg = TextConstants.msg_raster_equality
 
         return status, msg
 
@@ -887,34 +909,38 @@ class MainPluginDialog(QDialog, FORM_CLASS):
 
             if i == 12:
 
-                # if there are some values already existing, delete them
-                self.e3d_wizard_process.remove_additions_fids_if_exist()
+                ok, msg = self.validate_rasters()
 
-                # add "POLY_NR" field
+                if ok:
 
-                self.e3d_wizard_process.add_fid_field()
+                    # if there are some values already existing, delete them
+                    self.e3d_wizard_process.remove_additions_fids_if_exist()
 
-                # solve raster and raster additions
+                    # add "POLY_NR" field
 
-                self.e3d_wizard_process.rasterize_main_layer(self.progressBar)
+                    self.e3d_wizard_process.add_fid_field()
 
-                self.e3d_wizard_process.add_channel_elements()
+                    # solve raster and raster additions
 
-                self.e3d_wizard_process.add_drain_elements()
+                    self.e3d_wizard_process.rasterize_main_layer(self.progressBar)
 
-                self.progressBar.setMaximum(5)
+                    self.e3d_wizard_process.add_channel_elements()
 
-                self.e3d_wizard_process.add_poly_nr_rows()
+                    self.e3d_wizard_process.add_drain_elements()
 
-                self.progressBar.setValue(2)
+                    self.progressBar.setMaximum(5)
 
-                self.e3d_wizard_process.add_fields_contant()
+                    self.e3d_wizard_process.add_poly_nr_rows()
 
-                self.progressBar.setValue(3)
+                    self.progressBar.setValue(2)
 
-                self.table_edit_values.add_data(self.e3d_wizard_process.layer_main)
+                    self.e3d_wizard_process.add_fields_contant()
 
-                self.progressBar.setValue(5)
+                    self.progressBar.setValue(3)
+
+                    self.table_edit_values.add_data(self.e3d_wizard_process.layer_main)
+
+                    self.progressBar.setValue(5)
 
             if i == 13:
 
