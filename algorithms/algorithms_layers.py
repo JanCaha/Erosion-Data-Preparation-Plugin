@@ -441,3 +441,71 @@ def replace_raster_values_by_raster(raster_orig: QgsRasterLayer,
     progress_bar.setValue(5)
 
     return QgsRasterLayer(output_raster_filename)
+
+
+def find_difference_and_assign_value(first_raster: QgsRasterLayer,
+                                     second_raster: QgsRasterLayer,
+                                     value: int) -> QgsRasterLayer:
+
+    result = processing.run("native:slope",
+                            {'INPUT': first_raster,
+                             'Z_FACTOR': 1,
+                             'OUTPUT': 'TEMPORARY_OUTPUT'})
+
+    first_raster_slope = QgsRasterLayer(result["OUTPUT"])
+
+    result = processing.run("native:slope",
+                            {'INPUT': second_raster,
+                             'Z_FACTOR': 1,
+                             'OUTPUT': 'TEMPORARY_OUTPUT'})
+
+    second_raster_slope = QgsRasterLayer(result["OUTPUT"])
+
+    first_raster_entry = QgsRasterCalculatorEntry()
+    first_raster_entry.ref = 'first_raster_entry@1'
+    first_raster_entry.raster = first_raster
+    first_raster_entry.bandNumber = 1
+
+    second_raster_entry = QgsRasterCalculatorEntry()
+    second_raster_entry.ref = 'second_raster_entry@1'
+    second_raster_entry.raster = second_raster
+    second_raster_entry.bandNumber = 1
+
+    first_raster_slope_entry = QgsRasterCalculatorEntry()
+    first_raster_slope_entry.ref = 'first_raster_slope_entry@1'
+    first_raster_slope_entry.raster = first_raster_slope
+    first_raster_slope_entry.bandNumber = 1
+
+    second_raster_slope_entry = QgsRasterCalculatorEntry()
+    second_raster_slope_entry.ref = 'second_raster_slope_entry@1'
+    second_raster_slope_entry.raster = second_raster_slope
+    second_raster_slope_entry.bandNumber = 1
+
+    raster_entries = [first_raster_entry,
+                      second_raster_entry,
+                      first_raster_slope_entry,
+                      second_raster_slope_entry]
+
+    expression = f"(" \
+                 f"(0 < abs({first_raster_entry.ref} - {second_raster_entry.ref})) OR " \
+                 f"(0 < abs({first_raster_slope_entry.ref} - {second_raster_slope_entry.ref}))" \
+                 f") * {value}"
+
+    extent = first_raster.extent()
+    output_raster_filename = QgsProcessingUtils.generateTempFilename("raster.tif")
+
+    calc = QgsRasterCalculator(
+        expression,
+        output_raster_filename,
+        GdalUtils.getFormatShortNameFromFilename(output_raster_filename),
+        extent,
+        first_raster.crs(),
+        int(extent.width()),
+        int(extent.height()),
+        raster_entries,
+        QgsCoordinateTransformContext()
+    )
+
+    calc.processCalculation()
+
+    return QgsRasterLayer(output_raster_filename)
