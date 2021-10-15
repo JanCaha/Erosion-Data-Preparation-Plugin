@@ -201,8 +201,8 @@ class TextConstantsCZ:
     col_ka5_code = "Půdní ID (KA5 třída)"
     col_stats = "Statistika"
 
-    header_table_corg = [col_crop, col_ka5_code, "Corg z katalogu", "Corg"]
-    header_table_bulkdensity = [col_crop, col_ka5_code, "Objemová hmotnost půdy z katalogu", "Objemová hmotnost půdy"]
+    header_table_corg = [col_crop, col_ka5_code, "", "Corg"]
+    header_table_bulkdensity = [col_crop, col_ka5_code, "", "Objemová hmotnost půdy"]
     header_table_canopycover = [col_crop, "Zakrytí povrchu rostlinami z katalogu", "Zakrytí povrchu rostlinami"]
     header_table_roughness = [col_crop, "Hydraulická drsnost povrchu z katalogu", "Hydraulická drsnost povrchu"]
     header_table_erodibility = [col_crop, col_ka5_code, "Erozní odolnost půdy z katalogu", "Erozní odolnost půdy"]

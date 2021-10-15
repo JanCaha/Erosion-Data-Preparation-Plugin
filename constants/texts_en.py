@@ -202,12 +202,12 @@ class TextConstantsEN:
     col_ka5_code = "Soil ID (KA5 Class)"
     col_stats = "Statistics"
 
-    header_table_corg = [col_crop, col_ka5_code, "Corg from catalog", "Corg"]
-    header_table_bulkdensity = [col_crop, col_ka5_code, "Bulk Density from catalog", "Bulk Density"]
-    header_table_canopycover = [col_crop, "Canopy Cover from catalog", "Canopy Cover"]
-    header_table_roughness = [col_crop, "Roughness from catalog", "Roughness"]
-    header_table_erodibility = [col_crop, col_ka5_code, "Erodibility from catalog", "Erodibility"]
-    header_table_skinfactor = [col_crop, col_ka5_code, "Skin Factor from catalog", "Skin Factor"]
+    header_table_corg = [col_crop, col_ka5_code, "", "Corg"]
+    header_table_bulkdensity = [col_crop, col_ka5_code, "", "Bulk Density"]
+    header_table_canopycover = [col_crop, "", "Canopy Cover"]
+    header_table_roughness = [col_crop, "", "Roughness"]
+    header_table_erodibility = [col_crop, col_ka5_code, "", "Erodibility"]
+    header_table_skinfactor = [col_crop, col_ka5_code, "", "Skin Factor"]
 
     message_statistics = "Found {count} records with range ({min}, {max}) and mean {round(mean, 2)}."
     message_statistics_no_records = "Found 0 records."
