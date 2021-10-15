@@ -273,10 +273,13 @@ class E3DWizardProcess:
             add_field_with_constant_value(self.layer_soil, field_name_constant, 0)
 
     def layer_based_on_keyword(self, layer_name: str) -> Optional[QgsVectorLayer]:
+
         if "Soil" in layer_name:
             return self.layer_soil
+
         elif "Landuse" in layer_name:
             return self.layer_landuse
+
         else:
             return None
 
