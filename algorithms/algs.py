@@ -78,6 +78,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
     add_fields.append(QgsField(fieldname_ka5_name, QVariant.String))
     add_fields.append(QgsField(fieldname_ka5_id, QVariant.String))
     add_fields.append(QgsField(TextConstants.field_name_ka5_group_lv2_id, QVariant.String))
+    add_fields.append(QgsField(TextConstants.field_name_ka5_group_lv1_id, QVariant.String))
 
     dp_input.addAttributes(add_fields)
 
@@ -99,7 +100,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
             QgsMessageLog.logMessage(str(e), TextConstants.plugin_name, Qgis.Critical)
             continue
 
-        feature_data = KA5Class(None, None, None, None,
+        feature_data = KA5Class(None, None, None, None, None,
                                 float(feature.attribute(fieldname_FT)),
                                 float(feature.attribute(fieldname_MT)),
                                 float(feature.attribute(fieldname_GT)),
@@ -115,6 +116,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
         min_rmse_name = None
         min_rmse_id = None
         min_rmse_ka5_group_lv2 = None
+        min_rmse_ka5_group_lv1 = None
 
         for ka5_cat in ka5_table:
 
@@ -126,6 +128,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
                 min_rmse_name = ka5_cat.name
                 min_rmse_id = ka5_cat.id
                 min_rmse_ka5_group_lv2 = ka5_cat.group_lv2_id
+                min_rmse_ka5_group_lv1 = ka5_cat.group_lv1_id
 
         layer_input.changeAttributeValue(feature.id(),
                                          feature.fieldNameIndex(fieldname_ka5_name),
@@ -142,6 +145,10 @@ def classify_KA5(layer_input: QgsVectorLayer,
         layer_input.changeAttributeValue(feature.id(),
                                          feature.fieldNameIndex(TextConstants.field_name_ka5_group_lv2_id),
                                          min_rmse_ka5_group_lv2)
+
+        layer_input.changeAttributeValue(feature.id(),
+                                         feature.fieldNameIndex(TextConstants.field_name_ka5_group_lv1_id),
+                                         min_rmse_ka5_group_lv1)
 
         progress_bar.setValue(int(number))
 
