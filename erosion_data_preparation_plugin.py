@@ -199,10 +199,10 @@ class ErosionDataPreparationPlugin:
 
             path_pour_points = None
 
-            if self.dlg.layer_pour_points_rasterized:
+            if self.dlg.e3d_wizard_process.layer_pour_points_rasterized:
                 path_pour_points = self.dlg.lineEdit_pour_points_raster.text()
 
-            add_maplayer_to_project(self.dlg.layer_export_e3d)
+            add_maplayer_to_project(self.dlg.e3d_wizard_process.layer_e3d)
 
             self.dialog = DialogResult(path_landuse_raster=self.dlg.lineEdit_landuse_raster.text(),
                                        path_parameter_table=self.dlg.lineEdit_parameter_table.text(),
@@ -211,16 +211,16 @@ class ErosionDataPreparationPlugin:
 
             worker = ExportWorker()
 
-            worker.set_export_lookup(self.dlg.layer_export_lookup,
+            worker.set_export_lookup(self.dlg.e3d_wizard_process.layer_lookup,
                                      self.dlg.lineEdit_lookup_table.text())
 
-            worker.set_export_parameters(self.dlg.layer_export_parameters,
+            worker.set_export_parameters(self.dlg.e3d_wizard_process.layer_parameters,
                                          self.dlg.lineEdit_parameter_table.text())
 
-            worker.set_export_rasterized(self.dlg.layer_raster_rasterized,
+            worker.set_export_rasterized(self.dlg.e3d_wizard_process.layer_main_raster,
                                          self.dlg.lineEdit_landuse_raster.text())
 
-            worker.set_export_pour_points(self.dlg.layer_pour_points_rasterized,
+            worker.set_export_pour_points(self.dlg.e3d_wizard_process.layer_pour_points_rasterized,
                                           self.dlg.lineEdit_pour_points_raster.text())
 
             self.dialog.set_progress_bar(worker.steps)
