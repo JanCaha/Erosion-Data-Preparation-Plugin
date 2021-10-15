@@ -320,6 +320,7 @@ def create_table_KA5_to_join() -> QgsVectorLayer:
     classes = E3dCatalog().get_KA5_table()
 
     fields = [F"field={TextConstants.field_name_ka5_code}:string",
+              F"field={TextConstants.field_name_ka5_group_lv1_id}:string",
               F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
               F"field=ka5_ft:double",
               F"field=ka5_mt:double",
@@ -346,7 +347,8 @@ def create_table_KA5_to_join() -> QgsVectorLayer:
 
         f = QgsFeature()
 
-        f.setAttributes([ka5_class.code, ka5_class.group_lv2_id,
+        f.setAttributes([ka5_class.code,
+                         ka5_class.group_lv1_id, ka5_class.group_lv2_id,
                          ka5_class.FT, ka5_class.MT, ka5_class.GT,
                          ka5_class.FU, ka5_class.MU, ka5_class.GU,
                          ka5_class.FS, ka5_class.MS, ka5_class.GS])
