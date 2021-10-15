@@ -59,6 +59,7 @@ class E3DWizardProcess:
     dissolve_list = [TextConstants.field_name_ka5_id,
                      TextConstants.field_name_ka5_name,
                      TextConstants.field_name_ka5_code,
+                     TextConstants.field_name_ka5_group_lv1_id,
                      TextConstants.field_name_ka5_group_lv2_id,
                      TextConstants.field_name_landuse_lv1_id,
                      TextConstants.field_name_landuse_lv2_id,
