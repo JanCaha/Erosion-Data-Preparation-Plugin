@@ -229,6 +229,8 @@ class TextConstantsCZ:
 
     mgs_select_landuse_field = "Atribut s využitím půdy je nutné vybrat."
 
+    msg_raster_equality = "Vstupní rastr DEM a raster Channel elements nejsou shodné."
+
     msg_result_data_ok = "Data pro export jsou kompletní."
     msg_result_data_missing = "V tabulce parametrů chybí hodnoty.\nDatasety mohou být uloženy, ale je možné, že budou potřebovat doplnění pro správné sestavení modelu v Erosion-3D."
 

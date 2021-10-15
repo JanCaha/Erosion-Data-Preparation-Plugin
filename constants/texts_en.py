@@ -230,6 +230,8 @@ class TextConstantsEN:
 
     mgs_select_landuse_field = "Landuse field must be selected."
 
+    msg_raster_equality = "Input DEM raster and Channel elements raster are not equal."
+
     msg_result_data_ok = "Data for export is complete."
     msg_result_data_missing = "Parameters table is missing some values.\nThe datasets can be saved anyway but they may need some more processing to be used in Erosion-3D."
 
