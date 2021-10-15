@@ -185,7 +185,7 @@ class E3dCatalog(metaclass=Singleton):
 
         classes = []
 
-        self.db_cursor.execute(f"SELECT id, code, name_{TextConstants.language}, ka5_group_lv2_id, "
+        self.db_cursor.execute(f"SELECT id, code, name_{TextConstants.language}, ka5_group_lv1_id, ka5_group_lv2_id,"
                                f"ft, mt, gt, fu, mu, gu, fs, ms, gs FROM ka5_class")
 
         rows = self.db_cursor.fetchall()
