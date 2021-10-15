@@ -31,7 +31,9 @@ class QWidgetSliderValues(QWidget):
         self.val = current_value
 
         self.label_min.setText(str(self.min))
+        self.label_min.hide()
         self.label_max.setText(str(self.max))
+        self.label_max.hide()
 
         self.slider_value.setMinimum(self.slider_min)
         self.slider_value.setMaximum(self.slider_max)
