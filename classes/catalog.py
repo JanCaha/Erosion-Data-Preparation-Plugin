@@ -146,7 +146,8 @@ class E3dCatalog(metaclass=Singleton):
                                              id_landuse_lv2=None,
                                              id_crop=None)})
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv1_id FROM landuse_lv2")
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv1_id FROM landuse_lv2 "
+                               f"ORDER BY name_{TextConstants.language}")
 
         rows = self.db_cursor.fetchall()
 
@@ -160,7 +161,8 @@ class E3dCatalog(metaclass=Singleton):
                                              id_landuse_lv2=row[1],
                                              id_crop=None)})
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv2_id FROM crop")
+        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv2_id FROM crop "
+                               f"ORDER BY name_{TextConstants.language}")
 
         rows = self.db_cursor.fetchall()
 
