@@ -1,43 +1,21 @@
 # -*- coding: utf-8 -*-
 from pathlib import Path
-from typing import Dict, List, Tuple, NoReturn
+from typing import List, NoReturn
 
 from qgis.PyQt import uic, QtWidgets
-from qgis.PyQt.QtWidgets import QComboBox
-from qgis.PyQt.QtCore import QVariant
+from qgis.PyQt.QtWidgets import QComboBox, QLabel
 
 from qgis.gui import (QgsMapLayerComboBox,
                       QgsFieldComboBox)
 from qgis.core import (QgsMapLayerProxyModel,
-                       QgsVectorLayer,
-                       QgsRasterLayer,
                        QgsFields,
                        QgsFieldProxyModel,
                        QgsProject,
                        QgsFileUtils,
                        QgsProcessingUtils)
 
-from .algorithms.algs import (landuse_with_crops,
-                              validate_KA5,
-                              classify_KA5,
-                              add_field_with_constant_value,
-                              add_fid_field,
-                              rename_field,
-                              max_value_in_field,
-                              add_row_without_geom,
-                              delete_features_with_values,
-                              delete_fields,
-                              field_contains_null_values)
-
-from .algorithms.algorithms_layers import (join_tables,
-                                           intersect_dissolve,
-                                           copy_layer_fix_geoms,
-                                           create_table_KA5_to_join,
-                                           rasterize_layer_by_example,
-                                           retain_only_fields,
-                                           replace_raster_values_by_raster)
-
-
+from .e3d_wizard_process import E3DWizardProcess
+from .algorithms.algs import (validate_KA5)
 from .algorithms.utils import (log,
                                add_maplayer_to_project,
                                evaluate_result_layer,
@@ -52,21 +30,12 @@ from .gui_classes.table_widget_with_slider import (TableWidgetBulkDensity,
                                                    TableWidgetSkinFactor)
 from .gui_classes.table_widget_edit_values import TableWidgetEditNumericValues
 
-from .classes.definition_landuse_values import LanduseValues
-from .classes.definition_landuse_crop import LanduseCrop
 from .constants import TextConstants
 
 
 # This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
 path_ui = Path(__file__).parent / "ui" / "main_wizard_dialog_base.ui"
 FORM_CLASS, _ = uic.loadUiType(str(path_ui))
-
-DEFAULT_EXPORT_VALUES = {TextConstants.field_name_bulk_density: 1,
-                         TextConstants.field_name_corg: 1,
-                         TextConstants.field_name_roughness: 1,
-                         TextConstants.field_name_canopy_cover: 1,
-                         TextConstants.field_name_skinfactor: 1,
-                         TextConstants.field_name_erodibility: 1}
 
 
 class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
@@ -80,30 +49,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     qlabel_main: QtWidgets.QLabel
     qlabel_step_description: QtWidgets.QLabel
     qlabel_steps: QtWidgets.QLabel
-
-    # process parameters
-    layer_soil: QgsVectorLayer = None
-    layer_soil_input: QgsVectorLayer = None
-    layer_landuse: QgsVectorLayer = None
-    layer_landuse_fields_backup: QgsFields = None
-
-    layer_soil_interstep: QgsVectorLayer = None
-    layer_landuse_interstep: QgsVectorLayer = None
-
-    layer_intersected_dissolved: QgsVectorLayer = None
-    layer_raster_dtm: QgsRasterLayer = None
-    layer_pour_points_rasterized: QgsRasterLayer = None
-    layer_raster_rasterized: QgsRasterLayer = None
-    date_month: int = None
-    layer_export_parameters: QgsVectorLayer = None
-    layer_export_lookup: QgsVectorLayer = None
-    layer_export_e3d: QgsVectorLayer = None
-
-    layer_channel_elements: QgsVectorLayer = None
-    layer_drain_elements: QgsVectorLayer = None
-    layer_pour_points: QgsVectorLayer = None
-
-    poly_nr_additons: List[Tuple[int, str]] = []
 
     next_pb: QtWidgets.QPushButton
 
@@ -205,9 +150,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     label_created: QtWidgets.QLabel
     label_project: QtWidgets.QLabel
 
-    dict_landuse_values: Dict[str, LanduseValues]
-    dict_landuse_crop: Dict[str, LanduseCrop]
-
     ok_result_layer: bool
 
     table_bulk_density: TableWidgetBulkDensity
@@ -227,11 +169,15 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     label_data_status_confirm: QtWidgets.QLabel
     checkbox_export_empty_data: QtWidgets.QCheckBox
 
+    e3d_wizard_process: E3DWizardProcess
+
     def __init__(self, iface, parent=None):
 
         super(MainPluginDialog, self).__init__(parent)
 
         self.iface = iface
+
+        self.e3d_wizard_process = E3DWizardProcess()
 
         self.ok_result_layer = False
 
@@ -479,7 +425,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
             if self.field_ka5_cb.currentText():
 
-                ok, missing_values = validate_KA5(self.layer_soil, self.field_ka5_cb.currentText())
+                ok, missing_values = validate_KA5(self.e3d_wizard_process.layer_soil,
+                                                  self.field_ka5_cb.currentText())
 
                 msg = eval_string_with_variables(TextConstants.msg_validate_ka5_classes)
 
@@ -523,29 +470,36 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.layer_channel_elements_cb.currentText()):
 
-            self.layer_channel_elements = copy_layer_fix_geoms(self.layer_channel_elements_cb.currentLayer(),
-                                                               TextConstants.layer_channel_elements)
+            self.e3d_wizard_process.set_layer_channel_elements(self.layer_channel_elements_cb.currentLayer())
 
         else:
-            self.layer_channel_elements = None
+
+            self.e3d_wizard_process.set_layer_channel_elements(None)
 
     def update_layer_drain_elements(self):
 
         if 0 < len(self.layer_drain_elements_cb.currentText()):
 
-            self.layer_drain_elements = copy_layer_fix_geoms(self.layer_drain_elements_cb.currentLayer(),
-                                                             TextConstants.layer_drain_elements)
+            self.e3d_wizard_process.set_layer_drain_elements(self.layer_drain_elements_cb.currentLayer())
 
         else:
-            self.layer_drain_elements = None
+
+            self.e3d_wizard_process.set_layer_drain_elements(None)
 
     def update_layer_pour_points(self):
-        self.layer_pour_points = self.layer_pour_points_cb.currentLayer()
 
-        fields = self.layer_pour_points.fields()
+        if 0 < len(self.layer_pour_points_cb.currentText()):
 
-        self.field_pour_points_cb.setFields(fields)
-        self.field_pour_points_cb.setCurrentIndex(0)
+            self.e3d_wizard_process.set_layer_pour_points(self.layer_pour_points_cb.currentLayer())
+
+            self.field_pour_points_cb.setFields(self.e3d_wizard_process.get_fields_pour_points_layer())
+            self.field_pour_points_cb.setCurrentIndex(0)
+
+        else:
+
+            self.e3d_wizard_process.set_layer_pour_points(None)
+
+            self.field_pour_points_cb.setFields(QgsFields())
 
     def update_month(self):
         self.date_month = self.calendar.selectedDate().month()
@@ -553,13 +507,16 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     def update_layer_raster_dtm(self):
 
         if self.raster_dtm_cb.currentLayer():
-            self.layer_raster_dtm = self.raster_dtm_cb.currentLayer()
+
+            self.e3d_wizard_process.set_layer_raster_dtm(self.raster_dtm_cb.currentLayer())
 
     def update_layer_landuse(self):
 
+        self.e3d_wizard_process.set_layer_landuse(self.layer_landuse_cb.currentLayer())
+
         if self.layer_landuse_cb.currentLayer():
 
-            fields = self.layer_landuse_cb.currentLayer().fields()
+            fields = self.e3d_wizard_process.get_fields_landuse_layer()
 
             self.fcb_landuse.setFields(fields)
 
@@ -573,23 +530,9 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def update_layer_soil(self):
 
-        if self.layer_soil:
+        if self.e3d_wizard_process.layer_soil:
 
-            fields = self.layer_soil.fields()
-
-            field_names = [""]
-
-            fields_to_remove = ["fid", "objectid", "shape_length", "shape_area"]
-
-            for field_to_remove in fields_to_remove:
-                index = fields.lookupField(field_to_remove)
-                if index != -1:
-                    fields.remove(index)
-
-            for field in fields:
-                if field.name() not in fields_to_remove:
-                    if field.isNumeric() and not field_contains_null_values(self.layer_soil, field.name()):
-                        field_names.append(field.name())
+            fields = self.e3d_wizard_process.get_fields_soil_layer()
 
             if not self.field_soilid_cb.currentText():
                 self.field_soilid_cb.setFields(fields)
@@ -597,6 +540,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if not self.field_ka5_cb.currentText():
                 self.field_ka5_cb.setFields(fields)
                 self.field_ka5_cb.setField("ka5")
+
+            field_names = self.e3d_wizard_process.get_field_names_soil_layer()
 
             self.add_field_names_and_set_selected_back(self.fcb_ftc, field_names)
             self.add_field_names_and_set_selected_back(self.fcb_mtc, field_names)
@@ -641,13 +586,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.fcb_bulk_density_layer.currentText()):
 
-            if "Soil" in self.fcb_bulk_density_layer.currentText():
-
-                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
-
-            elif "Landuse" in self.fcb_bulk_density_layer.currentText():
-
-                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+            fields = self.e3d_wizard_process.get_fields_for_layer(self.fcb_bulk_density_layer.currentText())
 
             self.fcb_bulk_density.setFields(fields)
             self.fcb_bulk_density.setFilters(QgsFieldProxyModel.Numeric)
@@ -660,13 +599,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.fcb_corg_layer.currentText()):
 
-            if "Soil" in self.fcb_corg_layer.currentText():
-
-                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
-
-            elif "Landuse" in self.fcb_corg_layer.currentText():
-
-                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+            fields = self.e3d_wizard_process.get_fields_for_layer(self.fcb_corg_layer.currentText())
 
             self.fcb_corg.setFields(fields)
             self.fcb_corg.setFilters(QgsFieldProxyModel.Numeric)
@@ -679,13 +612,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.fcb_roughness_layer.currentText()):
 
-            if "Soil" in self.fcb_roughness_layer.currentText():
-
-                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
-
-            elif "Landuse" in self.fcb_roughness_layer.currentText():
-
-                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+            fields = self.e3d_wizard_process.get_fields_for_layer(self.fcb_roughness_layer.currentText())
 
             self.fcb_roughness.setFields(fields)
             self.fcb_roughness.setFilters(QgsFieldProxyModel.Numeric)
@@ -698,13 +625,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.fcb_surface_cover_layer.currentText()):
 
-            if "Soil" in self.fcb_surface_cover_layer.currentText():
-
-                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
-
-            elif "Landuse" in self.fcb_surface_cover_layer.currentText():
-
-                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+            fields = self.e3d_wizard_process.get_fields_for_layer(self.fcb_surface_cover_layer.currentText())
 
             self.fcb_surface_cover.setFields(fields)
             self.fcb_surface_cover.setFilters(QgsFieldProxyModel.Numeric)
@@ -717,13 +638,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         if 0 < len(self.fcb_initmoisture_layer.currentText()):
 
-            if "Soil" in self.fcb_initmoisture_layer.currentText():
-
-                fields: QgsFields = self.layer_soil_cb.currentLayer().fields()
-
-            elif "Landuse" in self.fcb_initmoisture_layer.currentText():
-
-                fields: QgsFields = self.layer_landuse_cb.currentLayer().fields()
+            fields = self.e3d_wizard_process.get_fields_for_layer(self.fcb_initmoisture_layer.currentText())
 
             self.fcb_initmoisture.setFields(fields)
             self.fcb_initmoisture.setFilters(QgsFieldProxyModel.Numeric)
@@ -731,93 +646,6 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         else:
             self.fcb_initmoisture.setFields(QgsFields())
-
-    def rename_corg(self):
-
-        if 0 < len(self.fcb_corg.currentText()):
-
-            if "Soil" in self.fcb_corg_layer.currentText():
-
-                rename_field(self.layer_soil,
-                             self.fcb_corg.currentText(),
-                             TextConstants.field_name_corg)
-
-            elif "Landuse" in self.fcb_corg_layer.currentText():
-
-                rename_field(self.layer_landuse,
-                             self.fcb_corg.currentText(),
-                             TextConstants.field_name_corg)
-
-    def rename_bulkdensity(self):
-
-        if 0 < len(self.fcb_bulk_density.currentText()):
-
-            if "Soil" in self.fcb_bulk_density_layer.currentText():
-
-                rename_field(self.layer_soil,
-                             self.fcb_bulk_density.currentText(),
-                             TextConstants.field_name_bulk_density)
-
-            elif "Landuse" in self.fcb_bulk_density_layer.currentText():
-
-                rename_field(self.layer_landuse,
-                             self.fcb_bulk_density.currentText(),
-                             TextConstants.field_name_bulk_density)
-
-    def rename_roughness(self):
-
-        if 0 < len(self.fcb_roughness.currentText()):
-
-            if "Soil" in self.fcb_roughness_layer.currentText():
-
-                rename_field(self.layer_soil,
-                             self.fcb_roughness.currentText(),
-                             TextConstants.field_name_roughness)
-
-            elif "Landuse" in self.fcb_roughness_layer.currentText():
-
-                rename_field(self.layer_landuse,
-                             self.fcb_roughness.currentText(),
-                             TextConstants.field_name_roughness)
-
-    def rename_cover(self):
-
-        if 0 < len(self.fcb_surface_cover.currentText()):
-
-            if "Soil" in self.fcb_surface_cover_layer.currentText():
-
-                rename_field(self.layer_soil,
-                             self.fcb_surface_cover.currentText(),
-                             TextConstants.field_name_canopy_cover)
-
-            elif "Landuse" in self.fcb_surface_cover_layer.currentText():
-
-                rename_field(self.layer_landuse,
-                             self.fcb_surface_cover.currentText(),
-                             TextConstants.field_name_canopy_cover)
-
-    def rename_initmoisture(self):
-
-        if 0 < len(self.fcb_initmoisture.currentText()):
-
-            if "Soil" in self.fcb_initmoisture_layer.currentText():
-
-                rename_field(self.layer_soil,
-                             self.fcb_initmoisture.currentText(),
-                             TextConstants.field_name_init_moisture)
-
-            elif "Landuse" in self.fcb_initmoisture_layer.currentText():
-
-                rename_field(self.layer_landuse,
-                             self.fcb_initmoisture.currentText(),
-                             TextConstants.field_name_init_moisture)
-
-        else:
-
-            add_field_with_constant_value(self.layer_soil,
-                                          TextConstants.field_name_init_moisture,
-                                          0.0,
-                                          data_type=QVariant.Double)
 
     def update_prev_next_buttons(self):
         i = self.stackedWidget.currentIndex()
@@ -859,12 +687,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 ok, msg = self.validate_widget_0()
 
                 if ok:
-                    self.layer_soil_input = copy_layer_fix_geoms(self.layer_soil_cb.currentLayer(),
-                                                                 TextConstants.layer_soil)
-                    self.layer_soil = self.layer_soil_input
 
-                    self.layer_landuse = copy_layer_fix_geoms(self.layer_landuse_cb.currentLayer(),
-                                                              TextConstants.layer_landuse)
+                    self.e3d_wizard_process.set_layer_soil(layer=self.layer_soil_cb.currentLayer())
+
+                    self.e3d_wizard_process.set_layer_landuse(layer=self.layer_landuse_cb.currentLayer())
 
                     self.update_layer_soil()
 
@@ -874,91 +700,55 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 if self.field_ka5_cb.currentText():
 
-                    layer_ka5 = create_table_KA5_to_join()
-
-                    self.layer_soil = join_tables(self.layer_soil,
-                                                  self.field_ka5_cb.currentText(),
-                                                  layer_ka5,
-                                                  TextConstants.field_name_ka5_code,
-                                                  progress_bar=self.progressBar)
+                    self.e3d_wizard_process.join_ka5_2_layer_soil(ka5_field=self.field_ka5_cb.currentText(),
+                                                                  progress_bar=self.progressBar)
 
                     self.update_layer_soil()
 
-                    self.layer_soil_input = self.layer_soil
+                    self.e3d_wizard_process.soil_2_soil_input()
 
             if i == 2:
 
-                self.layer_soil = self.layer_soil_input.clone()
+                self.e3d_wizard_process.soil_input_2_soil()
 
                 ok, msg = self.validate_widget_2()
 
                 if ok:
 
-                    rename_field(self.layer_soil,
-                                 self.field_soilid_cb.currentText(),
-                                 TextConstants.field_name_soil_id)
+                    self.e3d_wizard_process.rename_soil_field_soil_id(field_to_rename=self.field_soilid_cb.currentText())
 
                     self.progressBar.setMaximum(4)
                     self.progressBar.setValue(1)
 
                     # this three columns exists so rename them
 
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_MT,
-                                                     self.fcb_mtc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_MU,
-                                                     self.fcb_muc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_MS,
-                                                     self.fcb_msc)
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_MT,
+                                                                       self.fcb_mtc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_MU,
+                                                                       self.fcb_muc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_MS,
+                                                                       self.fcb_msc.currentText())
 
                     self.progressBar.setValue(2)
 
                     # these six columns may or may not be set, so either rename or create with 0 value
 
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_FT,
-                                                     self.fcb_ftc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_GT,
-                                                     self.fcb_gtc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_FU,
-                                                     self.fcb_fuc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_GU,
-                                                     self.fcb_guc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_FS,
-                                                     self.fcb_fsc)
-
-                    self.handle_particle_size_fields(self.layer_soil,
-                                                     TextConstants.field_name_GS,
-                                                     self.fcb_gsc)
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_FT,
+                                                                       self.fcb_ftc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_GT,
+                                                                       self.fcb_gtc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_FU,
+                                                                       self.fcb_fuc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_GU,
+                                                                       self.fcb_guc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_FS,
+                                                                       self.fcb_fsc.currentText())
+                    self.e3d_wizard_process.handle_particle_size_field(TextConstants.field_name_GS,
+                                                                       self.fcb_gsc.currentText())
 
                     self.progressBar.setValue(3)
 
-                    ok, msg = classify_KA5(self.layer_soil,
-                                           TextConstants.field_name_FT,
-                                           TextConstants.field_name_MT,
-                                           TextConstants.field_name_GT,
-                                           TextConstants.field_name_FU,
-                                           TextConstants.field_name_MU,
-                                           TextConstants.field_name_GU,
-                                           TextConstants.field_name_FS,
-                                           TextConstants.field_name_MS,
-                                           TextConstants.field_name_GS,
-                                           TextConstants.field_name_ka5_code,
-                                           TextConstants.field_name_ka5_name,
-                                           TextConstants.field_name_ka5_id,
-                                           self.progressBar)
+                    self.e3d_wizard_process.classify_ka5(self.progressBar)
 
                     self.progressBar.setValue(4)
 
@@ -968,14 +758,13 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 if ok:
 
-                    ok, msg = landuse_with_crops(self.layer_landuse,
-                                                 self.fcb_landuse.currentText(),
-                                                 self.fcb_crop.currentText(),
-                                                 self.progressBar)
+                    self.e3d_wizard_process.merge_landuse_with_crops(field_name_landuse=self.fcb_landuse.currentText(),
+                                                                     field_name_crop=self.fcb_crop.currentText(),
+                                                                     progress_bar=self.progressBar)
 
-                    self.layer_landuse_fields_backup = self.layer_landuse.fields()
+                    self.e3d_wizard_process.backup_fields_landuse()
 
-                self.table_landuse_assign_catalog.add_data(self.layer_landuse,
+                self.table_landuse_assign_catalog.add_data(self.e3d_wizard_process.layer_landuse,
                                                            TextConstants.field_name_landuse_crops)
 
             if i == 4:
@@ -986,92 +775,46 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                     table = self.table_landuse_assign_catalog.get_data_as_layer(TextConstants.field_name_landuse_crops)
 
-                    self.layer_landuse = retain_only_fields(self.layer_landuse,
-                                                            self.layer_landuse_fields_backup.names())
-
-                    self.layer_landuse = join_tables(self.layer_landuse,
-                                                     TextConstants.field_name_landuse_crops,
-                                                     table,
-                                                     TextConstants.field_name_landuse_crops,
-                                                     self.progressBar)
+                    self.e3d_wizard_process.join_catalog_info_layer_landuse(table,
+                                                                            self.progressBar)
 
                     self.update_value_layers()
 
-                    self.layer_soil_interstep = self.layer_soil
-                    self.layer_landuse_interstep = self.layer_landuse
+                    self.e3d_wizard_process.backup_input_layers()
 
             if i == 5:
 
-                self.layer_landuse = self.layer_landuse_interstep
-                self.layer_soil = self.layer_soil_interstep
+                self.e3d_wizard_process.restore_input_layers()
 
-                self.rename_initmoisture()
-
-                dissolve_list = [TextConstants.field_name_ka5_id,
-                                 TextConstants.field_name_ka5_name,
-                                 TextConstants.field_name_ka5_code,
-                                 TextConstants.field_name_ka5_group_lv2_id,
-                                 TextConstants.field_name_landuse_lv1_id,
-                                 TextConstants.field_name_landuse_lv2_id,
-                                 TextConstants.field_name_crop_id,
-                                 TextConstants.field_name_crop_name,
-                                 TextConstants.field_name_soil_id,
-                                 TextConstants.field_name_landuse_crops,
-                                 TextConstants.field_name_poly_id,
-                                 TextConstants.field_name_FU,
-                                 TextConstants.field_name_MU,
-                                 TextConstants.field_name_GU,
-                                 TextConstants.field_name_FT,
-                                 TextConstants.field_name_MT,
-                                 TextConstants.field_name_GT,
-                                 TextConstants.field_name_FS,
-                                 TextConstants.field_name_MS,
-                                 TextConstants.field_name_GS,
-                                 TextConstants.field_name_agrotechnology,
-                                 TextConstants.field_name_protection_measure,
-                                 TextConstants.field_name_vegetation_conditions,
-                                 TextConstants.field_name_surface_conditions,
-                                 TextConstants.field_name_init_moisture]
+                self.e3d_wizard_process.rename_initmoisture(layer_name=self.fcb_initmoisture_layer.currentText(),
+                                                            field_name=self.fcb_initmoisture.currentText())
 
                 if self.skip_step_table_corg():
 
-                    self.rename_corg()
-
-                    dissolve_list = dissolve_list + [TextConstants.field_name_corg]
+                    self.e3d_wizard_process.rename_corg(layer_name=self.fcb_corg_layer.currentText(),
+                                                        field_name=self.fcb_corg.currentText())
 
                 if self.skip_step_table_bulkdensity():
 
-                    self.rename_bulkdensity()
-
-                    dissolve_list = dissolve_list + [TextConstants.field_name_bulk_density]
+                    self.e3d_wizard_process.rename_bulkdensity(layer_name=self.fcb_bulk_density_layer.currentText(),
+                                                               field_name=self.fcb_bulk_density.currentText())
 
                 if self.skip_step_table_roughness():
 
-                    self.rename_roughness()
-
-                    dissolve_list = dissolve_list + [TextConstants.field_name_roughness]
+                    self.e3d_wizard_process.rename_roughness(layer_name=self.fcb_roughness_layer.currentText(),
+                                                             field_name=self.fcb_roughness.currentText())
 
                 if self.skip_step_table_surfacecover():
 
-                    self.rename_cover()
+                    self.e3d_wizard_process.rename_cover(layer_name=self.fcb_surface_cover_layer.currentText(),
+                                                         field_name=self.fcb_surface_cover.currentText())
 
-                    dissolve_list = dissolve_list + [TextConstants.field_name_canopy_cover]
+                self.e3d_wizard_process.create_main_layer(self.progressBar)
 
-                self.layer_intersected_dissolved = intersect_dissolve(self.layer_soil,
-                                                                      self.layer_landuse,
-                                                                      TextConstants.field_name_poly_id,
-                                                                      TextConstants.field_name_soil_id,
-                                                                      TextConstants.field_name_landuse_crops,
-                                                                      dissolve_list,
-                                                                      progress_bar=self.progressBar)
-
-                add_field_with_constant_value(self.layer_intersected_dissolved,
-                                              TextConstants.field_name_month,
-                                              self.date_month,
-                                              data_type=QVariant.Int)
+                self.e3d_wizard_process.add_month_field(self.date_month)
 
                 if not self.skip_step_table_corg():
-                    self.table_corg.add_data(self.layer_intersected_dissolved)
+                    self.table_corg.add_data(self.e3d_wizard_process.layer_main)
 
                 else:
 
@@ -1080,10 +823,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 6:
 
                 if not self.skip_step_table_corg():
-                    self.layer_intersected_dissolved = self.table_corg.join_data(self.layer_intersected_dissolved)
+                    self.e3d_wizard_process.layer_main = self.table_corg.join_data(self.e3d_wizard_process.layer_main)
 
                 if not self.skip_step_table_bulkdensity():
-                    self.table_bulk_density.add_data(self.layer_intersected_dissolved)
+                    self.table_bulk_density.add_data(self.e3d_wizard_process.layer_main)
 
                 else:
 
@@ -1092,10 +835,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 7:
 
                 if not self.skip_step_table_bulkdensity():
-                    self.layer_intersected_dissolved = self.table_bulk_density.join_data(self.layer_intersected_dissolved)
+                    self.e3d_wizard_process.layer_main = self.table_bulk_density.join_data(self.e3d_wizard_process.layer_main)
 
                 if not self.skip_step_table_surfacecover():
-                    self.table_canopy_cover.add_data(self.layer_intersected_dissolved)
+                    self.table_canopy_cover.add_data(self.e3d_wizard_process.layer_main)
 
                 else:
 
@@ -1104,10 +847,10 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 8:
 
                 if not self.skip_step_table_surfacecover():
-                    self.layer_intersected_dissolved = self.table_canopy_cover.join_data(self.layer_intersected_dissolved)
+                    self.e3d_wizard_process.layer_main = self.table_canopy_cover.join_data(self.e3d_wizard_process.layer_main)
 
                 if not self.skip_step_table_roughness():
-                    self.table_roughness.add_data(self.layer_intersected_dissolved)
+                    self.table_roughness.add_data(self.e3d_wizard_process.layer_main)
 
                 else:
 
@@ -1116,56 +859,48 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i == 9:
 
                 if not self.skip_step_table_roughness():
-                    self.layer_intersected_dissolved = self.table_roughness.join_data(self.layer_intersected_dissolved)
+                    self.e3d_wizard_process.layer_main = self.table_roughness.join_data(self.e3d_wizard_process.layer_main)
 
-                self.table_erodibility.add_data(self.layer_intersected_dissolved)
+                self.table_erodibility.add_data(self.e3d_wizard_process.layer_main)
 
             if i == 10:
 
-                self.layer_intersected_dissolved = self.table_erodibility.join_data(self.layer_intersected_dissolved)
+                self.e3d_wizard_process.layer_main = self.table_erodibility.join_data(self.e3d_wizard_process.layer_main)
 
-                self.table_skinfactor.add_data(self.layer_intersected_dissolved)
+                self.table_skinfactor.add_data(self.e3d_wizard_process.layer_main)
 
             if i == 11:
 
-                self.layer_intersected_dissolved = self.table_skinfactor.join_data(self.layer_intersected_dissolved)
+                self.e3d_wizard_process.layer_main = self.table_skinfactor.join_data(self.e3d_wizard_process.layer_main)
 
             if i == 12:
 
                 # if there are some values already existing, delete them
-                self.remove_additions_fids_if_exist()
+                self.e3d_wizard_process.remove_additions_fids_if_exist()
 
                 # add "POLY_NR" field
 
-                add_fid_field(self.layer_intersected_dissolved)
+                self.e3d_wizard_process.add_fid_field()
 
                 # solve raster and raster additions
 
-                self.layer_raster_rasterized = rasterize_layer_by_example(self.layer_intersected_dissolved,
-                                                                          TextConstants.field_name_fid,
-                                                                          self.layer_raster_dtm,
-                                                                          progress_bar=self.progressBar)
-                self.add_channel_elements()
+                self.e3d_wizard_process.rasterize_main_layer(self.progressBar)
 
-                self.add_drain_elements()
+                self.e3d_wizard_process.add_channel_elements()
+
+                self.e3d_wizard_process.add_drain_elements()
 
                 self.progressBar.setMaximum(5)
 
-                self.add_poly_nr_rows()
+                self.e3d_wizard_process.add_poly_nr_rows()
 
                 self.progressBar.setValue(2)
 
-                add_field_with_constant_value(self.layer_intersected_dissolved,
-                                              TextConstants.field_name_layer_id,
-                                              0)
-
-                add_field_with_constant_value(self.layer_intersected_dissolved,
-                                              TextConstants.field_name_layer_thick,
-                                              10000)
+                self.e3d_wizard_process.add_fields_contant()
 
                 self.progressBar.setValue(3)
 
-                self.table_edit_values.add_data(self.layer_intersected_dissolved)
+                self.table_edit_values.add_data(self.e3d_wizard_process.layer_main)
 
                 self.progressBar.setValue(5)
 
@@ -1177,7 +912,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 self.progressBar.setValue(1)
 
-                self.prepare_layer_parameters()
+                self.e3d_wizard_process.prepare_layer_parameters()
 
                 self.progressBar.setValue(2)
 
@@ -1185,11 +920,11 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
                 self.progressBar.setValue(3)
 
-                self.prepare_layer_lookup()
+                self.e3d_wizard_process.prepare_layer_lookup()
 
                 self.progressBar.setValue(4)
 
-                self.prepare_layer_export_e3d()
+                self.e3d_wizard_process.prepare_layer_e3d()
 
                 self.progressBar.setValue(5)
 
@@ -1214,7 +949,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         i = self.stackedWidget.currentIndex()
 
         if i == 3:
-            self.layer_soil = self.layer_soil_input
+            self.e3d_wizard_process.soil_input_2_soil()
             self.update_layer_soil()
 
         if i == 5:
@@ -1222,8 +957,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             # TODO make sure this makes sense!!!!!!
             # TODO make sure this makes sense!!!!!!
             # TODO make sure this makes sense!!!!!!
-            self.layer_landuse = self.layer_landuse_interstep
-            self.layer_soil = self.layer_soil_interstep
+            self.e3d_wizard_process.restore_input_layers()
 
         if self.skip_step_table_roughness() and i == self.roughness_widget_index + 1:
             i = i - 1
@@ -1283,92 +1017,18 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
         return empty
 
-    @staticmethod
-    def handle_particle_size_fields(layer: QgsVectorLayer,
-                                    field_name: str,
-                                    field_cb: QComboBox):
-
-        if field_cb.currentText() != field_name:
-
-            delete_fields(layer, field_name)
-
-        if 0 < len(field_cb.currentText()):
-
-            rename_field(layer, field_cb.currentText(), field_name)
-
-        else:
-
-            add_field_with_constant_value(layer, field_name, 0)
-
-    def prepare_layer_export_e3d(self):
-
-        self.layer_export_e3d = retain_only_fields(self.layer_intersected_dissolved,
-                                                   [TextConstants.field_name_fid,
-                                                    TextConstants.field_name_poly_id,
-                                                    TextConstants.field_name_layer_id,
-                                                    TextConstants.field_name_layer_thick,
-                                                    TextConstants.field_name_FT,
-                                                    TextConstants.field_name_MT,
-                                                    TextConstants.field_name_GT,
-                                                    TextConstants.field_name_FU,
-                                                    TextConstants.field_name_MU,
-                                                    TextConstants.field_name_GU,
-                                                    TextConstants.field_name_FS,
-                                                    TextConstants.field_name_GS,
-                                                    TextConstants.field_name_MS,
-                                                    TextConstants.field_name_bulk_density,
-                                                    TextConstants.field_name_corg,
-                                                    TextConstants.field_name_init_moisture,
-                                                    TextConstants.field_name_roughness,
-                                                    TextConstants.field_name_canopy_cover,
-                                                    TextConstants.field_name_skinfactor,
-                                                    TextConstants.field_name_erodibility],
-                                                   "E3D export layer")
-
-    def prepare_layer_lookup(self):
-
-        self.layer_export_lookup = retain_only_fields(self.layer_intersected_dissolved,
-                                                      [TextConstants.field_name_poly_id,
-                                                       TextConstants.field_name_fid],
-                                                      "lookup")
-
-    def prepare_layer_parameters(self):
-
-        self.layer_export_parameters = retain_only_fields(self.layer_intersected_dissolved,
-                                                          [TextConstants.field_name_poly_id,
-                                                           TextConstants.field_name_layer_id,
-                                                           TextConstants.field_name_layer_thick,
-                                                           TextConstants.field_name_FT,
-                                                           TextConstants.field_name_MT,
-                                                           TextConstants.field_name_GT,
-                                                           TextConstants.field_name_FU,
-                                                           TextConstants.field_name_MU,
-                                                           TextConstants.field_name_GU,
-                                                           TextConstants.field_name_FS,
-                                                           TextConstants.field_name_GS,
-                                                           TextConstants.field_name_MS,
-                                                           TextConstants.field_name_bulk_density,
-                                                           TextConstants.field_name_corg,
-                                                           TextConstants.field_name_init_moisture,
-                                                           TextConstants.field_name_roughness,
-                                                           TextConstants.field_name_canopy_cover,
-                                                           TextConstants.field_name_skinfactor,
-                                                           TextConstants.field_name_erodibility],
-                                                          "parameters")
-
     def prepare_layer_pour_points(self):
 
-        if self.layer_pour_points and self.field_pour_points_cb.currentText():
-            self.layer_pour_points_rasterized = rasterize_layer_by_example(self.layer_pour_points,
-                                                                           self.field_pour_points_cb.currentText(),
-                                                                           self.layer_raster_dtm)
+        if self.layer_pour_points_cb.currentLayer() and self.field_pour_points_cb.currentText():
+
+            self.e3d_wizard_process.prepare_pour_points(field_name=self.field_pour_points_cb.currentText())
 
             self.lineEdit_pour_points_raster.setEnabled(True)
             self.toolButton_pour_points_raster.setEnabled(True)
 
     def evaluate_result_layer_set_message(self):
 
-        self.ok_result_layer, msg = evaluate_result_layer(self.layer_export_parameters)
+        self.ok_result_layer, msg = evaluate_result_layer(self.e3d_wizard_process.layer_parameters)
 
         self.label_data_status.setText(msg)
 
@@ -1380,78 +1040,3 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.label_data_status.setStyleSheet("color : red;")
             self.label_data_status_confirm.show()
             self.checkbox_export_empty_data.show()
-
-    def remove_additions_fids_if_exist(self):
-
-        if not len(self.poly_nr_additons) == 0:
-
-            fids_to_delete = []
-
-            for fid_value, poly_id in self.poly_nr_additons:
-                fids_to_delete.append(fid_value)
-
-            delete_features_with_values(self.layer_intersected_dissolved,
-                                        TextConstants.field_name_fid,
-                                        fids_to_delete)
-
-            self.poly_nr_additons = []
-
-    def add_channel_elements(self):
-
-        if 0 < len(self.layer_channel_elements_cb.currentText()):
-
-            value = max_value_in_field(self.layer_intersected_dissolved,
-                                       TextConstants.field_name_fid)
-
-            value = int(value + 1)
-
-            self.poly_nr_additons.append((value, "channel_elements"))
-
-            add_field_with_constant_value(self.layer_channel_elements,
-                                          TextConstants.field_name_fid,
-                                          value)
-
-            raster = rasterize_layer_by_example(self.layer_channel_elements,
-                                                TextConstants.field_name_fid,
-                                                self.layer_raster_dtm)
-
-            self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
-                                                                           raster)
-
-    def add_drain_elements(self):
-
-        if 0 < len(self.layer_drain_elements_cb.currentText()):
-
-            value = max_value_in_field(self.layer_intersected_dissolved,
-                                       TextConstants.field_name_fid)
-
-            value += 1
-
-            if 0 < len(self.poly_nr_additons):
-                value = self.poly_nr_additons[-1]
-                value = int(value[0] + 1)
-
-            self.poly_nr_additons.append((value, "drain_elements"))
-
-            add_field_with_constant_value(self.layer_drain_elements,
-                                          TextConstants.field_name_fid,
-                                          value)
-
-            raster = rasterize_layer_by_example(self.layer_drain_elements,
-                                                TextConstants.field_name_fid,
-                                                self.layer_raster_dtm)
-
-            self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
-                                                                           raster)
-
-    def add_poly_nr_rows(self):
-
-        # add rows for channel elements and drain elements
-        for fid_value, poly_id in self.poly_nr_additons:
-            values = {TextConstants.field_name_fid: fid_value,
-                      TextConstants.field_name_init_moisture: 0.0,
-                      TextConstants.field_name_poly_id: poly_id}
-
-            values.update(DEFAULT_EXPORT_VALUES)
-
-            add_row_without_geom(self.layer_intersected_dissolved, values)
