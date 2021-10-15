@@ -78,6 +78,7 @@ class TextConstantsCZ:
     field_name_ka5_code = "ka5_code"
     field_name_ka5_id = "ka5_id"
     field_name_ka5_group_lv2_id = "ka5_group_lv2_id"
+    field_name_ka5_group_lv1_id = "ka5_group_lv1_id"
 
     field_name_poly_id = "POLY_ID"
 
