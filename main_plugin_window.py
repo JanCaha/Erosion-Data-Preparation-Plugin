@@ -2,8 +2,20 @@
 from pathlib import Path
 from typing import List, NoReturn
 
-from qgis.PyQt import uic, QtWidgets
-from qgis.PyQt.QtWidgets import QComboBox, QLabel
+from qgis.PyQt import uic
+from qgis.PyQt.QtWidgets import (QComboBox,
+                                 QLabel,
+                                 QDialog,
+                                 QPushButton,
+                                 QCalendarWidget,
+                                 QLineEdit,
+                                 QCheckBox,
+                                 QFileDialog,
+                                 QDialogButtonBox,
+                                 QStackedWidget,
+                                 QProgressBar,
+                                 QWidget,
+                                 QMessageBox)
 
 from qgis.gui import (QgsMapLayerComboBox,
                       QgsFieldComboBox)
@@ -38,7 +50,7 @@ path_ui = Path(__file__).parent / "ui" / "main_wizard_dialog_base.ui"
 FORM_CLASS, _ = uic.loadUiType(str(path_ui))
 
 
-class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
+class MainPluginDialog(QDialog, FORM_CLASS):
 
     landuse_select_widget_index = 4
     corg_widget_index = 6
@@ -46,72 +58,72 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     canopycover_widget_index = corg_widget_index + 2
     roughness_widget_index = corg_widget_index + 3
 
-    qlabel_main: QtWidgets.QLabel
-    qlabel_step_description: QtWidgets.QLabel
-    qlabel_steps: QtWidgets.QLabel
+    qlabel_main: QLabel
+    qlabel_step_description: QLabel
+    qlabel_steps: QLabel
 
-    next_pb: QtWidgets.QPushButton
+    next_pb: QPushButton
 
     # widget0
     layer_soil_cb: QgsMapLayerComboBox
     layer_landuse_cb: QgsMapLayerComboBox
     raster_dtm_cb: QgsMapLayerComboBox
-    calendar: QtWidgets.QCalendarWidget
+    calendar: QCalendarWidget
 
     # widget1
     field_ka5_cb: QgsFieldComboBox
-    label_ka5_class: QtWidgets.QLabel
-    label_soil_id: QtWidgets.QLabel
+    label_ka5_class: QLabel
+    label_soil_id: QLabel
     field_soilid_cb: QgsFieldComboBox
 
     # widget2
     layer_soil_cb_2: QgsMapLayerComboBox
-    le_field_gb: QtWidgets.QLineEdit
-    le_field_d90: QtWidgets.QLineEdit
-    cb_addD90: QtWidgets.QCheckBox
+    le_field_gb: QLineEdit
+    le_field_d90: QLineEdit
+    cb_addD90: QCheckBox
 
     # widget 3
-    fcb_ftc: QtWidgets.QComboBox
-    fcb_mtc: QtWidgets.QComboBox
-    fcb_gtc: QtWidgets.QComboBox
-    fcb_fuc: QtWidgets.QComboBox
-    fcb_muc: QtWidgets.QComboBox
-    fcb_guc: QtWidgets.QComboBox
-    fcb_fsc: QtWidgets.QComboBox
-    fcb_msc: QtWidgets.QComboBox
-    fcb_gsc: QtWidgets.QComboBox
+    fcb_ftc: QComboBox
+    fcb_mtc: QComboBox
+    fcb_gtc: QComboBox
+    fcb_fuc: QComboBox
+    fcb_muc: QComboBox
+    fcb_guc: QComboBox
+    fcb_fsc: QComboBox
+    fcb_msc: QComboBox
+    fcb_gsc: QComboBox
 
     # widget 4
     fcb_landuse: QgsFieldComboBox
     fcb_crop: QgsFieldComboBox
 
     # widget 6
-    label_data_status: QtWidgets.QLabel
+    label_data_status: QLabel
 
     # widget initmoisture
-    label_initmoisture_layer: QtWidgets.QLabel
-    label_initmoisture_field: QtWidgets.QLabel
+    label_initmoisture_layer: QLabel
+    label_initmoisture_field: QLabel
     fcb_initmoisture: QgsFieldComboBox
-    fcb_initmoisture_layer: QtWidgets.QComboBox
+    fcb_initmoisture_layer: QComboBox
 
-    label_bulk_density_layer: QtWidgets.QLabel
-    label_bulk_density_field: QtWidgets.QLabel
-    fcb_bulk_density_layer: QtWidgets.QComboBox
+    label_bulk_density_layer: QLabel
+    label_bulk_density_field: QLabel
+    fcb_bulk_density_layer: QComboBox
     fcb_bulk_density: QgsFieldComboBox
 
-    label_corg_layer: QtWidgets.QLabel
-    label_corg_field: QtWidgets.QLabel
-    fcb_corg_layer: QtWidgets.QComboBox
+    label_corg_layer: QLabel
+    label_corg_field: QLabel
+    fcb_corg_layer: QComboBox
     fcb_corg: QgsFieldComboBox
 
-    label_roughness_layer: QtWidgets.QLabel
-    label_roughness_field: QtWidgets.QLabel
-    fcb_roughness_layer: QtWidgets.QComboBox
+    label_roughness_layer: QLabel
+    label_roughness_field: QLabel
+    fcb_roughness_layer: QComboBox
     fcb_roughness: QgsFieldComboBox
 
-    label_surface_cover_layer: QtWidgets.QLabel
-    label_surface_cover_field: QtWidgets.QLabel
-    fcb_surface_cover_layer: QtWidgets.QComboBox
+    label_surface_cover_layer: QLabel
+    label_surface_cover_field: QLabel
+    fcb_surface_cover_layer: QComboBox
     fcb_surface_cover: QgsFieldComboBox
 
     # widget optional
@@ -119,36 +131,36 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     layer_drain_elements_cb: QgsMapLayerComboBox
     layer_pour_points_cb: QgsMapLayerComboBox
 
-    label_channel_elements: QtWidgets.QLabel
-    label_drain_elements: QtWidgets.QLabel
-    label_pour_points: QtWidgets.QLabel
+    label_channel_elements: QLabel
+    label_drain_elements: QLabel
+    label_pour_points: QLabel
 
     # widget last
 
-    label_landuse_raster: QtWidgets.QLabel
-    lineEdit_landuse_raster: QtWidgets.QLineEdit
-    toolButton_landuse_raster: QtWidgets.QFileDialog
+    label_landuse_raster: QLabel
+    lineEdit_landuse_raster: QLineEdit
+    toolButton_landuse_raster: QFileDialog
 
-    label_parameter_table: QtWidgets.QLabel
-    lineEdit_parameter_table: QtWidgets.QLineEdit
-    toolButton_parameter_table: QtWidgets.QFileDialog
+    label_parameter_table: QLabel
+    lineEdit_parameter_table: QLineEdit
+    toolButton_parameter_table: QFileDialog
 
-    label_lookup_table: QtWidgets.QLabel
-    lineEdit_lookup_table: QtWidgets.QLineEdit
-    toolButton_lookup_table: QtWidgets.QFileDialog
+    label_lookup_table: QLabel
+    lineEdit_lookup_table: QLineEdit
+    toolButton_lookup_table: QFileDialog
 
-    label_pour_points_raster: QtWidgets.QLabel
-    lineEdit_pour_points_raster: QtWidgets.QLineEdit
-    toolButton_pour_points_raster: QtWidgets.QFileDialog
+    label_pour_points_raster: QLabel
+    lineEdit_pour_points_raster: QLineEdit
+    toolButton_pour_points_raster: QFileDialog
 
     # main window
-    stackedWidget: QtWidgets.QStackedWidget
-    progressBar: QtWidgets.QProgressBar
-    button_box: QtWidgets.QDialogButtonBox
-    checkbox_export_empty_data: QtWidgets.QCheckBox
+    stackedWidget: QStackedWidget
+    progressBar: QProgressBar
+    button_box: QDialogButtonBox
+    checkbox_export_empty_data: QCheckBox
 
-    label_created: QtWidgets.QLabel
-    label_project: QtWidgets.QLabel
+    label_created: QLabel
+    label_project: QLabel
 
     ok_result_layer: bool
 
@@ -166,8 +178,8 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
     # lineEdit_soil_layer: QtWidgets.QLineEdit
     # toolButton_soil_layer: QtWidgets.QToolButton
 
-    label_data_status_confirm: QtWidgets.QLabel
-    checkbox_export_empty_data: QtWidgets.QCheckBox
+    label_data_status_confirm: QLabel
+    checkbox_export_empty_data: QCheckBox
 
     e3d_wizard_process: E3DWizardProcess
 
@@ -184,7 +196,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.stackedWidget.setCurrentIndex(0)
 
-        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
+        self.button_box.button(QDialogButtonBox.Ok).setEnabled(False)
 
         self.set_steps_label()
 
@@ -329,7 +341,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         self.fcb_crop.setFilters(QgsFieldProxyModel.String)
 
         self.table_landuse_assign_catalog = TableWidgetLanduseAssignedCatalog()
-        widget: QtWidgets.QWidget = self.stackedWidget.widget(self.landuse_select_widget_index)
+        widget: QWidget = self.stackedWidget.widget(self.landuse_select_widget_index)
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(self.landuse_select_widget_index, self.table_landuse_assign_catalog)
 
@@ -372,33 +384,33 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def select_file_pour_points_raster(self):
         filter = "asc (*.asc)"
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name, type = QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
         file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_pour_points_raster.setText(file_name)
 
     def select_file_landuse_raster(self):
         filter = "asc (*.asc)"
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name, type = QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
         file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_landuse_raster.setText(file_name)
 
     def select_file_lookup_table(self):
         filter = "csv (*.csv)"
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name, type = QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
         file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_lookup_table.setText(file_name)
 
     def select_file_parameter_table(self):
         filter = "csv (*.csv)"
-        file_name, type = QtWidgets.QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name, type = QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
         file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
         self.lineEdit_parameter_table.setText(file_name)
 
     def allow_ok_button(self):
         if self.sender().isChecked() or self.ok_result_layer:
-            self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
+            self.button_box.button(QDialogButtonBox.Ok).setEnabled(True)
         else:
-            self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
+            self.button_box.button(QDialogButtonBox.Ok).setEnabled(False)
 
     def validate_widget_0(self):
 
@@ -554,7 +566,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.add_field_names_and_set_selected_back(self.fcb_gsc, field_names)
 
     @staticmethod
-    def add_field_names_and_set_selected_back(combo_box: QtWidgets.QComboBox,
+    def add_field_names_and_set_selected_back(combo_box: QComboBox,
                                               items: List[str]) -> NoReturn:
         index = None
 
@@ -931,7 +943,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             if i + 1 == self.stackedWidget.count() - 1:
 
                 if self.ok_result_layer or self.checkbox_export_empty_data.isChecked():
-                    self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
+                    self.button_box.button(QDialogButtonBox.Ok).setEnabled(True)
 
                 self.next_pb.setVisible(False)
 
@@ -940,7 +952,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
                 self.progressBar.setMaximum(1)
                 self.progressBar.setValue(1)
             else:
-                QtWidgets.QMessageBox.warning(self, TextConstants.msg_title, msg)
+                QMessageBox.warning(self, TextConstants.msg_title, msg)
                 self.progressBar.setMaximum(1)
                 self.progressBar.setValue(1)
 
@@ -977,7 +989,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
             self.next_pb.setText(TextConstants.text_next)
 
         self.next_pb.setVisible(True)
-        self.button_box.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
+        self.button_box.button(QDialogButtonBox.Ok).setEnabled(False)
 
     def skip_step_table_bulkdensity(self) -> bool:
 
@@ -996,7 +1008,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         return 0 < len(self.fcb_surface_cover.currentText())
 
     @staticmethod
-    def cb_unique_values(combo_boxes: List[QtWidgets.QComboBox]) -> int:
+    def cb_unique_values(combo_boxes: List[QComboBox]) -> int:
 
         l = []
 
@@ -1007,7 +1019,7 @@ class MainPluginDialog(QtWidgets.QDialog, FORM_CLASS):
         return len(set(l))
 
     @staticmethod
-    def cb_number_empty(combo_boxes: List[QtWidgets.QComboBox]) -> int:
+    def cb_number_empty(combo_boxes: List[QComboBox]) -> int:
 
         empty = 0
 
