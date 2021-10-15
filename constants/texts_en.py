@@ -40,6 +40,7 @@ class TextConstantsEN:
 
     tw_lc_sub_cats = "subcategories"
     tw_lc_col_value = "Source landuse category"
+    tw_lcs_col_value = "Landuse category"
     tw_lc_col_assigned = "Catalogue landuse category"
     tw_lc_col_agrotechnology = "Agrotechnology"
     tw_lc_col_vegetation_condition = "Vegetation condition"
@@ -202,12 +203,12 @@ class TextConstantsEN:
     col_ka5_code = "Soil ID (KA5 Class)"
     col_stats = "Statistics"
 
-    header_table_corg = [col_crop, col_ka5_code, "", "Corg"]
-    header_table_bulkdensity = [col_crop, col_ka5_code, "", "Bulk Density"]
-    header_table_canopycover = [col_crop, "", "Canopy Cover"]
-    header_table_roughness = [col_crop, "", "Roughness"]
-    header_table_erodibility = [col_crop, col_ka5_code, "", "Erodibility"]
-    header_table_skinfactor = [col_crop, col_ka5_code, "", "Skin Factor"]
+    header_table_corg = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Corg"]
+    header_table_bulkdensity = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Bulk Density"]
+    header_table_canopycover = [tw_lcs_col_value, col_crop, "", "Canopy Cover"]
+    header_table_roughness = [tw_lcs_col_value, col_crop, "", "Roughness"]
+    header_table_erodibility = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Erodibility"]
+    header_table_skinfactor = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Skin Factor"]
 
     message_statistics = "Found {count} records with range ({min}, {max}) and mean {round(mean, 2)}."
     message_statistics_no_records = "Found 0 records."

@@ -375,7 +375,8 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_soil_id,
-                TextConstants.field_name_agrotechnology]
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -397,7 +398,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], f"{row[6]} ({row[5]})"]
+            return [row[8], row[3], f"{row[6]} ({row[5]})"]
         else:
             return None
 
@@ -436,7 +437,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_group_lv2_id,
                 TextConstants.field_name_ka5_code,
                 TextConstants.field_name_soil_id,
-                TextConstants.field_name_agrotechnology]
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -451,7 +453,7 @@ class TableWidgetCorg(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[7]:
-            return [row[3], f"{row[8]} ({row[7]})"]
+            return [row[10], row[3], f"{row[8]} ({row[7]})"]
         else:
             return None
 
@@ -493,7 +495,8 @@ class TableWidgetCanopyCover(TableWidgetWithSlider):
         return [TextConstants.field_name_crop_id,
                 TextConstants.field_name_landuse_lv2_id,
                 TextConstants.field_name_landuse_lv1_id,
-                TextConstants.field_name_crop_name]
+                TextConstants.field_name_crop_name,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -503,7 +506,7 @@ class TableWidgetCanopyCover(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3]:
-            return [row[3]]
+            return [row[4], row[3]]
         else:
             return None
 
@@ -542,7 +545,8 @@ class TableWidgetRoughness(TableWidgetWithSlider):
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_surface_conditions,
                 TextConstants.field_name_vegetation_conditions,
-                TextConstants.field_name_protection_measure]
+                TextConstants.field_name_protection_measure,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -557,7 +561,7 @@ class TableWidgetRoughness(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3]:
-            return [row[3]]
+            return [row[9], row[3]]
         else:
             return None
 
@@ -607,7 +611,8 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_soil_id,
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_protection_measure,
-                TextConstants.field_name_surface_conditions]
+                TextConstants.field_name_surface_conditions,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -623,7 +628,7 @@ class TableWidgetErodibility(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], f"{row[6]} ({row[5]})"]
+            return [row[10], row[3], f"{row[6]} ({row[5]})"]
         else:
             return None
 
@@ -674,7 +679,8 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_month,
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_protection_measure,
-                TextConstants.field_name_surface_conditions]
+                TextConstants.field_name_surface_conditions,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -691,7 +697,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], f"{row[6]} ({row[5]})"]
+            return [row[11], row[3], f"{row[6]} ({row[5]})"]
         else:
             return None
 
@@ -739,7 +745,8 @@ class TableWidgetInitMoisture(TableWidgetWithSlider):
                 TextConstants.field_name_landuse_lv1_id,
                 TextConstants.field_name_crop_name,
                 TextConstants.field_name_ka5_id,
-                TextConstants.field_name_ka5_name]
+                TextConstants.field_name_ka5_name,
+                TextConstants.field_name_landuse_crops]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -751,7 +758,7 @@ class TableWidgetInitMoisture(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[3], row[5]]
+            return [row[6], row[3], row[5]]
         else:
             return None
 

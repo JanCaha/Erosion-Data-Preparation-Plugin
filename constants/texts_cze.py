@@ -40,6 +40,7 @@ class TextConstantsCZ:
 
     tw_lc_sub_cats = "dílčí kategorie"
     tw_lc_col_value = "Zdrojová kategorie"
+    tw_lcs_col_value = "Zdrojová kategorie"
     tw_lc_col_assigned = "Kategorie Katalogu parametrů"
     tw_lc_col_agrotechnology = "Agrotechnologie"
     tw_lc_col_vegetation_condition = "Stav vegetace"
@@ -201,12 +202,12 @@ class TextConstantsCZ:
     col_ka5_code = "Půdní ID (KA5 třída)"
     col_stats = "Statistika"
 
-    header_table_corg = [col_crop, col_ka5_code, "", "Corg"]
-    header_table_bulkdensity = [col_crop, col_ka5_code, "", "Objemová hmotnost půdy"]
-    header_table_canopycover = [col_crop, "Zakrytí povrchu rostlinami z katalogu", "Zakrytí povrchu rostlinami"]
-    header_table_roughness = [col_crop, "Hydraulická drsnost povrchu z katalogu", "Hydraulická drsnost povrchu"]
-    header_table_erodibility = [col_crop, col_ka5_code, "Erozní odolnost půdy z katalogu", "Erozní odolnost půdy"]
-    header_table_skinfactor = [col_crop, col_ka5_code, "Skin Factor z katalogu", "Skin Factor"]
+    header_table_corg = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Corg"]
+    header_table_bulkdensity = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Objemová hmotnost půdy"]
+    header_table_canopycover = [tw_lcs_col_value, col_crop, "", "Zakrytí povrchu rostlinami"]
+    header_table_roughness = [tw_lcs_col_value, col_crop, "", "Hydraulická drsnost povrchu"]
+    header_table_erodibility = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Erozní odolnost půdy"]
+    header_table_skinfactor = [tw_lcs_col_value, col_crop, col_ka5_code, "", "Skin Factor"]
 
     message_statistics = "Nalezeno {count} záznamů s rozsahem ({min}, {max}) a průměrem {round(mean, 2)}."
     message_statistics_no_records = "Nalezeno 0 záznamů."
