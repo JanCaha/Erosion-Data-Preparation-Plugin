@@ -13,7 +13,8 @@ from .algorithms.algorithms_layers import (join_tables,
                                            create_table_KA5_to_join,
                                            rasterize_layer_by_example,
                                            retain_only_fields,
-                                           replace_raster_values_by_raster)
+                                           replace_raster_values_by_raster,
+                                           find_difference_and_assign_value)
 from .algorithms.algs import (landuse_with_crops,
                               validate_KA5,
                               classify_KA5,
@@ -47,7 +48,7 @@ class E3DWizardProcess:
     layer_export_lookup: QgsVectorLayer = None
     layer_export_e3d: QgsVectorLayer = None
 
-    layer_channel_elements: QgsVectorLayer = None
+    layer_channel_elements: QgsRasterLayer = None
     layer_drain_elements: QgsVectorLayer = None
     layer_pour_points: QgsVectorLayer = None
 
@@ -128,11 +129,10 @@ class E3DWizardProcess:
     def set_layer_raster_dtm(self, layer: QgsRasterLayer) -> NoReturn:
         self.layer_raster_dtm = layer
 
-    def set_layer_channel_elements(self, layer: Optional[QgsVectorLayer]) -> NoReturn:
+    def set_layer_channel_elements(self, layer: Optional[QgsRasterLayer]) -> NoReturn:
 
         if layer:
-            self.layer_channel_elements = copy_layer_fix_geoms(layer,
-                                                               TextConstants.layer_channel_elements)
+            self.layer_channel_elements = layer
         else:
             self.layer_channel_elements = None
 
@@ -402,13 +402,9 @@ class E3DWizardProcess:
 
             self.poly_nr_additons.append((value, "channel_elements"))
 
-            add_field_with_constant_value(self.layer_channel_elements,
-                                          TextConstants.field_name_fid,
-                                          value)
-
-            raster = rasterize_layer_by_example(self.layer_channel_elements,
-                                                TextConstants.field_name_fid,
-                                                self.layer_raster_dtm)
+            raster = find_difference_and_assign_value(self.layer_raster_dtm,
+                                                      self.layer_channel_elements,
+                                                      value)
 
             self.layer_raster_rasterized = replace_raster_values_by_raster(self.layer_raster_rasterized,
                                                                            raster)
