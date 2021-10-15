@@ -2,6 +2,7 @@ class KA5Class:
 
     def __init__(self,
                  id, code, name,
+                 group_lv1_id,
                  group_lv2_id,
                  FT, MT, GT,
                  FU, MU, GU,
@@ -10,6 +11,7 @@ class KA5Class:
         self.id = id
         self.code = code
         self.name = name
+        self.group_lv1_id = group_lv1_id
         self.group_lv2_id = group_lv2_id
         self.FT = FT
         self.MT = MT
@@ -27,8 +29,8 @@ class KA5Class:
     @classmethod
     def from_array(cls, data_array: list):
 
-        if len(data_array) != 13:
-            raise ValueError(F"KA5 category needs to be defined using 13 elements. "
+        if len(data_array) != 14:
+            raise ValueError(F"KA5 category needs to be defined using 14 elements. "
                              F"Only {len(data_array)} are present.")
 
         return KA5Class(data_array[0],
@@ -43,7 +45,8 @@ class KA5Class:
                         data_array[9],
                         data_array[10],
                         data_array[11],
-                        data_array[12])
+                        data_array[12],
+                        data_array[13])
 
     def RMSE(self, other):
 
