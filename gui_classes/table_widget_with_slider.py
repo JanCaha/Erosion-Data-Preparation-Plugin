@@ -139,11 +139,11 @@ class TableWidgetWithSlider(QTableWidget):
 
             if not (min is None and max is None):
 
-                slider = QWidgetSliderValues(min, max, ((max - min) / 2) + min)
+                slider = QWidgetSliderValues(min, max, round(mean, 4))
                 slider.value_changed.connect(self.set_value_from_slider)
 
                 self.setCellWidget(row_to_put, self.slider_col, slider)
-                self.cellWidget(row_to_put, self.value_col).setText(str(round(((max - min) / 2) + min, 6)))
+                self.cellWidget(row_to_put, self.value_col).setText(str(round(mean, 4)))
 
             else:
                 # TODO this can be removed to stop coloring
