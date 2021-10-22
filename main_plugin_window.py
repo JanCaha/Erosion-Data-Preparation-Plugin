@@ -346,35 +346,17 @@ class MainPluginDialog(QDialog, FORM_CLASS):
         self.stackedWidget.removeWidget(widget)
         self.stackedWidget.insertWidget(self.landuse_select_widget_index, self.table_landuse_assign_catalog)
 
-        self.table_corg = TableWidgetCorg(TextConstants.header_table_corg)
-        widget = self.stackedWidget.widget(self.corg_widget_index)
-        self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.corg_widget_index, self.table_corg)
+        self.create_table_corg()
 
-        self.table_bulk_density = TableWidgetBulkDensity(TextConstants.header_table_bulkdensity)
-        widget = self.stackedWidget.widget(self.bulkdensity_widget_index)
-        self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.bulkdensity_widget_index, self.table_bulk_density)
+        self.create_table_bulk_density()
 
-        self.table_canopy_cover = TableWidgetCanopyCover(TextConstants.header_table_canopycover)
-        widget = self.stackedWidget.widget(self.canopycover_widget_index)
-        self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.canopycover_widget_index, self.table_canopy_cover)
+        self.create_table_canopy_cover()
 
-        self.table_roughness = TableWidgetRoughness(TextConstants.header_table_roughness)
-        widget = self.stackedWidget.widget(self.roughness_widget_index)
-        self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.roughness_widget_index, self.table_roughness)
+        self.create_table_rougness()
 
-        self.table_erodibility = TableWidgetErodibility(TextConstants.header_table_erodibility)
-        widget = self.stackedWidget.widget(self.corg_widget_index+4)
-        self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.corg_widget_index+4, self.table_erodibility)
+        self.create_table_erodibility()
 
-        self.table_skinfactor = TableWidgetSkinFactor(TextConstants.header_table_skinfactor)
-        widget = self.stackedWidget.widget(self.corg_widget_index+5)
-        self.stackedWidget.removeWidget(widget)
-        self.stackedWidget.insertWidget(self.corg_widget_index+5, self.table_skinfactor)
+        self.create_table_skinfactor()
 
         self.table_edit_values = TableWidgetEditNumericValues()
         widget = self.stackedWidget.widget(self.corg_widget_index + 7)
@@ -845,6 +827,17 @@ class MainPluginDialog(QDialog, FORM_CLASS):
 
                 self.e3d_wizard_process.create_main_layer(self.progressBar)
 
+                if self.table_landuse_assign_catalog.data_changes():
+
+                    self.e3d_wizard_process.adjust_search_values(self.table_landuse_assign_catalog.get_data_change_approaches())
+
+                    self.create_table_corg()
+                    self.create_table_bulk_density()
+                    self.create_table_canopy_cover()
+                    self.create_table_rougness()
+                    self.create_table_erodibility()
+                    self.create_table_skinfactor()
+
                 self.e3d_wizard_process.add_month_field(self.date_month)
 
                 if not self.skip_step_table_corg():
@@ -906,6 +899,8 @@ class MainPluginDialog(QDialog, FORM_CLASS):
             if i == 11:
 
                 self.e3d_wizard_process.layer_main = self.table_skinfactor.join_data(self.e3d_wizard_process.layer_main)
+
+                add_maplayer_to_project(self.e3d_wizard_process.layer_main)
 
             if i == 12:
 
@@ -1078,3 +1073,39 @@ class MainPluginDialog(QDialog, FORM_CLASS):
             self.label_data_status.setStyleSheet("color : red;")
             self.label_data_status_confirm.show()
             self.checkbox_export_empty_data.show()
+
+    def create_table_corg(self):
+        self.table_corg = TableWidgetCorg(TextConstants.header_table_corg)
+        widget = self.stackedWidget.widget(self.corg_widget_index)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.corg_widget_index, self.table_corg)
+
+    def create_table_bulk_density(self):
+        self.table_bulk_density = TableWidgetBulkDensity(TextConstants.header_table_bulkdensity)
+        widget = self.stackedWidget.widget(self.bulkdensity_widget_index)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.bulkdensity_widget_index, self.table_bulk_density)
+
+    def create_table_canopy_cover(self):
+        self.table_canopy_cover = TableWidgetCanopyCover(TextConstants.header_table_canopycover)
+        widget = self.stackedWidget.widget(self.canopycover_widget_index)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.canopycover_widget_index, self.table_canopy_cover)
+
+    def create_table_rougness(self):
+        self.table_roughness = TableWidgetRoughness(TextConstants.header_table_roughness)
+        widget = self.stackedWidget.widget(self.roughness_widget_index)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.roughness_widget_index, self.table_roughness)
+
+    def create_table_erodibility(self):
+        self.table_erodibility = TableWidgetErodibility(TextConstants.header_table_erodibility)
+        widget = self.stackedWidget.widget(self.corg_widget_index+4)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.corg_widget_index + 4, self.table_erodibility)
+
+    def create_table_skinfactor(self):
+        self.table_skinfactor = TableWidgetSkinFactor(TextConstants.header_table_skinfactor)
+        widget = self.stackedWidget.widget(self.corg_widget_index+5)
+        self.stackedWidget.removeWidget(widget)
+        self.stackedWidget.insertWidget(self.corg_widget_index + 5, self.table_skinfactor)
