@@ -46,6 +46,12 @@ class TextConstantsCZ:
     tw_lc_col_vegetation_condition = "Stav vegetace"
     tw_lc_col_protection_measure = "Ochranná opatření"
     tw_lc_col_surface_conditions = "Stav povrchu"
+    tw_lc_col_detail_level = "Detail level"
+
+    menu_status_ka5 = "KA5 Class"
+    menu_status_ka5_lv1 = "KA5 Group Level 1"
+    menu_status_ka5_lv2 = "KA5 Group Level 2"
+    menu_status_ka5_nodifferentiate = "No differentiate"
 
     # TableWidgetLanduseAssignedValues
 
