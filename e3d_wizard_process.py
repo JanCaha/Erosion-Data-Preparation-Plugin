@@ -1,4 +1,4 @@
-from typing import Tuple, List, NoReturn, Optional, Any
+from typing import Tuple, List, NoReturn, Optional, Any, Dict
 
 from qgis.core import (QgsVectorLayer,
                        QgsRasterLayer,
@@ -25,7 +25,9 @@ from .algorithms.algs import (landuse_with_crops,
                               add_row_without_geom,
                               delete_features_with_values,
                               delete_fields,
-                              field_contains_null_values)
+                              field_contains_null_values,
+                              adjust_feature_values_to_settings)
+from .algorithms.utils import add_maplayer_to_project
 
 
 class E3DWizardProcess:
@@ -250,6 +252,11 @@ class E3DWizardProcess:
                                          table_to_join,
                                          TextConstants.field_name_landuse_crops,
                                          progress_bar)
+
+    def adjust_search_values(self, table: Dict[str, str]):
+
+        adjust_feature_values_to_settings(self.layer_intersected_dissolved,
+                                          table)
 
     def rename_soil_field_soil_id(self, field_to_rename: str) -> NoReturn:
 
