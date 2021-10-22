@@ -20,6 +20,8 @@ from .table_widget_item import TableItemNotEditable
 
 class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
+    data_details_changed: bool = True
+
     def __init__(self, parent=None,
                  name_subcategory: str = None):
 
@@ -43,7 +45,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         self.protection_dict = self.catalog.get_protection_measure()
         self.surface_dict = self.catalog.get_surface_condition()
 
-        self.setColumnCount(6)
+        self.setColumnCount(7)
 
         self.setHorizontalHeaderItem(0, self.add_header(TextConstants.tw_lc_col_value))
         self.setHorizontalHeaderItem(1, self.add_header(TextConstants.tw_lc_col_assigned))
@@ -51,6 +53,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         self.setHorizontalHeaderItem(3, self.add_header(TextConstants.tw_lc_col_vegetation_condition))
         self.setHorizontalHeaderItem(4, self.add_header(TextConstants.tw_lc_col_protection_measure))
         self.setHorizontalHeaderItem(5, self.add_header(TextConstants.tw_lc_col_surface_conditions))
+        self.setHorizontalHeaderItem(6, self.add_header(TextConstants.tw_lc_col_detail_level))
 
         width_smaller = 0.6
 
@@ -60,6 +63,7 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         self.setColumnWidth(3, int(self.columnWidth(1) * width_smaller))
         self.setColumnWidth(4, int(self.columnWidth(1) * width_smaller))
         self.setColumnWidth(5, int(self.columnWidth(1) * width_smaller))
+        self.setColumnWidth(6, int(self.columnWidth(1) * width_smaller))
 
     def add_header(self, column_name: str) -> QTableWidgetItem:
 
@@ -135,6 +139,24 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         for name in self.agrotechnology_dict.keys():
 
             main_menu.addAction(name)
+
+        button = self.build_menu_button(main_menu)
+
+        return button
+
+    def details_changed(self):
+        self.data_details_changed = True
+
+    def build_menu_detail(self) -> QPushButton:
+
+        main_menu = QMenu()
+        main_menu.triggered.connect(lambda action: button.setText(action.text()))
+        main_menu.triggered.connect(self.details_changed)
+
+        main_menu.addAction(TextConstants.menu_status_ka5)
+        main_menu.addAction(TextConstants.menu_status_ka5_lv1)
+        main_menu.addAction(TextConstants.menu_status_ka5_lv2)
+        main_menu.addAction(TextConstants.menu_status_ka5_nodifferentiate)
 
         button = self.build_menu_button(main_menu)
 
@@ -216,6 +238,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
                 self.setCellWidget(i, 3, self.build_menu_vegetation_condition())
                 self.setCellWidget(i, 4, self.build_menu_protection_measure())
                 self.setCellWidget(i, 5, self.build_menu_surface_conditions())
+                self.setCellWidget(i, 6, self.build_menu_detail())
+                self.cellWidget(i, 6).setText(TextConstants.menu_status_ka5)
 
     def is_filled(self):
 
@@ -240,6 +264,25 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
                 data.update({landuse_category: self.data_dict[values]})
             else:
                 data.update({landuse_category: None})
+
+        return data
+
+    def data_changes(self) -> bool:
+
+        return self.data_details_changed
+
+    def get_data_change_approaches(self) -> Dict[str, str]:
+
+        data = {}
+
+        for i in range(self.rowCount()):
+
+            class_name = self.item(i, 0).text()
+            value = self.cellWidget(i, 6).text()
+
+            data.update({class_name: value})
+
+        self.data_details_changed = False
 
         return data
 
