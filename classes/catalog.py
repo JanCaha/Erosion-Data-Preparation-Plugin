@@ -16,6 +16,9 @@ class E3dCatalog(metaclass=Singleton):
     def __init__(self,
                  database_file: Optional[str] = None):
 
+        self._data_quality_values = {}
+        self._data_sources_values = {}
+
         if not database_file or not Path(database_file).exists():
             database_file = "database.sqlite"
             self.database_file = Path(__file__).parent.parent / "db_catalog" / database_file
@@ -26,6 +29,58 @@ class E3dCatalog(metaclass=Singleton):
         self.db_connection = sqlite3.connect(self.database_file)
 
         self.db_cursor = self.db_connection.cursor()
+
+    def set_data_quality(self, data: Dict) -> Dict:
+
+        result = {}
+
+        for key in data.keys():
+
+            result.update({self.data_quality[key]: data[key]})
+
+        return result
+
+    @property
+    def data_quality(self):
+
+        if not self._data_quality_values:
+
+            sql = f"SELECT id, name_{TextConstants.language} FROM quality_index"
+
+            self.db_cursor.execute(sql)
+
+            data = self.db_cursor.fetchall()
+
+            for row in data:
+                self._data_quality_values.update({row[0]: row[1]})
+
+        return self._data_quality_values
+
+    def set_data_sources(self, data: Dict) -> Dict:
+
+        result = {}
+
+        for key in data.keys():
+
+            result.update({self.data_sources[key]: data[key]})
+
+        return result
+
+    @property
+    def data_sources(self):
+
+        if not self._data_sources_values:
+
+            sql = f"SELECT id, name_{TextConstants.language} FROM source"
+
+            self.db_cursor.execute(sql)
+
+            data = self.db_cursor.fetchall()
+
+            for row in data:
+                self._data_sources_values.update({row[0]: row[1]})
+
+        return self._data_sources_values
 
     def get_values(self, table: str, landuse_lv1_id: str, landuse_lv2_id: str, crop_id: str):
 
