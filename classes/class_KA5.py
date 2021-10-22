@@ -52,15 +52,38 @@ class KA5Class:
 
         MSE = 0
 
-        MSE += pow(self.FT - other.FT, 2)
         MSE += pow(self.MT - other.MT, 2)
-        MSE += pow(self.GT - other.GT, 2)
-        MSE += pow(self.FU - other.FU, 2)
         MSE += pow(self.MU - other.MU, 2)
-        MSE += pow(self.GU - other.GU, 2)
-        MSE += pow(self.FT - other.FT, 2)
-        MSE += pow(self.FS - other.FS, 2)
         MSE += pow(self.MS - other.MS, 2)
-        MSE += pow(self.GS - other.GS, 2)
 
-        return pow(MSE/9, 0.5)
+        count = 3
+
+        if other.FT != 0:
+            MSE += pow(self.FT - other.FT, 2)
+            count += 1
+
+        if other.GT != 0:
+            MSE += pow(self.GT - other.GT, 2)
+            count += 1
+
+        if other.FU != 0:
+            MSE += pow(self.FU - other.FU, 2)
+            count += 1
+
+        if other.GU != 0:
+            MSE += pow(self.GU - other.GU, 2)
+            count += 1
+
+        if other.FT != 0:
+            MSE += pow(self.FT - other.FT, 2)
+            count += 1
+
+        if other.FS != 0:
+            MSE += pow(self.FS - other.FS, 2)
+            count += 1
+
+        if other.GS != 0:
+            MSE += pow(self.GS - other.GS, 2)
+            count += 1
+
+        return pow(MSE/count, 0.5)
