@@ -594,3 +594,84 @@ def field_contains_null_values(layer: QgsVectorLayer, field_name: str) -> bool:
 
     return 0 < layer.selectedFeatureCount()
 
+
+def adjust_feature_values_to_settings(layer: QgsVectorLayer,
+                                      settings: Dict[str, str]) -> NoReturn:
+
+    feature: QgsFeature
+
+    fields: QgsFields = layer.fields()
+
+    remove_soil_classes = {}
+
+    layer.startEditing()
+
+    for feature in layer.getFeatures():
+
+        for setting in settings.keys():
+
+            if setting == feature.attribute(TextConstants.field_name_landuse_crops):
+
+                if settings[setting] == TextConstants.menu_status_ka5:
+
+                    field_index_1 = fields.lookupField(TextConstants.field_name_ka5_group_lv1_id)
+                    field_index_2 = fields.lookupField(TextConstants.field_name_ka5_group_lv2_id)
+
+                    layer.changeAttributeValue(feature.id(),
+                                               field_index_1,
+                                               None)
+
+                    layer.changeAttributeValue(feature.id(),
+                                               field_index_2,
+                                               None)
+
+                if settings[setting] == TextConstants.menu_status_ka5_lv1:
+
+                    field_index_2 = fields.lookupField(TextConstants.field_name_ka5_group_lv2_id)
+
+                    layer.changeAttributeValue(feature.id(),
+                                               field_index_2,
+                                               None)
+
+                if settings[setting] == TextConstants.menu_status_ka5_lv2:
+
+                    field_index_1 = fields.lookupField(TextConstants.field_name_ka5_group_lv1_id)
+
+                    layer.changeAttributeValue(feature.id(),
+                                               field_index_1,
+                                               None)
+
+                if settings[setting] == TextConstants.menu_status_ka5_nodifferentiate:
+
+                    field_index_1 = fields.lookupField(TextConstants.field_name_ka5_group_lv1_id)
+                    field_index_2 = fields.lookupField(TextConstants.field_name_ka5_group_lv2_id)
+
+                    layer.changeAttributeValue(feature.id(),
+                                               field_index_1,
+                                               None)
+
+                    layer.changeAttributeValue(feature.id(),
+                                               field_index_2,
+                                               None)
+
+                    landuse_crop = feature.attribute(TextConstants.field_name_landuse_crops)
+
+                    if landuse_crop in remove_soil_classes.keys():
+
+                        fields_to_unify = {fields.lookupField(TextConstants.field_name_ka5_id): TextConstants.field_name_ka5_id,
+                                           fields.lookupField(TextConstants.field_name_ka5_name): TextConstants.field_name_ka5_name,
+                                           fields.lookupField(TextConstants.field_name_ka5_code): TextConstants.field_name_ka5_code,
+                                           fields.lookupField(TextConstants.field_name_soil_id): TextConstants.field_name_soil_id}
+
+                        for field_index in fields_to_unify.keys():
+
+                            layer.changeAttributeValue(feature.id(),
+                                                       field_index,
+                                                       remove_soil_classes[landuse_crop].attribute(fields_to_unify[field_index]))
+
+                    else:
+
+                        remove_soil_classes.update({landuse_crop: feature})
+
+    layer.commitChanges()
+
