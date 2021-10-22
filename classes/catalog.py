@@ -250,16 +250,50 @@ class E3dCatalog(metaclass=Singleton):
 
         return classes
 
-    def get_bulk_density_range(self,
-                               ka5_class: Optional[str] = None,
-                               ka5_group_lv2: Optional[str] = None,
-                               crop: Optional[str] = None,
-                               landuse_lv1: Optional[str] = None,
-                               landuse_lv2: Optional[str] = None,
-                               agrotechnology: Optional[str] = None,
-                               month: Optional[str] = None):
+    def extract_values_sources_quality(self, data: List[Tuple]) -> Tuple[List[float], Dict[str, int], Dict[str, int]]:
+
+        values = []
+        source_id = {}
+        quality_index = {}
+
+        for row in data:
+
+            values.append(row[0])
+
+            if row[1] not in source_id.keys():
+                source_id.update({row[1]: 1})
+            else:
+                number = source_id[row[1]]
+                source_id.update({row[1]: number + 1})
+
+            if row[2] not in quality_index.keys():
+                quality_index.update({row[2]: 1})
+            else:
+                number = quality_index[row[2]]
+                quality_index.update({row[2]: number + 1})
+
+        source_id = self.set_data_sources(source_id)
+        quality_index = self.set_data_quality(quality_index)
+
+        return values, source_id, quality_index
+
+    def prepare_bulk_density_conditions(self,
+                                        ka5_class: Optional[str] = None,
+                                        ka5_group_lv1: Optional[str] = None,
+                                        ka5_group_lv2: Optional[str] = None,
+                                        crop: Optional[str] = None,
+                                        landuse_lv1: Optional[str] = None,
+                                        landuse_lv2: Optional[str] = None,
+                                        agrotechnology: Optional[str] = None,
+                                        month: Optional[str] = None) -> List[str]:
 
         conds = []
+
+        if ka5_group_lv1:
+            conds.append(f"ka5_group_lv1_id = {ka5_group_lv1}")
+
+        if ka5_group_lv2:
+            conds.append(f"ka5_group_lv2_id = {ka5_group_lv2}")
 
         if agrotechnology:
             conds.append(f"agrotechnology_id = {agrotechnology}")
@@ -278,6 +312,60 @@ class E3dCatalog(metaclass=Singleton):
 
         if month:
             conds.append(f"month_id = {month}")
+
+        return conds
+
+    def get_bulk_density_data(self,
+                              ka5_class: Optional[str] = None,
+                              ka5_group_lv1: Optional[str] = None,
+                              ka5_group_lv2: Optional[str] = None,
+                              crop: Optional[str] = None,
+                              landuse_lv1: Optional[str] = None,
+                              landuse_lv2: Optional[str] = None,
+                              agrotechnology: Optional[str] = None,
+                              month: Optional[str] = None) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+
+        conds = self.prepare_bulk_density_conditions(ka5_class,
+                                                     ka5_group_lv1,
+                                                     ka5_group_lv2,
+                                                     crop,
+                                                     landuse_lv1,
+                                                     landuse_lv2,
+                                                     agrotechnology,
+                                                     month)
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            self.db_cursor.execute(F"SELECT bulk_density, source_id, quality_index_id "
+                                   F" FROM bulk_density "
+                                   F"WHERE {conds}")
+
+            data = self.db_cursor.fetchall()
+
+            return self.extract_values_sources_quality(data)
+
+        return None
+
+    def get_bulk_density_range(self,
+                               ka5_class: Optional[str] = None,
+                               ka5_group_lv1: Optional[str] = None,
+                               ka5_group_lv2: Optional[str] = None,
+                               crop: Optional[str] = None,
+                               landuse_lv1: Optional[str] = None,
+                               landuse_lv2: Optional[str] = None,
+                               agrotechnology: Optional[str] = None,
+                               month: Optional[str] = None):
+
+        conds = self.prepare_bulk_density_conditions(ka5_class,
+                                                     ka5_group_lv1,
+                                                     ka5_group_lv2,
+                                                     crop,
+                                                     landuse_lv1,
+                                                     landuse_lv2,
+                                                     agrotechnology,
+                                                     month)
 
         if 0 < len(conds):
 
@@ -292,15 +380,22 @@ class E3dCatalog(metaclass=Singleton):
         else:
             return self.default_stat_tuple
 
-    def get_corg_range(self,
-                       ka5_class: Optional[str] = None,
-                       ka5_group_lv2: Optional[str] = None,
-                       crop: Optional[str] = None,
-                       landuse_lv1: Optional[str] = None,
-                       landuse_lv2: Optional[str] = None,
-                       agrotechnology: Optional[str] = None):
+    def get_corg_conditions(self,
+                            ka5_class: Optional[str] = None,
+                            ka5_group_lv1: Optional[str] = None,
+                            ka5_group_lv2: Optional[str] = None,
+                            crop: Optional[str] = None,
+                            landuse_lv1: Optional[str] = None,
+                            landuse_lv2: Optional[str] = None,
+                            agrotechnology: Optional[str] = None) -> List[str]:
 
         conds = []
+
+        if ka5_group_lv1:
+            conds.append(f"ka5_group_lv1_id = {ka5_group_lv1}")
+
+        if ka5_group_lv2:
+            conds.append(f"ka5_group_lv2_id = {ka5_group_lv2}")
 
         if agrotechnology:
             conds.append(f"agrotechnology_id = {agrotechnology}")
@@ -317,6 +412,25 @@ class E3dCatalog(metaclass=Singleton):
         if landuse_lv2:
             conds.append(f"landuse_lv2_id = {landuse_lv2}")
 
+        return conds
+
+    def get_corg_range(self,
+                       ka5_class: Optional[str] = None,
+                       ka5_group_lv1: Optional[str] = None,
+                       ka5_group_lv2: Optional[str] = None,
+                       crop: Optional[str] = None,
+                       landuse_lv1: Optional[str] = None,
+                       landuse_lv2: Optional[str] = None,
+                       agrotechnology: Optional[str] = None):
+
+        conds = self.get_corg_conditions(ka5_class,
+                                         ka5_group_lv1,
+                                         ka5_group_lv2,
+                                         crop,
+                                         landuse_lv1,
+                                         landuse_lv2,
+                                         agrotechnology)
+
         if 0 < len(conds):
 
             conds = " AND ".join(conds)
@@ -329,11 +443,42 @@ class E3dCatalog(metaclass=Singleton):
         else:
             return self.default_stat_tuple
 
-    def get_canopy_cover_range(self,
-                               crop: Optional[str] = None,
-                               landuse_lv1: Optional[str] = None,
-                               landuse_lv2: Optional[str] = None,
-                               month: Optional[str] = None):
+    def get_corg_data(self,
+                      ka5_class: Optional[str] = None,
+                      ka5_group_lv1: Optional[str] = None,
+                      ka5_group_lv2: Optional[str] = None,
+                      crop: Optional[str] = None,
+                      landuse_lv1: Optional[str] = None,
+                      landuse_lv2: Optional[str] = None,
+                      agrotechnology: Optional[str] = None) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+
+        conds = self.get_corg_conditions(ka5_class,
+                                         ka5_group_lv1,
+                                         ka5_group_lv2,
+                                         crop,
+                                         landuse_lv1,
+                                         landuse_lv2,
+                                         agrotechnology)
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            self.db_cursor.execute(F"SELECT corg, source_id, quality_index_id "
+                                   F" FROM corg "
+                                   F"WHERE {conds}")
+
+            data = self.db_cursor.fetchall()
+
+            return self.extract_values_sources_quality(data)
+
+        return None
+
+    def get_canopy_cover_conditions(self,
+                                    crop: Optional[str] = None,
+                                    landuse_lv1: Optional[str] = None,
+                                    landuse_lv2: Optional[str] = None,
+                                    month: Optional[str] = None) -> List[str]:
 
         conds = []
 
@@ -348,6 +493,19 @@ class E3dCatalog(metaclass=Singleton):
 
         if landuse_lv2:
             conds.append(f"landuse_lv2_id = {landuse_lv2}")
+
+        return conds
+
+    def get_canopy_cover_range(self,
+                               crop: Optional[str] = None,
+                               landuse_lv1: Optional[str] = None,
+                               landuse_lv2: Optional[str] = None,
+                               month: Optional[str] = None):
+
+        conds = self.get_canopy_cover_conditions(crop,
+                                                 landuse_lv1,
+                                                 landuse_lv2,
+                                                 month)
 
         if 0 < len(conds):
 
@@ -368,15 +526,41 @@ class E3dCatalog(metaclass=Singleton):
         else:
             return self.default_stat_tuple
 
-    def get_roughness_range(self,
-                            crop: Optional[str] = None,
-                            landuse_lv1: Optional[str] = None,
-                            landuse_lv2: Optional[str] = None,
-                            agrotechnology: Optional[str] = None,
-                            protection_measure: Optional[str] = None,
-                            surface_condition: Optional[str] = None,
-                            vegetation_condition: Optional[str] = None,
-                            month: Optional[str] = None):
+    def get_canopy_cover_data(self,
+                              crop: Optional[str] = None,
+                              landuse_lv1: Optional[str] = None,
+                              landuse_lv2: Optional[str] = None,
+                              month: Optional[str] = None) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+
+        conds = self.get_canopy_cover_conditions(crop,
+                                                 landuse_lv1,
+                                                 landuse_lv2,
+                                                 month)
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            self.db_cursor.execute(F"SELECT canopy_cover, source_id, quality_index_id "
+                                   F" FROM canopy_cover "
+                                   F"WHERE {conds}")
+
+            data = self.db_cursor.fetchall()
+
+            return self.extract_values_sources_quality(data)
+
+        return None
+
+    def get_rougness_conditions(self,
+                                crop: Optional[str] = None,
+                                landuse_lv1: Optional[str] = None,
+                                landuse_lv2: Optional[str] = None,
+                                agrotechnology: Optional[str] = None,
+                                protection_measure: Optional[str] = None,
+                                surface_condition: Optional[str] = None,
+                                vegetation_condition: Optional[str] = None,
+                                month: Optional[str] = None) -> List[str]:
+
         conds = []
 
         if agrotechnology:
@@ -403,6 +587,27 @@ class E3dCatalog(metaclass=Singleton):
         if landuse_lv2:
             conds.append(f"landuse_lv2_id = {landuse_lv2}")
 
+        return conds
+
+    def get_roughness_range(self,
+                            crop: Optional[str] = None,
+                            landuse_lv1: Optional[str] = None,
+                            landuse_lv2: Optional[str] = None,
+                            agrotechnology: Optional[str] = None,
+                            protection_measure: Optional[str] = None,
+                            surface_condition: Optional[str] = None,
+                            vegetation_condition: Optional[str] = None,
+                            month: Optional[str] = None):
+
+        conds = self.get_rougness_conditions(crop,
+                                             landuse_lv1,
+                                             landuse_lv2,
+                                             agrotechnology,
+                                             protection_measure,
+                                             surface_condition,
+                                             vegetation_condition,
+                                             month)
+
         if 0 < len(conds):
 
             conds = " AND ".join(conds)
@@ -422,18 +627,58 @@ class E3dCatalog(metaclass=Singleton):
         else:
             return self.default_stat_tuple
 
-    def get_erodibility_range(self,
-                              crop: Optional[str] = None,
-                              landuse_lv1: Optional[str] = None,
-                              landuse_lv2: Optional[str] = None,
-                              ka5_class: Optional[str] = None,
-                              ka5_group_lv2: Optional[str] = None,
-                              agrotechnology: Optional[str] = None,
-                              protection_measure: Optional[str] = None,
-                              surface_condition: Optional[str] = None,
-                              month: Optional[str] = None):
+    def get_roughness_data(self,
+                           crop: Optional[str] = None,
+                           landuse_lv1: Optional[str] = None,
+                           landuse_lv2: Optional[str] = None,
+                           agrotechnology: Optional[str] = None,
+                           protection_measure: Optional[str] = None,
+                           surface_condition: Optional[str] = None,
+                           vegetation_condition: Optional[str] = None,
+                           month: Optional[str] = None) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+
+        conds = self.get_rougness_conditions(crop,
+                                             landuse_lv1,
+                                             landuse_lv2,
+                                             agrotechnology,
+                                             protection_measure,
+                                             surface_condition,
+                                             vegetation_condition,
+                                             month)
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            self.db_cursor.execute(F"SELECT roughness, source_id, quality_index_id "
+                                   F" FROM roughness "
+                                   F"WHERE {conds}")
+
+            data = self.db_cursor.fetchall()
+
+            return self.extract_values_sources_quality(data)
+
+        return None
+
+    def get_erodibility_conditions(self,
+                                   crop: Optional[str] = None,
+                                   landuse_lv1: Optional[str] = None,
+                                   landuse_lv2: Optional[str] = None,
+                                   ka5_class: Optional[str] = None,
+                                   ka5_group_lv1: Optional[str] = None,
+                                   ka5_group_lv2: Optional[str] = None,
+                                   agrotechnology: Optional[str] = None,
+                                   protection_measure: Optional[str] = None,
+                                   surface_condition: Optional[str] = None,
+                                   month: Optional[str] = None) -> List[str]:
 
         conds = []
+
+        if ka5_group_lv1:
+            conds.append(f"ka5_group_lv1_id = {ka5_group_lv1}")
+
+        if ka5_group_lv2:
+            conds.append(f"ka5_group_lv2_id = {ka5_group_lv2}")
 
         if agrotechnology:
             conds.append(f"agrotechnology_id = {agrotechnology}")
@@ -458,6 +703,31 @@ class E3dCatalog(metaclass=Singleton):
 
         if ka5_class:
             conds.append(f"ka5_class_id = {ka5_class}")
+
+        return conds
+
+    def get_erodibility_range(self,
+                              crop: Optional[str] = None,
+                              landuse_lv1: Optional[str] = None,
+                              landuse_lv2: Optional[str] = None,
+                              ka5_class: Optional[str] = None,
+                              ka5_group_lv1: Optional[str] = None,
+                              ka5_group_lv2: Optional[str] = None,
+                              agrotechnology: Optional[str] = None,
+                              protection_measure: Optional[str] = None,
+                              surface_condition: Optional[str] = None,
+                              month: Optional[str] = None):
+
+        conds = self.get_erodibility_conditions(crop,
+                                                landuse_lv1,
+                                                landuse_lv2,
+                                                ka5_class,
+                                                ka5_group_lv1,
+                                                ka5_group_lv2,
+                                                agrotechnology,
+                                                protection_measure,
+                                                surface_condition,
+                                                month)
 
         if 0 < len(conds):
 
@@ -478,18 +748,62 @@ class E3dCatalog(metaclass=Singleton):
         else:
             return self.default_stat_tuple
 
-    def get_skinfactor_range(self,
+    def get_erodibility_data(self,
                              crop: Optional[str] = None,
                              landuse_lv1: Optional[str] = None,
                              landuse_lv2: Optional[str] = None,
                              ka5_class: Optional[str] = None,
+                             ka5_group_lv1: Optional[str] = None,
                              ka5_group_lv2: Optional[str] = None,
                              agrotechnology: Optional[str] = None,
                              protection_measure: Optional[str] = None,
                              surface_condition: Optional[str] = None,
-                             month: Optional[str] = None):
+                             month: Optional[str] = None) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+
+        conds = self.get_erodibility_conditions(crop,
+                                                landuse_lv1,
+                                                landuse_lv2,
+                                                ka5_class,
+                                                ka5_group_lv1,
+                                                ka5_group_lv2,
+                                                agrotechnology,
+                                                protection_measure,
+                                                surface_condition,
+                                                month)
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            self.db_cursor.execute(F"SELECT erodibility, source_id, quality_index_id "
+                                   F" FROM calibration "
+                                   F"WHERE {conds}")
+
+            data = self.db_cursor.fetchall()
+
+            return self.extract_values_sources_quality(data)
+
+        return None
+
+    def get_skinfactor_conditions(self,
+                                  crop: Optional[str] = None,
+                                  landuse_lv1: Optional[str] = None,
+                                  landuse_lv2: Optional[str] = None,
+                                  ka5_class: Optional[str] = None,
+                                  ka5_group_lv1: Optional[str] = None,
+                                  ka5_group_lv2: Optional[str] = None,
+                                  agrotechnology: Optional[str] = None,
+                                  protection_measure: Optional[str] = None,
+                                  surface_condition: Optional[str] = None,
+                                  month: Optional[str] = None) -> List[str]:
 
         conds = []
+
+        if ka5_group_lv1:
+            conds.append(f"ka5_group_lv1_id = {ka5_group_lv1}")
+
+        if ka5_group_lv2:
+            conds.append(f"ka5_group_lv2_id = {ka5_group_lv2}")
 
         if agrotechnology:
             conds.append(f"agrotechnology_id = {agrotechnology}")
@@ -515,6 +829,32 @@ class E3dCatalog(metaclass=Singleton):
         if ka5_class:
             conds.append(f"ka5_class_id = {ka5_class}")
 
+        return conds
+
+
+    def get_skinfactor_range(self,
+                             crop: Optional[str] = None,
+                             landuse_lv1: Optional[str] = None,
+                             landuse_lv2: Optional[str] = None,
+                             ka5_class: Optional[str] = None,
+                             ka5_group_lv1: Optional[str] = None,
+                             ka5_group_lv2: Optional[str] = None,
+                             agrotechnology: Optional[str] = None,
+                             protection_measure: Optional[str] = None,
+                             surface_condition: Optional[str] = None,
+                             month: Optional[str] = None):
+
+        conds = self.get_skinfactor_conditions(crop,
+                                               landuse_lv1,
+                                               landuse_lv2,
+                                               ka5_class,
+                                               ka5_group_lv1,
+                                               ka5_group_lv2,
+                                               agrotechnology,
+                                               protection_measure,
+                                               surface_condition,
+                                               month)
+
         if 0 < len(conds):
 
             conds = " AND ".join(conds)
@@ -534,11 +874,49 @@ class E3dCatalog(metaclass=Singleton):
         else:
             return self.default_stat_tuple
 
+    def get_skinfactor_data(self,
+                            crop: Optional[str] = None,
+                            landuse_lv1: Optional[str] = None,
+                            landuse_lv2: Optional[str] = None,
+                            ka5_class: Optional[str] = None,
+                            ka5_group_lv1: Optional[str] = None,
+                            ka5_group_lv2: Optional[str] = None,
+                            agrotechnology: Optional[str] = None,
+                            protection_measure: Optional[str] = None,
+                            surface_condition: Optional[str] = None,
+                            month: Optional[str] = None) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+
+        conds = self.get_skinfactor_conditions(crop,
+                                               landuse_lv1,
+                                               landuse_lv2,
+                                               ka5_class,
+                                               ka5_group_lv1,
+                                               ka5_group_lv2,
+                                               agrotechnology,
+                                               protection_measure,
+                                               surface_condition,
+                                               month)
+
+        if 0 < len(conds):
+
+            conds = " AND ".join(conds)
+
+            self.db_cursor.execute(F"SELECT skinfactor, source_id, quality_index_id "
+                                   F" FROM calibration "
+                                   F"WHERE {conds}")
+
+            data = self.db_cursor.fetchall()
+
+            return self.extract_values_sources_quality(data)
+
+        return None
+
     def get_initmoisture_range(self,
                                crop: Optional[str] = None,
                                landuse_lv1: Optional[str] = None,
                                landuse_lv2: Optional[str] = None,
                                ka5_class: Optional[str] = None,
+                               ka5_group_lv1: Optional[str] = None,
                                ka5_group_lv2: Optional[str] = None,
                                agrotechnology: Optional[str] = None,
                                protection_measure: Optional[str] = None,
@@ -546,6 +924,12 @@ class E3dCatalog(metaclass=Singleton):
                                month: Optional[str] = None):
 
         conds = []
+
+        if ka5_group_lv1:
+            conds.append(f"ka5_group_lv1_id = {ka5_group_lv1}")
+
+        if ka5_group_lv2:
+            conds.append(f"ka5_group_lv2_id = {ka5_group_lv2}")
 
         if month:
             conds.append(f"month_id = {month}")
