@@ -900,8 +900,6 @@ class MainPluginDialog(QDialog, FORM_CLASS):
 
                 self.e3d_wizard_process.layer_main = self.table_skinfactor.join_data(self.e3d_wizard_process.layer_main)
 
-                add_maplayer_to_project(self.e3d_wizard_process.layer_main)
-
             if i == 12:
 
                 ok, msg = self.validate_rasters()
