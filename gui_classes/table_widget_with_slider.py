@@ -1,7 +1,7 @@
 import abc
 from typing import Dict, Any, List, Optional, Tuple, NoReturn
 
-from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView
+from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QLineEdit, QHeaderView, QToolButton
 from qgis.PyQt import QtCore
 from qgis.PyQt.QtCore import QRegExp
 from qgis.PyQt.QtGui import QFont, QRegExpValidator, QColor
@@ -19,6 +19,7 @@ from ..algorithms.utils import (get_unique_fields_combinations, eval_string_with
 from ..algorithms.algorithms_layers import join_tables
 from ..algorithms.algs import delete_fields
 from .table_widget_item import TableItemNotEditable
+from .dialog_data_info import DialogDataInfo
 
 
 class TableWidgetWithSlider(QTableWidget):
@@ -42,16 +43,23 @@ class TableWidgetWithSlider(QTableWidget):
 
         self.any_cell_empty = False
 
-        self.setColumnCount(len(column_names) + 1)
+        self.column_names = column_names
 
-        self.slider_col = len(column_names) - 2
-        self.value_col = len(column_names) - 1
-        self.stat_col = len(column_names)
+        self.prepare_header()
 
-        for i in range(len(column_names)):
-            self.setHorizontalHeaderItem(i, self.header_column(column_names[i]))
+    def prepare_header(self):
 
-            if column_names[i] == TextConstants.col_ka5_code:
+        self.setColumnCount(len(self.column_names) + 2)
+
+        self.slider_col = len(self.column_names) - 2
+        self.value_col = len(self.column_names) - 1
+        self.stat_col = len(self.column_names)
+        self.link_col = self.stat_col + 1
+
+        for i in range(len(self.column_names)):
+            self.setHorizontalHeaderItem(i, self.header_column(self.column_names[i]))
+
+            if self.column_names[i] == TextConstants.col_ka5_code:
                 self.setColumnWidth(i, 150)
 
             else:
@@ -67,6 +75,8 @@ class TableWidgetWithSlider(QTableWidget):
 
         self.setHorizontalHeaderItem(self.stat_col, self.header_column(TextConstants.col_stats))
         self.horizontalHeader().setSectionResizeMode(self.stat_col, QHeaderView.ResizeToContents)
+        self.setHorizontalHeaderItem(self.link_col, self.header_column("Info"))
+        self.horizontalHeader().setSectionResizeMode(self.link_col, QHeaderView.ResizeToContents)
 
     def set_row_color(self, row: int,
                       color: Optional[QColor] = None):
@@ -145,9 +155,36 @@ class TableWidgetWithSlider(QTableWidget):
                 self.setCellWidget(row_to_put, self.slider_col, slider)
                 self.cellWidget(row_to_put, self.value_col).setText(str(round(mean, 4)))
 
+                button = QToolButton()
+                button.setText("...")
+                button.clicked.connect(self.action_for_button)
+
+                self.setCellWidget(row_to_put, self.link_col, button)
+
             else:
                 # TODO this can be removed to stop coloring
                 self.set_row_color(row_to_put, self.COLOR_HIGHLIGHT)
+
+    def action_for_button(self):
+
+        for i in range(self.rowCount()):
+
+            if self.cellWidget(i, self.link_col) == self.sender():
+
+                original_data = self.get_real_data(self.extract_data_list()[i])
+
+                named_row = self.create_named_row_for_catalog(original_data)
+
+                values, sources, quality = self.get_row_data(named_row)
+
+                dialog = DialogDataInfo(self.extract_data_list()[i],
+                                        values,
+                                        sources,
+                                        quality,
+                                        parent=self)
+
+                dialog.show()
+                dialog.exec_()
 
     def set_value_from_slider(self):
 
@@ -181,7 +218,6 @@ class TableWidgetWithSlider(QTableWidget):
         table_data = self.data_show
 
         if self.rowCount() == 0:
-
             self.add_all_data(table_data)
 
         else:
@@ -258,13 +294,17 @@ class TableWidgetWithSlider(QTableWidget):
 
         return layer
 
+    def get_real_data(self, visual_row: List[Any]) -> List[Any]:
+
+        index = self.data_show.index(visual_row)
+
+        return self.data_stored[index]
+
     def prepare_feature_attributes(self,
                                    extract_list_rows: List[List[Any]],
                                    row_number: int) -> QgsFeature:
 
-        index = self.data_show.index(extract_list_rows[row_number])
-
-        row = self.data_stored[index]
+        row = self.get_real_data(extract_list_rows[row_number])
 
         feature = QgsFeature()
 
@@ -361,6 +401,14 @@ class TableWidgetWithSlider(QTableWidget):
     def get_slider_stat_values(self, values: List[Any]) -> Tuple[float, float, float, float]:
         return
 
+    @abc.abstractmethod
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return
+
+    @abc.abstractmethod
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return
+
 
 class TableWidgetBulkDensity(TableWidgetWithSlider):
 
@@ -376,7 +424,9 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_soil_id,
                 TextConstants.field_name_agrotechnology,
-                TextConstants.field_name_landuse_crops]
+                TextConstants.field_name_landuse_crops,
+                TextConstants.field_name_ka5_group_lv1_id,
+                TextConstants.field_name_ka5_group_lv2_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -386,7 +436,9 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_id,
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_soil_id,
-                TextConstants.field_name_agrotechnology]
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_ka5_group_lv1_id,
+                TextConstants.field_name_ka5_group_lv2_id]
 
     def get_slider_stat_values(self, values: List[Any]) -> Tuple[float, float, float, float]:
 
@@ -394,7 +446,9 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                                                    landuse_lv1=values[2],
                                                    landuse_lv2=values[1],
                                                    ka5_class=values[4],
-                                                   agrotechnology=values[7])
+                                                   agrotechnology=values[7],
+                                                   ka5_group_lv1=values[9],
+                                                   ka5_group_lv2=values[10])
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
@@ -412,6 +466,8 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_name}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_agrotechnology}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv1_id}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
                   F"field={TextConstants.field_name_bulk_density}:integer"]
 
         fields = "&".join(fields)
@@ -419,7 +475,20 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], int(value)]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[9], row[10], int(value)]
+
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+
+        return {"ka5_class": row[4],
+                "ka5_group_lv1": row[9],
+                "ka5_group_lv2": row[10],
+                "crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1],
+                "agrotechnology": row[7]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return E3dCatalog().get_bulk_density_data(**row)
 
 
 class TableWidgetCorg(TableWidgetWithSlider):
@@ -438,7 +507,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_code,
                 TextConstants.field_name_soil_id,
                 TextConstants.field_name_agrotechnology,
-                TextConstants.field_name_landuse_crops]
+                TextConstants.field_name_landuse_crops,
+                TextConstants.field_name_ka5_group_lv1_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -449,7 +519,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                 TextConstants.field_name_ka5_name,
                 TextConstants.field_name_ka5_group_lv2_id,
                 TextConstants.field_name_soil_id,
-                TextConstants.field_name_agrotechnology]
+                TextConstants.field_name_agrotechnology,
+                TextConstants.field_name_ka5_group_lv1_id]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[7]:
@@ -463,7 +534,8 @@ class TableWidgetCorg(TableWidgetWithSlider):
                                            landuse_lv1=values[2],
                                            landuse_lv2=values[1],
                                            ka5_group_lv2=values[6],
-                                           agrotechnology=values[9])
+                                           agrotechnology=values[9],
+                                           ka5_group_lv1=values[11])
 
     def prepare_fields(self) -> str:
 
@@ -476,6 +548,7 @@ class TableWidgetCorg(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
                   F"field={TextConstants.field_name_soil_id}:string",
                   F"field={TextConstants.field_name_agrotechnology}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv1_id}:string",
                   F"field={TextConstants.field_name_corg}:double"]
 
         fields = "&".join(fields)
@@ -483,7 +556,19 @@ class TableWidgetCorg(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[8], row[9], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[8], row[9], row[11], value]
+
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return {"ka5_class": row[4],
+                "crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1],
+                "ka5_group_lv2": row[6],
+                "agrotechnology": row[9],
+                "ka5_group_lv1": row[11]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return E3dCatalog().get_corg_data(**row)
 
 
 class TableWidgetCanopyCover(TableWidgetWithSlider):
@@ -529,6 +614,14 @@ class TableWidgetCanopyCover(TableWidgetWithSlider):
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
         return [row[0], row[1], row[2], row[3], int(value)]
+
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return {"crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return E3dCatalog().get_canopy_cover_data(**row)
 
 
 class TableWidgetRoughness(TableWidgetWithSlider):
@@ -595,6 +688,19 @@ class TableWidgetRoughness(TableWidgetWithSlider):
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
         return [row[0], row[1], row[2], row[3], int(row[4]), row[5], row[6], row[7], row[8], value]
 
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return {"crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1],
+                "month": row[4],
+                "agrotechnology": row[5],
+                "surface_condition": row[6],
+                "vegetation_condition": row[7],
+                "protection_measure": row[8]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return E3dCatalog().get_roughness_data(**row)
+
 
 class TableWidgetErodibility(TableWidgetWithSlider):
 
@@ -612,7 +718,9 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_protection_measure,
                 TextConstants.field_name_surface_conditions,
-                TextConstants.field_name_landuse_crops]
+                TextConstants.field_name_landuse_crops,
+                TextConstants.field_name_ka5_group_lv1_id,
+                TextConstants.field_name_ka5_group_lv2_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -624,7 +732,9 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_soil_id,
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_protection_measure,
-                TextConstants.field_name_surface_conditions]
+                TextConstants.field_name_surface_conditions,
+                TextConstants.field_name_ka5_group_lv1_id,
+                TextConstants.field_name_ka5_group_lv2_id]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
@@ -639,7 +749,9 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                                                   ka5_class=values[4],
                                                   agrotechnology=values[7],
                                                   protection_measure=values[8],
-                                                  surface_condition=values[9])
+                                                  surface_condition=values[9],
+                                                  ka5_group_lv1=values[11],
+                                                  ka5_group_lv2=values[12])
 
     def prepare_fields(self) -> str:
 
@@ -653,6 +765,8 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_protection_measure}:string",
                   F"field={TextConstants.field_name_surface_conditions}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv1_id}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
                   F"field={TextConstants.field_name_erodibility}:double"]
 
         fields = "&".join(fields)
@@ -660,7 +774,21 @@ class TableWidgetErodibility(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[11], row[12], value]
+
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return {"crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1],
+                "ka5_class": row[4],
+                "agrotechnology": row[7],
+                "protection_measure": row[8],
+                "surface_condition": row[9],
+                "ka5_group_lv1": row[11],
+                "ka5_group_lv2": row[12]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return E3dCatalog().get_erodibility_data(**row)
 
 
 class TableWidgetSkinFactor(TableWidgetWithSlider):
@@ -680,7 +808,9 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_protection_measure,
                 TextConstants.field_name_surface_conditions,
-                TextConstants.field_name_landuse_crops]
+                TextConstants.field_name_landuse_crops,
+                TextConstants.field_name_ka5_group_lv1_id,
+                TextConstants.field_name_ka5_group_lv2_id]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -693,7 +823,9 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_month,
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_protection_measure,
-                TextConstants.field_name_surface_conditions]
+                TextConstants.field_name_surface_conditions,
+                TextConstants.field_name_ka5_group_lv1_id,
+                TextConstants.field_name_ka5_group_lv2_id]
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
@@ -709,7 +841,9 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                                                  month=values[7],
                                                  agrotechnology=values[8],
                                                  protection_measure=values[9],
-                                                 surface_condition=values[10])
+                                                 surface_condition=values[10],
+                                                 ka5_group_lv1=values[12],
+                                                 ka5_group_lv2=values[13])
 
     def prepare_fields(self) -> str:
 
@@ -724,6 +858,8 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                   F"field={TextConstants.field_name_agrotechnology}:string",
                   F"field={TextConstants.field_name_protection_measure}:string",
                   F"field={TextConstants.field_name_surface_conditions}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv1_id}:string",
+                  F"field={TextConstants.field_name_ka5_group_lv2_id}:string",
                   F"field={TextConstants.field_name_skinfactor}:double"]
 
         fields = "&".join(fields)
@@ -731,7 +867,22 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], int(row[7]), row[8], row[9], row[10], value]
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], int(row[7]), row[8], row[9], row[10], row[12], row[13], value]
+
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return {"crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1],
+                "ka5_class": row[4],
+                "month": row[7],
+                "agrotechnology": row[8],
+                "protection_measure": row[9],
+                "surface_condition": row[10],
+                "ka5_group_lv1": row[12],
+                "ka5_group_lv2": row[13]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        return E3dCatalog().get_skinfactor_data(**row)
 
 
 class TableWidgetInitMoisture(TableWidgetWithSlider):
@@ -784,3 +935,12 @@ class TableWidgetInitMoisture(TableWidgetWithSlider):
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
         return [row[0], row[1], row[2], row[3], row[4], row[5], value]
+
+    def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
+        return {"crop": row[0],
+                "landuse_lv1": row[2],
+                "landuse_lv2": row[1],
+                "ka5_class": row[4]}
+
+    def get_row_data(self, row: Dict[str, Any]) -> Optional[Tuple[List[Any], Dict[str, int], Dict[str, int]]]:
+        pass
