@@ -63,9 +63,13 @@ class DialogDataInfo(QDialog):
 
         # https://matplotlib.org/stable/api/axes_api.html
 
-        ax.hist(self.data, bins=50, density=True, color="orange")
+        ax.hist(self.data, bins=50, color="orange")
         # ax.set_xlabel('Landuse type')
         # ax.set_ylabel('Frequency')
         # ax.set_title('Histogram of landuses - resting points (Distance below mean-variance)')
+
+        if 1 == len(set(self.data)):
+
+            ax.set_xlim(self.data[0]-self.data[0]*0.1, self.data[0]+self.data[0]*0.1)
 
         self.canvas.draw()
