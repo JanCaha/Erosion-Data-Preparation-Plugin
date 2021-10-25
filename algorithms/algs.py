@@ -534,6 +534,7 @@ def save_raster_as_asc(raster: QgsRasterLayer,
     no_data = raster_data_provider.sourceNoDataValue(1)
 
     if no_data < -9999:
+        raster_data_provider.setNoDataValue(1, -9999)
         no_data = -9999
 
     processing.run("gdal:translate", {
