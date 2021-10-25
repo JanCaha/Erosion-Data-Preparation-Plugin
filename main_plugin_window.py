@@ -154,6 +154,10 @@ class MainPluginDialog(QDialog, FORM_CLASS):
     lineEdit_pour_points_raster: QLineEdit
     toolButton_pour_points_raster: QFileDialog
 
+    label_dem: QLabel
+    lineEdit_dem: QLineEdit
+    toolButton_dem: QFileDialog
+
     # main window
     stackedWidget: QStackedWidget
     progressBar: QProgressBar
@@ -318,6 +322,7 @@ class MainPluginDialog(QDialog, FORM_CLASS):
         self.toolButton_lookup_table.clicked.connect(self.select_file_lookup_table)
         self.toolButton_parameter_table.clicked.connect(self.select_file_parameter_table)
         self.toolButton_pour_points_raster.clicked.connect(self.select_file_pour_points_raster)
+        self.toolButton_dem.clicked.connect(self.select_file_dem)
 
         project_path = QgsProject.instance().absolutePath()
 
@@ -364,6 +369,12 @@ class MainPluginDialog(QDialog, FORM_CLASS):
         self.stackedWidget.insertWidget(self.corg_widget_index + 7, self.table_edit_values)
 
         self.checkbox_export_empty_data.stateChanged.connect(self.allow_ok_button)
+
+    def select_file_dem(self):
+        filter = "asc (*.asc)"
+        file_name, type = QFileDialog.getSaveFileName(self, 'Select file', filter=filter)
+        file_name = QgsFileUtils.addExtensionFromFilter(file_name, filter)
+        self.lineEdit_dem.setText(file_name)
 
     def select_file_pour_points_raster(self):
         filter = "asc (*.asc)"
