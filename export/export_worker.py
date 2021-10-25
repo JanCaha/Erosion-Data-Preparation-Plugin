@@ -14,7 +14,7 @@ from ..algorithms.utils import log, is_valid_path_for_file
 
 class ExportWorker(QRunnable):
 
-    steps = 4
+    steps = 5
 
     def __init__(self):
 
@@ -33,6 +33,18 @@ class ExportWorker(QRunnable):
 
         self.layer_pour_points_rasterized = None
         self.path_pour_points = None
+
+        self.layer_raster_dem = None
+        self.path_raster_dem = None
+
+    def set_export_dem(self,
+                       layer_raster_dem: QgsRasterLayer,
+                       path_dem: str):
+
+        if is_valid_path_for_file(path_dem, required_suffix="asc"):
+
+            self.layer_raster_dem = layer_raster_dem
+            self.path_raster_dem = path_dem
 
     def set_export_lookup(self,
                           layer_lookup: QgsVectorLayer,
@@ -109,6 +121,14 @@ class ExportWorker(QRunnable):
                                self.path_raster_rasterized)
 
         self.signals.progress.emit(4)
+
+        if self.path_raster_dem:
+
+            save_raster_as_asc(self.layer_raster_dem,
+                               self.path_raster_dem,
+                               out_type=7)
+
+        self.signals.progress.emit(5)
 
         self.signals.result.emit()
 
