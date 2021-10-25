@@ -28,7 +28,8 @@ class DialogResult(QDialog):
                  path_landuse_raster: str,
                  path_parameter_table: str,
                  path_lookup_table: str,
-                 path_pour_points_raster: str = None):
+                 path_pour_points_raster: str = None,
+                 path_dem: str = None):
 
         super().__init__()
 
@@ -48,6 +49,7 @@ class DialogResult(QDialog):
         self.set_text_for_path(self.lineEdit_parameter_table, path_parameter_table)
         self.set_text_for_path(self.lineEdit_lookup_table, path_lookup_table)
         self.set_text_for_path(self.lineEdit_pour_points_raster, path_pour_points_raster, is_optional=True)
+        self.set_text_for_path(self.lineEdit_dem, path_dem)
 
     @staticmethod
     def set_text_for_path(line_edit: QLineEdit,

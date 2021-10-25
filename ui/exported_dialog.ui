@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>584</width>
-    <height>422</height>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
      <x>40</x>
      <y>100</y>
      <width>491</width>
-     <height>281</height>
+     <height>391</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -139,6 +139,33 @@
     </item>
     <item>
      <widget class="QLineEdit" name="lineEdit_pour_points_raster">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label_dem">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>DEM: </string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="lineEdit_dem">
       <property name="font">
        <font>
         <pointsize>10</pointsize>
