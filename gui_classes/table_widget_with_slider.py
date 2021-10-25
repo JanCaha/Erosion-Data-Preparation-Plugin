@@ -155,15 +155,20 @@ class TableWidgetWithSlider(QTableWidget):
                 self.setCellWidget(row_to_put, self.slider_col, slider)
                 self.cellWidget(row_to_put, self.value_col).setText(str(round(mean, 4)))
 
-                button = QToolButton()
-                button.setText("...")
-                button.clicked.connect(self.action_for_button)
-
-                self.setCellWidget(row_to_put, self.link_col, button)
-
             else:
                 # TODO this can be removed to stop coloring
                 self.set_row_color(row_to_put, self.COLOR_HIGHLIGHT)
+
+            if 0 < count:
+
+                button = QToolButton()
+                button.setText("...")
+                button.setEnabled(False)
+
+                button.clicked.connect(self.action_for_button)
+                button.setEnabled(True)
+
+                self.setCellWidget(row_to_put, self.link_col, button)
 
     def action_for_button(self):
 
