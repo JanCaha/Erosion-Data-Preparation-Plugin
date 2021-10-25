@@ -475,7 +475,11 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[9], row[10], int(value)]
+
+        if value is not None:
+            value = int(value)
+
+        return [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[9], row[10], value]
 
     def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
 
@@ -613,7 +617,11 @@ class TableWidgetCanopyCover(TableWidgetWithSlider):
         return fields
 
     def values_to_feature_list(self, row: List[Any], value: Optional[float]) -> List[Any]:
-        return [row[0], row[1], row[2], row[3], int(value)]
+
+        if value is not None:
+            value = int(value)
+
+        return [row[0], row[1], row[2], row[3], value]
 
     def create_named_row_for_catalog(self, row: List[Any]) -> Dict[str, Any]:
         return {"crop": row[0],
