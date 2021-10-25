@@ -46,12 +46,12 @@ class TextConstantsEN:
     tw_lc_col_vegetation_condition = "Vegetation condition"
     tw_lc_col_protection_measure = "Protection measure"
     tw_lc_col_surface_conditions = "Surface conditions"
-    tw_lc_col_detail_level = "Detail level"
+    tw_lc_col_detail_level = "Soil detail level"
 
     menu_status_ka5 = "KA5 Class"
-    menu_status_ka5_lv1 = "KA5 Group Level 1"
-    menu_status_ka5_lv2 = "KA5 Group Level 2"
-    menu_status_ka5_nodifferentiate = "No differentiate"
+    menu_status_ka5_lv1 = "KA5 group level 1"
+    menu_status_ka5_lv2 = "KA5 group level 2"
+    menu_status_ka5_nodifferentiate = "don’t differentiate"
 
     # TableWidgetLanduseAssignedValues
 
@@ -131,7 +131,7 @@ class TextConstantsEN:
                    "Soil type class field",
                    "Particle size distribution",
                    "Landuse classification",
-                   "Landuse categories",
+                   "Parametrization patches classification",
                    "Prepared inputs sources",
                    "Organic carbon content (Corg)",
                    "Bulk density",
@@ -144,13 +144,12 @@ class TextConstantsEN:
                    "Export input datasets for Erosion-3D"
                    ]
 
-
     step_description_labels = [
-        "Please select source layers for your landuse and soil properties definition. Both layers need to be polygon geometry vector datasets.\n\nPlease select the digital terrain model that will be used in the model. It will be used for referencing the Erosion-3D input parameter rasters that are going to be generated in the end of this wizard.\n\nAnd set the date when the modeled rainfall event occurs.",
+        "Please select source layers for your landuse and soil properties definition. Both layers need to be polygon geometry vector datasets.\n\nPlease select the digital terrain model that will be used in the model. It will be used for referencing the Erosion-3D input parameter rasters that are going to be generated in the end of this wizard. This DMT should be without streams burnt-in. If you’d like to use DMT with burn-in the stream channels you may specify it in step 13. \n\nAnd set the date when the modeled rainfall event occurs.",
         "Please select the attribute field containing the KA5 (KA4) identifier code. If not present it will be calculated later in the proces from structurall classes contents.\n\nSelect the attribute field with your arbitrary soil units identifier which will be used for definition of unique combinations of landuse and soil texture.",
         "Please assign attribute field from Soils layer containing the pareticle size classes according to the KA5 standard. If you don’t have the detailed textural classes content you may assign total of clay/silt/sand particles to the Medium clay (MT)/ Medium silt (MU)/ Medium sand (MS).\n\nIf your soils are allready classified to KA5 you may also use the average values provided in the standard. In that case assign to all of the attribute field the generated field „ka5_xx“.",
         "Please select attribute field from Landuse layer containing the landuse type and optionaly a crop.",
-        "Assign source landuse categories to Erosion-3D Parameters Catalogue categories. For correct quering of the catalogue the landuse categories need to be assigned from values available within the catalogue. Each category can be assigned on different level of classification (don’t miss the „subcategories“ items!)\nIf the categories include any special limitations (agrotechnology, soil erosion protection measures, vegetation condition) you may specify them too and the query will be limited accordingly.",
+        "Assign source landuse categories to Erosion-3D Parameters Catalogue categories. For correct quering of the catalogue the landuse categories need to be assigned from values available within the catalogue. Each category can be assigned on different level of classification (don’t miss the „subcategories“ items!)\nIf the categories include any special limitations (agrotechnology, soil erosion protection measures, vegetation condition) you may specify them too and the query will be limited accordingly.\n\nSet the level of detail for soil classes classification (class > group level 2 > group level 1). Higher the level of detail lower the the number of results will be. You can try to reduce the level of detail if no results are found for a parametrization patch class. The „don’t differentiate“ option will completely ignore the soil definition geometry and the landuse category will have uniform properties.\n\nThis step is crucial for following steps and returning here from further stages of this wizzard will discard all manual editing of the parametres (i.e. all the values will be loaded again from the catalogue).",
         "Parameter values that have been allready prepared in an input layer may used without further processing. Retrieving values from the Catalogue will be skipped for those parameters and values from selected field will be directly transcripted into the outputs (i.e. input parameter datasets for Erosion-3D).\n\nSelect the source layer and attribute field for each of the prepared parameters.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
@@ -158,7 +157,7 @@ class TextConstantsEN:
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
-        "Please specify additional input layers to be included in the processing of the Erosion-3D input datasets.\n\nPour point layer serves for deriving correct raster definition of DMT cells where the tabelated outputs of Erosion3D are recorded.\n\nChannel elements is a raster layer that defines cells of „stream flow“ in the simulation. This input may be used to create one special landuse category that is independent of the input soil and landuse layers. The layer is a raster that must have the same spatial definition as the DMT. The channel elements raster generated by Erosion-3D during the Relief dataset processing can be used.\n\nDrain elements are raster cells that drain any surface runoff completely. Please select point or line feature layer that will be converted into raster layer with special category in the soil parameters table.",
+        "Please specify additional input layers to be included in the processing of the Erosion-3D input datasets.\n\nPour point layer serves for deriving correct raster definition of DMT cells where the tabelated outputs of Erosion3D are recorded.\n\nIf digital elevation model with burnt-in channels is used you can specify it here. This input will be used to create one special landuse category that is independent of the input soil and landuse layers. This category will be applied for pixels where the elevation or inclination differs compared to the original DMT. Both elevation rasters must have the same spatial definition. This DMT will be experted in the last step if set here.\n\nDrain elements are raster cells that drain any surface runoff completely. Please select point or line feature layer that will be converted into raster layer with special category in the soil parameters table.",
         "Here you can check the values before the export. The values can be manually adjusted if desired.",
         "Data for export is complete. Please select the input files you want to export and set name and directory to store them to.",
         ""
@@ -193,7 +192,7 @@ class TextConstantsEN:
     label_pour_points = "Pour point feature layer:"
     label_pour_points_identifier = "Pour points identifier field:" # TODO add to GUI
     label_drain_elements = "Drain features points or lines:"
-    label_channel_elements = "Channel elements:"
+    label_channel_elements = "DMT with channels:"
 
     label_data_status_confirm = "I understand and want to proceed anyway."
 

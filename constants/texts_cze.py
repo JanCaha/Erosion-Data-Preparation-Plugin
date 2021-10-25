@@ -46,12 +46,12 @@ class TextConstantsCZ:
     tw_lc_col_vegetation_condition = "Stav vegetace"
     tw_lc_col_protection_measure = "Ochranná opatření"
     tw_lc_col_surface_conditions = "Stav povrchu"
-    tw_lc_col_detail_level = "Detail level"
+    tw_lc_col_detail_level = "Úroveň detailu půd"
 
-    menu_status_ka5 = "KA5 Class"
-    menu_status_ka5_lv1 = "KA5 Group Level 1"
-    menu_status_ka5_lv2 = "KA5 Group Level 2"
-    menu_status_ka5_nodifferentiate = "No differentiate"
+    menu_status_ka5 = "třída KA5"
+    menu_status_ka5_lv1 = "skupina KA5 úrovně"
+    menu_status_ka5_lv2 = "skupina KA5 úrovně 2"
+    menu_status_ka5_nodifferentiate = "nerozlišovat půdní jednotky"
 
     # TableWidgetLanduseAssignedValues
 
@@ -131,7 +131,7 @@ class TextConstantsCZ:
                    "Pole půdní třídy",
                    "Zrnitostní složení půd",
                    "Klasifikace využití ploch",
-                   "Kategorie využití ploch",
+                   "Klasifikace parametrizačních ploch",
                    "Připravené vstupní parametry",
                    "Obah organického uhlíku (Corg)",
                    "Objemová hmotnost půdy",
@@ -145,11 +145,11 @@ class TextConstantsCZ:
                    ]
 
     step_description_labels = [
-        "Vyberte prosím zdrojové vrstvy s definicí půdních vlastností a využití ploch. Obě vrstvy musí být polygonové vektorové datasety.\n\nZvolte vrstvu digitálního modelu povrchu, která bude využita k sestavení modelu v Erosion-3D. Na konci tohoto průvodce bude využita jako referenční rastr pro vytvoření rastrových vstupů Erosion-3D.\n\nZvolte prosím datum, kdy se odehrává simulovaná srážková epizoda.",
+        "Vyberte prosím zdrojové vrstvy s definicí půdních vlastností a využití ploch. Obě vrstvy musí být polygonové vektorové datasety.\n\nZvolte vrstvu digitálního modelu povrchu, která bude využita k sestavení modelu v Erosion-3D. Na konci tohoto průvodce bude využita jako referenční rastr pro vytvoření rastrových vstupů Erosion-3D. Tento model terénu by měl být bez dodatečně zahloubených koryt vodních toků. Digitální model terénu obsahující virtuálně zahloubená koryta může být zadán v kroku 13 tohoto průvodce.\n\nZvolte prosím datum, kdy se odehrává simulovaná srážková epizoda.",
         "Vyberte prosím atributové pole obsahující identifikační kód půdní třídy dle normy KA5 (KA4). Pokud nejsou půdy klasifikovány bude klasifikace provedena později ze zrnitostních tříd.\n\nVyberte atributové pole obsahující identifikátor půdních jednotek, který bude využit při tvorbě unikátních kombinací typů využití ploch a zrnitostního složení půdy.",
         "Zvolte prosím atributová pole obsahující zastoupení částic v jednotlivých zrnitostních třídách podle normy KA5. Pokud nemáte podrobné zrnitostní složení pro všech 9 zrnitostních tříd, je možné použít hodnoty celkového obsahu jílu/prachu/písku v zrnitostních třídách Střední jíl (MT)/ Střední prach (MU)/ Střední písek (MS).\n\nPokud si přejete použít střední hodnoty obsahu zrnitostních tříd dle normy KA5 zvolte pro každou zrnitostní třídu odpovídající automaticky vygenerovaná pole „ka5_xx“.",
         "Zvolte prosím atributové pole obsahující typy využití ploch a volitelně pole obsahující plodiny.",
-        "Přiřaďte prosím zdrojovým kategoriím využití ploch kategorie odpovídající Katalogu parametrů Erosion-3D. Pro vyhledávání v Katalogu je nutné použít kategorie tak, jak jsou definované v Katalogu. Pro každou z kategorií je možné vícestupňová klasifikace (nepřehlédněte položky „podkategorie“ ve výběru hodnot!)\n\nPokud kategorie mají nějaké speciální charakteristiky (způsob obdělávání, protierozní opatření, stav plodiny) mohou být vybrány z nabízených hodnot a výsledky hledání v katalogu budou odpovídajícím způsobem omezeny.",
+        "Přiřaďte prosím zdrojovým kategoriím využití ploch kategorie odpovídající Katalogu parametrů Erosion-3D. Pro vyhledávání v Katalogu je nutné použít kategorie tak, jak jsou definované v Katalogu. Pro každou z kategorií je možné vícestupňová klasifikace (nepřehlédněte položky „podkategorie“ ve výběru hodnot!)\n\nPokud kategorie mají nějaké speciální charakteristiky (způsob obdělávání, protierozní opatření, stav plodiny) mohou být vybrány z nabízených hodnot a výsledky hledání v katalogu budou odpovídajícím způsobem omezeny.\n\nZvolte úroveň detailu pro členění půdních jednotech (třída > skupina úrovně 2 > skupina úrovně 1). Čím vyšší je úroveň podrobnosti, tím méně lze očekávat výsledků hledání v katalogu. Pokud nejsou pro některou ze tříd parametrizačních ploch nalezeny žádné výsledky, zkuste snížit úroveň detailu členění půd. Pokud zvolíte možnost “nerozlišovat půdní jednotky” budou výsledky hledání pro danou třídu parametrizačních ploch omezeny pouze typem využití a budou mít uniformí půdní vlastnosti.",
         "Hodnoty parametrů již přítomné v některé ze vstupních vrstev mohou být přímo použity bez dalších úprav. Vyhledávání v Katalogu bude pro tyto parametry přeskočeno a do výstupů (tedy vstupních datasetů Erosion-3D) budou přímo přepsány hodnoty ze vstupní vrstvy.\n\nZvolte vstupní vrstvu a její atributové pole s hodnotami daného parametru.",
         "Hodnoty načtené z Katalogu parametrů Erosion-3D pro všechny kombinace využití ploch/plodiny a půdních typů. Hodnoty může upravit, doplnit nebo ponechat prázdné.",
         "Hodnoty načtené z Katalogu parametrů Erosion-3D pro všechny kombinace využití ploch/plodiny a půdních typů. Hodnoty může upravit, doplnit nebo ponechat prázdné.",
@@ -157,7 +157,7 @@ class TextConstantsCZ:
         "Hodnoty načtené z Katalogu parametrů Erosion-3D pro všechny kombinace využití ploch/plodiny a půdních typů. Hodnoty může upravit, doplnit nebo ponechat prázdné.",
         "Hodnoty načtené z Katalogu parametrů Erosion-3D pro všechny kombinace využití ploch/plodiny a půdních typů. Hodnoty může upravit, doplnit nebo ponechat prázdné.",
         "Hodnoty načtené z Katalogu parametrů Erosion-3D pro všechny kombinace využití ploch/plodiny a půdních typů. Hodnoty může upravit, doplnit nebo ponechat prázdné.",
-        "Můžete zadat dodatečné vstupní vrstvy, které budou zahrnuty do přípravy vstupních vrstev pro Erosion-3D.\n\nVrstva „Pour point“ slouží pro vytvoření rastrové vrstvy záznamových bodů, z nichž budou výstupní hodnoty uloženy v tabelované podobě.\n\n„Channel elements“ je rastrová vrstva určující buňky, v nichž je odtok počítán jako soustředěný (nedochází k divergenci toku). Tato vstupní vstupní umožňuje vytvoření „speciální „ kategorie využití ploch, který je nezávislá na vstupních vrstvách půdních typů a využití ploch. Tato vrstva musí mít stejnou prostorovou definici jako rastr digitálního modelu terénu. Jako zdroj dat může být využita vrstva Channel elements vygenerovaná během vytváření datasetu Reliéfu v Erosion-3D.\n\n„Drain elements“ jsou buňky vstupního rastru využití ploch, které slouží jako „dokonalé odvodnění“, tedy všechen povrchový odtok, který do nich vchází je zcela ztracen (tzn. bezpečně odveden). Odvodňovací prvky mohou být zadány jako bodová nebo liniová geometrie, která bude zahrnuta do výstupního rastru využití ploch a půdních vlastností a tabulky vstupních parametrů jako speciální kategorie.",
+        "Můžete zadat dodatečné vstupní vrstvy, které budou zahrnuty do přípravy vstupních vrstev pro Erosion-3D.\n\nVrstva „Pour point“ slouží pro vytvoření rastrové vrstvy záznamových bodů, z nichž budou výstupní hodnoty uloženy v tabelované podobě.\n\nPokud chcete použít pro sestavení modelu digitální model terénu s virtuálně zahloubenými koryty vodních toků, zadejte ho zde. V tabulce půdních parametrů bude vytvořena speciální kategorie využití ploch, který je nezávislá na vstupních vrstvách půdních typů a využití ploch. Tato kategorie bude aplikována na buňky u nichž se liší nadmořská výška nebo sklon oproti původnímu DMT zadaném v prvním kroku průvodce. Oba digitální modely terénu musí mít stejnou prostorovou definici. Pokud je tento DMT zadán bude využit pro export v posledním kroku průvodce..\n\n„Odvodňovací prvky“ jsou buňky vstupního rastru využití ploch, které slouží jako „dokonalé odvodnění“, tedy všechen povrchový odtok, který do nich vchází je zcela ztracen (tzn. bezpečně odveden). Odvodňovací prvky mohou být zadány jako bodová nebo liniová geometrie, která bude zahrnuta do výstupního rastru využití ploch a půdních vlastností a tabulky vstupních parametrů jako speciální kategorie.",
         "Zde můžete zkontrolovat a případně manuálně upravit hodnoty pro jednotlivé kombinace využití ploch a skupin půdy.",
         "Data jsou připravena pro export. Zvolte prosím adresáře a jména souborů pro uložení.",
         ""
@@ -191,8 +191,8 @@ class TextConstantsCZ:
 
     label_pour_points = "Vrstva záznamových bodů:"
     label_pour_points_identifier = "Atributové pole s identifikátorem bodů:"  # TODO add to GUI
-    label_drain_elements = "Drain features points or lines:"
-    label_channel_elements = "Channel elements:"
+    label_drain_elements = "Odvodňovací prvky:"
+    label_channel_elements = "Digitální model terénu se zahloubenými koryty vodních toků:"
 
     label_data_status_confirm = "Rozumím a chci datasety uložit ve stávajícím stavu."
 
