@@ -246,6 +246,8 @@ class TableWidgetWithSlider(QTableWidget):
                 already_removed += 1
                 rows_to_remove.remove(row)
 
+        self.repaint()
+
     def extract_data_list(self) -> List[List[str]]:
 
         data_list = []
