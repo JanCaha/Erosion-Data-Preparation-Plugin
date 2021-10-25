@@ -348,8 +348,8 @@ class E3DWizardProcess:
         self.dissolve_list = self.dissolve_list + [TextConstants.field_name_roughness]
 
     def rename_cover(self,
-                         layer_name: str,
-                         field_name: str) -> NoReturn:
+                     layer_name: str,
+                     field_name: str) -> NoReturn:
 
         if 0 < len(field_name):
             rename_field(self.layer_based_on_keyword(layer_name),
