@@ -43,6 +43,7 @@ class E3DWizardProcess:
 
     layer_intersected_dissolved: QgsVectorLayer = None
     layer_raster_dtm: QgsRasterLayer = None
+    layer_raster_dtm_edited: QgsRasterLayer = None
     layer_pour_points_rasterized: QgsRasterLayer = None
     layer_raster_rasterized: QgsRasterLayer = None
     date_month: int = None
@@ -131,11 +132,13 @@ class E3DWizardProcess:
 
     def set_layer_raster_dtm(self, layer: QgsRasterLayer) -> NoReturn:
         self.layer_raster_dtm = layer
+        self.layer_raster_dtm_edited = layer
 
     def set_layer_channel_elements(self, layer: Optional[QgsRasterLayer]) -> NoReturn:
 
         if layer:
             self.layer_channel_elements = layer
+            self.layer_raster_dtm_edited = layer
         else:
             self.layer_channel_elements = None
 
