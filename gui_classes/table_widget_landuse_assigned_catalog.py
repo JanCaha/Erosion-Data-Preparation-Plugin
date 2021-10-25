@@ -154,8 +154,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         main_menu.triggered.connect(self.details_changed)
 
         main_menu.addAction(TextConstants.menu_status_ka5)
-        main_menu.addAction(TextConstants.menu_status_ka5_lv1)
         main_menu.addAction(TextConstants.menu_status_ka5_lv2)
+        main_menu.addAction(TextConstants.menu_status_ka5_lv1)
         main_menu.addAction(TextConstants.menu_status_ka5_nodifferentiate)
 
         button = self.build_menu_button(main_menu)
