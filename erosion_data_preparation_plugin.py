@@ -207,7 +207,8 @@ class ErosionDataPreparationPlugin:
             self.dialog = DialogResult(path_landuse_raster=self.dlg.lineEdit_landuse_raster.text(),
                                        path_parameter_table=self.dlg.lineEdit_parameter_table.text(),
                                        path_lookup_table=self.dlg.lineEdit_lookup_table.text(),
-                                       path_pour_points_raster=path_pour_points)
+                                       path_pour_points_raster=path_pour_points,
+                                       path_dem=self.dlg.lineEdit_dem.text())
 
             worker = ExportWorker()
 
@@ -222,6 +223,9 @@ class ErosionDataPreparationPlugin:
 
             worker.set_export_pour_points(self.dlg.e3d_wizard_process.layer_pour_points_rasterized,
                                           self.dlg.lineEdit_pour_points_raster.text())
+
+            worker.set_export_dem(self.dlg.e3d_wizard_process.layer_raster_dtm_edited,
+                                  self.dlg.lineEdit_dem.text())
 
             self.dialog.set_progress_bar(worker.steps)
 
