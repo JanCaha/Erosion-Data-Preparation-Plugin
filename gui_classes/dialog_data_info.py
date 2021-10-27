@@ -34,22 +34,41 @@ class DialogDataInfo(QDialog):
 
         uic.loadUi(ui_file.absolute().as_posix(), self)
 
-        self.setWindowTitle(" - ".join(title))
+        self.setWindowTitle(self.create_title_string(title))
 
-        self.data = data
+        self.label_data_sources.setText(TextConstants.dialog_info_label_data_sources)
+        self.label_data_quality.setText(TextConstants.dialog_info_label_data_quality)
+        self.label_histogram.setText(TextConstants.dialog_info_label_histogram)
+
+        self.label_data_sources_data.setText(self.create_sources_string(sources))
+
+        self.label_data_quality_data.setText(self.create_data_quality_string(data_quality))
+
+        self.create_histogram(data)
+
+    def create_title_string(self, title: List[str]) -> str:
+        return " - ".join(title)
+
+    def create_sources_string(self, sources: Dict[str, int]) -> str:
 
         sources_string = ""
 
         for key in sources.keys():
-            sources_string += f"{key} - {sources[key]}\n"
+
+            sources_string += f"{key}\n\t{sources[key]} {TextConstants.dialog_info_recods}\n"
+
+        return sources_string
+
+    def create_data_quality_string(self, data_quality: Dict[str, int]) -> str:
 
         data_quality_string = ""
 
         for key in data_quality.keys():
             data_quality_string += f"{key} - {data_quality[key]}\n"
 
-        self.label_data_quality_data.setText(data_quality_string)
-        self.label_data_sources_data.setText(sources_string)
+        return data_quality_string
+
+    def create_histogram(self, data: List[float]):
 
         self.figure = plt.figure()
         self.canvas = FigureCanvas(self.figure)
@@ -63,13 +82,12 @@ class DialogDataInfo(QDialog):
 
         # https://matplotlib.org/stable/api/axes_api.html
 
-        ax.hist(self.data, bins=50, color="orange")
+        ax.hist(data, bins=50, color="orange")
         # ax.set_xlabel('Landuse type')
         # ax.set_ylabel('Frequency')
         # ax.set_title('Histogram of landuses - resting points (Distance below mean-variance)')
 
-        if 1 == len(set(self.data)):
-
-            ax.set_xlim(self.data[0]-self.data[0]*0.1, self.data[0]+self.data[0]*0.1)
+        if 1 == len(set(data)):
+            ax.set_xlim(data[0] - data[0] * 0.1, data[0] + data[0] * 0.1)
 
         self.canvas.draw()
