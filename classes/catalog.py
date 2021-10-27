@@ -36,7 +36,13 @@ class E3dCatalog(metaclass=Singleton):
 
         for key in data.keys():
 
-            result.update({self.data_quality[key]: data[key]})
+            if key is not None:
+
+                result.update({self.data_quality[key]: data[key]})
+
+            else:
+
+                result.update({TextConstants.dialog_info_uknown_data_source: data[key]})
 
         return result
 
@@ -62,7 +68,9 @@ class E3dCatalog(metaclass=Singleton):
 
         for key in data.keys():
 
-            result.update({self.data_sources[key]: data[key]})
+            if key is not None:
+
+                result.update({self.data_sources[key]: data[key]})
 
         return result
 
