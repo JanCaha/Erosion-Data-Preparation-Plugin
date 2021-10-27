@@ -261,3 +261,13 @@ class TextConstantsEN:
     dialog_export_label_not_exported = "Dataset not set up for export."
 
     dialog_export_label_not_valid_path = "Path for this dataset is not valid. Data not exported."
+
+    dialog_info_label_data_sources = "Data Sources:"
+
+    dialog_info_label_data_quality = "Data Quality:"
+
+    dialog_info_label_histogram = "Data Histogram:"
+
+    dialog_info_recods = "records"
+
+    dialog_info_uknown_data_source = "data source unknown (original german parameters catalogue)"

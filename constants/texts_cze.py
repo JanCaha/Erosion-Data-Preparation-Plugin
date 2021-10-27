@@ -261,3 +261,13 @@ class TextConstantsCZ:
     dialog_export_label_not_exported = "Data nebyla nastavena k exportu."
 
     dialog_export_label_not_valid_path = "Cesta pro tento soubor není validní. Data se nexportují."
+
+    dialog_info_label_data_sources = "Zdroje hodnot:"
+
+    dialog_info_label_data_quality = "Kvalita dat:"
+
+    dialog_info_label_histogram = "Histogram hodnot:"
+
+    dialog_info_recods = "záznamů"
+
+    dialog_info_uknown_data_source = "zdroj neuveden (původní německý katalog)"
