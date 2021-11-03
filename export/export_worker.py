@@ -118,7 +118,7 @@ class ExportWorker(QRunnable):
         if self.layer_pour_points_rasterized:
 
             save_raster_as_asc(self.layer_pour_points_rasterized,
-                               self.path_raster_rasterized)
+                               self.path_pour_points)
 
         self.signals.progress.emit(4)
 
