@@ -2,7 +2,7 @@ from typing import List, Dict
 from pathlib import Path
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog, QLabel
+from qgis.PyQt.QtWidgets import QDialog, QLabel, QMessageBox
 
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -82,12 +82,23 @@ class DialogDataInfo(QDialog):
 
         # https://matplotlib.org/stable/api/axes_api.html
 
-        ax.hist(data, bins=50, color="orange")
-        # ax.set_xlabel('Landuse type')
-        # ax.set_ylabel('Frequency')
-        # ax.set_title('Histogram of landuses - resting points (Distance below mean-variance)')
+        data = [x for x in data if isinstance(x, (float, int))]
 
-        if 1 == len(set(data)):
-            ax.set_xlim(data[0] - data[0] * 0.1, data[0] + data[0] * 0.1)
+        if 0 < len(data):
 
-        self.canvas.draw()
+            # TODO remove this try
+            try:
+                ax.hist(data, bins=50, color="orange")
+            except Exception as e:
+                import textwrap
+                print_data = textwrap.fill(str(data), 64)
+                QMessageBox.warning(self, "Error with data", print_data)
+
+            # ax.set_xlabel('Landuse type')
+            # ax.set_ylabel('Frequency')
+            # ax.set_title('Histogram of landuses - resting points (Distance below mean-variance)')
+
+            if 1 == len(set(data)):
+                ax.set_xlim(data[0] - data[0] * 0.1, data[0] + data[0] * 0.1)
+
+            self.canvas.draw()
