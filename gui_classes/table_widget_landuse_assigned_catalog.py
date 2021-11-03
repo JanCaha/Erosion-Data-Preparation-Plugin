@@ -178,6 +178,9 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         main_level = self.filterTheDict(self.data_dict,
                                         lambda elem: elem[1].id_landuse_lv1 == elem[1].id)
 
+        main_menu.addAction("")
+        main_menu.addSeparator()
+
         for (name, info) in main_level.items():
 
             main_menu.addAction(name)
