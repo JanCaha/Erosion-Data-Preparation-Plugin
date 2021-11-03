@@ -100,6 +100,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         main_menu = QMenu()
         main_menu.triggered.connect(lambda action: button.setText(action.text()))
 
+        main_menu.addAction("")
+
         for name in self.surface_dict.keys():
             main_menu.addAction(name)
 
@@ -111,6 +113,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
         main_menu = QMenu()
         main_menu.triggered.connect(lambda action: button.setText(action.text()))
+
+        main_menu.addAction("")
 
         for name in self.protection_dict.keys():
             main_menu.addAction(name)
@@ -124,6 +128,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
         main_menu = QMenu()
         main_menu.triggered.connect(lambda action: button.setText(action.text()))
 
+        main_menu.addAction("")
+
         for name in self.vegetation_dict.keys():
             main_menu.addAction(name)
 
@@ -135,6 +141,8 @@ class TableWidgetLanduseAssignedCatalog(QTableWidget):
 
         main_menu = QMenu()
         main_menu.triggered.connect(lambda action: button.setText(action.text()))
+
+        main_menu.addAction("")
 
         for name in self.agrotechnology_dict.keys():
 
