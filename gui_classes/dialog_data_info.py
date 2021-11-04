@@ -99,6 +99,7 @@ class DialogDataInfo(QDialog):
             # ax.set_title('Histogram of landuses - resting points (Distance below mean-variance)')
 
             if 1 == len(set(data)):
-                ax.set_xlim(data[0] - data[0] * 0.1, data[0] + data[0] * 0.1)
+                value = min(data[0] * 0.1, 20)
+                ax.set_xlim(data[0] - value, data[0] + value)
 
             self.canvas.draw()
