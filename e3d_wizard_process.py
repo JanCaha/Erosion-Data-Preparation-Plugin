@@ -102,6 +102,43 @@ class E3DWizardProcess:
                              TextConstants.field_name_MS: 0,
                              TextConstants.field_name_GS: 0}
 
+    DEFAULT_CHANNEL_VALUES = {TextConstants.field_name_bulk_density: 2500,
+                              TextConstants.field_name_corg: 1,
+                              TextConstants.field_name_roughness: 0.1,
+                              TextConstants.field_name_canopy_cover: 100,
+                              TextConstants.field_name_skinfactor: 0.1,
+                              TextConstants.field_name_erodibility: 1,
+                              TextConstants.field_name_init_moisture: 100,
+                              TextConstants.field_name_FT: 0,
+                              TextConstants.field_name_MT: 0,
+                              TextConstants.field_name_GT: 0,
+                              TextConstants.field_name_FU: 0,
+                              TextConstants.field_name_MU: 0,
+                              TextConstants.field_name_GU: 0,
+                              TextConstants.field_name_FS: 0,
+                              TextConstants.field_name_MS: 0,
+                              TextConstants.field_name_GS: 100}
+
+    DEFAULT_DRAIN_VALUES = {TextConstants.field_name_bulk_density: 1500,
+                            TextConstants.field_name_corg: 1,
+                            TextConstants.field_name_roughness: 0.1,
+                            TextConstants.field_name_canopy_cover: 100,
+                            TextConstants.field_name_skinfactor: 1,
+                            TextConstants.field_name_erodibility: 0.1,
+                            TextConstants.field_name_init_moisture: 0,
+                            TextConstants.field_name_FT: 0,
+                            TextConstants.field_name_MT: 0,
+                            TextConstants.field_name_GT: 0,
+                            TextConstants.field_name_FU: 0,
+                            TextConstants.field_name_MU: 0,
+                            TextConstants.field_name_GU: 0,
+                            TextConstants.field_name_FS: 0,
+                            TextConstants.field_name_MS: 0,
+                            TextConstants.field_name_GS: 100}
+
+    text_drain = "drain_elements"
+    text_channel = "channel_elements"
+
     def __init__(self):
         pass
 
@@ -414,7 +451,7 @@ class E3DWizardProcess:
 
             value = int(value + 1)
 
-            self.poly_nr_additons.append((value, "channel_elements"))
+            self.poly_nr_additons.append((value, self.text_channel))
 
             raster = find_difference_and_assign_value(self.layer_raster_dtm,
                                                       self.layer_channel_elements,
@@ -436,7 +473,7 @@ class E3DWizardProcess:
                 value = self.poly_nr_additons[-1]
                 value = int(value[0] + 1)
 
-            self.poly_nr_additons.append((value, "drain_elements"))
+            self.poly_nr_additons.append((value, self.text_drain))
 
             add_field_with_constant_value(self.layer_drain_elements,
                                           TextConstants.field_name_fid,
@@ -454,10 +491,14 @@ class E3DWizardProcess:
         # add rows for channel elements and drain elements
         for fid_value, poly_id in self.poly_nr_additons:
             values = {TextConstants.field_name_fid: fid_value,
-                      TextConstants.field_name_init_moisture: 0.0,
                       TextConstants.field_name_poly_id: poly_id}
 
-            values.update(self.DEFAULT_EXPORT_VALUES)
+            if poly_id == self.text_drain:
+                values.update(self.DEFAULT_DRAIN_VALUES)
+            elif poly_id == self.text_channel:
+                values.update(self.DEFAULT_CHANNEL_VALUES)
+            else:
+                values.update(self.DEFAULT_EXPORT_VALUES)
 
             add_row_without_geom(self.layer_intersected_dissolved, values)
 
