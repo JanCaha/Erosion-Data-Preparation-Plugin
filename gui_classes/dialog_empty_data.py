@@ -11,9 +11,9 @@ class DialogEmptyData(QDialog):
 
     label_text_delete: QLabel
 
-    def __init__(self):
+    def __init__(self, parent=None):
 
-        super().__init__()
+        super().__init__(parent)
 
         ui_file = Path(__file__).parent.parent / "ui" / "dialog_data_empty.ui"
 
