@@ -271,3 +271,9 @@ class TextConstantsEN:
     dialog_info_recods = "records"
 
     dialog_info_uknown_data_source = "data source unknown (original german parameters catalogue)"
+
+    dialog_empty_title = "Empty data from wizard"
+
+    dialog_empty_label = "Really remove all preset data\nfrom plugin wizard?"
+
+    information_emptied = "Wizard values emptied."

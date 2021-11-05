@@ -271,3 +271,9 @@ class TextConstantsCZ:
     dialog_info_recods = "záznamů"
 
     dialog_info_uknown_data_source = "zdroj neuveden (původní německý katalog)"
+
+    dialog_empty_title = "Odstranit data z průvodce"
+
+    dialog_empty_label = "Opravdu odstranit všechna nastavená\ndata z průvodce?"
+
+    information_emptied = "Hodnoty průvodce nastaveny na výchozí stav."
