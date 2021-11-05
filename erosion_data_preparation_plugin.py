@@ -8,7 +8,8 @@ from qgis.PyQt.QtCore import (QSettings,
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog
 
-from qgis.core import (QgsApplication)
+from qgis.core import (QgsApplication,
+                       Qgis)
 
 from qgis.gui import (QgisInterface)
 
@@ -23,7 +24,10 @@ from .resources import *
 # Import the code for the dialog
 from .main_plugin_window import MainPluginDialog
 from .gui_classes.dialog_result import DialogResult
+from .gui_classes.dialog_empty_data import DialogEmptyData
+from .gui_classes.dialog_import_data_with_style import DialogLoadResult
 import os.path
+import sys
 
 from .erosion_data_plugin_provider import ErosionDataPluginProvider
 
@@ -143,6 +147,18 @@ class ErosionDataPreparationPlugin:
                                            callback=self.GarbrechRoughnessTool,
                                            plugin_menu_name=TextConstants.plugin_name)
 
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "empty_main.png"),
+                        text=TextConstants.plugin_action_name_empty_wizard,
+                        callback=self.reset_progress,
+                        add_to_toolbar=False,
+                        add_to_specific_toolbar=self.toolbar)
+
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "results_to_project.png"),
+                        text=TextConstants.plugin_action_name_load_data,
+                        callback=self.load_result,
+                        add_to_toolbar=False,
+                        add_to_specific_toolbar=self.toolbar)
+
     def add_to_pluginmenu_and_toolbar(self,
                                       icon: str,
                                       action_name: str,
@@ -163,6 +179,44 @@ class ErosionDataPreparationPlugin:
     def GarbrechRoughnessTool(self):
         tool_call = f"{TextConstants.tool_group_id}:{TextConstants.plugin_action_id_garbrech_roughness}"
         processing.execAlgorithmDialog(tool_call, {})
+
+    def reset_progress(self):
+
+        dialog_empty = DialogEmptyData(self.iface.mainWindow())
+
+        dialog_empty.show()
+
+        result = dialog_empty.exec_()
+
+        if result == QFileDialog.Rejected:
+            return
+
+        if result:
+
+            if self.dlg:
+
+                self.dlg.hide()
+
+                self.dlg = MainPluginDialog(self.iface)
+
+                self.iface.messageBar().pushMessage(TextConstants.information_emptied, Qgis.Success)
+
+                return
+
+    def load_result(self):
+
+        dialog_load = DialogLoadResult(self.iface.mainWindow())
+
+        dialog_load.show()
+
+        result = dialog_load.exec_()
+
+        if result == QFileDialog.Rejected:
+            return
+
+        if result:
+
+            dialog_load.load_result_data_with_style()
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
