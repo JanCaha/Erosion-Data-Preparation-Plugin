@@ -277,3 +277,16 @@ class TextConstantsEN:
     dialog_empty_label = "Really remove all preset data\nfrom plugin wizard?"
 
     information_emptied = "Wizard values emptied."
+
+    dialog_load_data_title = "Load data from Erosion 3D"
+
+    dialog_load_data_layer = "Select file to load"
+
+    dialog_load_data_style = "Select style for data"
+
+    dialog_load_data_opacity = "Opacity"
+
+    dialog_load_data_7_cat_tha = "7 categories in [t/ha]"
+    dialog_load_data_7_cat_kgm2 = "7 categories in [kg/m2]"
+    dialog_load_data_9_cat_tha = "9 categories in [t/ha]"
+    dialog_load_data_9_cat_kgm2 = "9 categories in [kg/m2]"

@@ -277,3 +277,16 @@ class TextConstantsCZ:
     dialog_empty_label = "Opravdu odstranit všechna nastavená\ndata z průvodce?"
 
     information_emptied = "Hodnoty průvodce nastaveny na výchozí stav."
+
+    dialog_load_data_title = "Nahrát data z Erosion 3D"
+
+    dialog_load_data_layer = "Vyberte soubor"
+
+    dialog_load_data_style = "Vyberte styl kategorií"
+
+    dialog_load_data_opacity = "Průhlednost"
+
+    dialog_load_data_7_cat_tha = "7 kategorií v [t/ha]"
+    dialog_load_data_7_cat_kgm2 = "7 kategorií v [kg/m2]"
+    dialog_load_data_9_cat_tha = "9 kategorií v [t/ha]"
+    dialog_load_data_9_cat_kgm2 = "9 kategorií v [kg/m2]"
