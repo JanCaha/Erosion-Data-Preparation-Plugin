@@ -17,6 +17,10 @@ class TextConstantsCZ:
     plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 
+    plugin_action_name_empty_wizard = "Vyprázdnit data v hlavním nástroji"
+
+    plugin_action_name_load_data = "Načíst data z Erosion 3D"
+
     ## Tools
 
     tool_group_name = "Erosion-3D Data Plugin"
