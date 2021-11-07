@@ -141,12 +141,6 @@ class ErosionDataPreparationPlugin:
                         add_to_menu=TextConstants.plugin_name,
                         add_to_specific_toolbar=self.toolbar)
 
-        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "roughness.png"),
-                                           action_name=TextConstants.plugin_action_name_garbrech_roughness,
-                                           action_id=TextConstants.plugin_action_id_garbrech_roughness,
-                                           callback=self.GarbrechRoughnessTool,
-                                           plugin_menu_name=TextConstants.plugin_name)
-
         self.add_action(icon_path=str(self.path_plugin / "icons" / "empty_main.png"),
                         text=TextConstants.plugin_action_name_empty_wizard,
                         callback=self.reset_progress,
@@ -158,6 +152,12 @@ class ErosionDataPreparationPlugin:
                         callback=self.load_result,
                         add_to_toolbar=False,
                         add_to_specific_toolbar=self.toolbar)
+
+        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "roughness.png"),
+                                           action_name=TextConstants.plugin_action_name_garbrech_roughness,
+                                           action_id=TextConstants.plugin_action_id_garbrech_roughness,
+                                           callback=self.GarbrechRoughnessTool,
+                                           plugin_menu_name=TextConstants.plugin_name)
 
     def add_to_pluginmenu_and_toolbar(self,
                                       icon: str,
