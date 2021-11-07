@@ -39,7 +39,7 @@ class DialogLoadResult(QDialog):
         self.label_style.setText(TextConstants.dialog_load_data_style)
         self.label_opacity.setText(TextConstants.dialog_load_data_opacity)
 
-        self.mQgsFileWidget.setFilter("GeoTiff files (*.tif)")
+        self.mQgsFileWidget.setFilter("Arc/Info ASCII Grid (*.asc);;GeoTiff files (*.tif)")
         # self.mQgsFileWidget.setFilter("GeoTiff files (*.tif);;All files (*.*)")
 
         self.comboBox_style.addItems(list(self.styles.keys()))
