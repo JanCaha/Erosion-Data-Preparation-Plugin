@@ -2,7 +2,6 @@ from qgis.PyQt import QtCore
 
 
 class TextConstantsEN:
-
     language = "en"
     locale = QtCore.QLocale(QtCore.QLocale.English)
 
@@ -12,14 +11,14 @@ class TextConstantsEN:
     plugin_toolbar_name = "E3D+GIS input parameters preparation tool Toolbar"
     plugin_toolbar_name_id = "Erosion3DDataPreparationToolbar"
 
-    plugin_main_tool_name = "E3D+GIS input parameters preparation tool Wizard"
+    plugin_main_tool_name = "E3D+GIS input parameters preparation Wizard"
 
     plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 
     plugin_action_name_empty_wizard = "Empty data in wizard"
 
-    plugin_action_name_load_data = "Load Erosion 3D data"
+    plugin_action_name_load_data = "Load Erosion-3D data"
 
     ## Tools
 
@@ -149,7 +148,7 @@ class TextConstantsEN:
                    ]
 
     step_description_labels = [
-        "Please select source layers for your landuse and soil properties definition. Both layers need to be polygon geometry vector datasets.\n\nPlease select the digital terrain model that will be used in the model. It will be used for referencing the Erosion-3D input parameter rasters that are going to be generated in the end of this wizard. This DMT should be without streams burnt-in. If you’d like to use DMT with burn-in the stream channels you may specify it in step 13. \n\nAnd set the date when the modeled rainfall event occurs.",
+        "Please select source layers for your landuse and soil properties definition. Both layers need to be polygon geometry vector datasets.\n\nPlease select the digital terrain model that will be used in the model. It will be used for referencing the Erosion-3D input parameter rasters that are going to be generated in the end of this wizard. This DEM should be without streams burnt-in. If you’d like to use DEM with burnt-in stream channels you may specify it in step 13. \n\nAnd set the date when the modeled rainfall event occurs.",
         "Please select the attribute field containing the KA5 (KA4) identifier code. If not present it will be calculated later in the proces from structurall classes contents.\n\nSelect the attribute field with your arbitrary soil units identifier which will be used for definition of unique combinations of landuse and soil texture.",
         "Please assign attribute field from Soils layer containing the pareticle size classes according to the KA5 standard. If you don’t have the detailed textural classes content you may assign total of clay/silt/sand particles to the Medium clay (MT)/ Medium silt (MU)/ Medium sand (MS).\n\nIf your soils are allready classified to KA5 you may also use the average values provided in the standard. In that case assign to all of the attribute field the generated field „ka5_xx“.",
         "Please select attribute field from Landuse layer containing the landuse type and optionaly a crop.",
@@ -161,7 +160,7 @@ class TextConstantsEN:
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
         "The values loaded from the Erosion-3D Parameters Catalogue for each combination of landuse/crop and soil type. Adjust the values as desired or leave blank.",
-        "Please specify additional input layers to be included in the processing of the Erosion-3D input datasets.\n\nPour point layer serves for deriving correct raster definition of DMT cells where the tabelated outputs of Erosion3D are recorded.\n\nIf digital elevation model with burnt-in channels is used you can specify it here. This input will be used to create one special landuse category that is independent of the input soil and landuse layers. This category will be applied for pixels where the elevation or inclination differs compared to the original DMT. Both elevation rasters must have the same spatial definition. This DMT will be experted in the last step if set here.\n\nDrain elements are raster cells that drain any surface runoff completely. Please select point or line feature layer that will be converted into raster layer with special category in the soil parameters table.",
+        "Please specify additional input layers to be included in the processing of the Erosion-3D input datasets.\n\nPour point layer serves for deriving correct raster definition of DEM cells where the tabelated outputs of Erosion3D are recorded.\n\nIf digital elevation model with burnt-in channels is used you can specify it here. This input will be used to create one special landuse category that is independent of the input soil and landuse layers. This category will be applied on pixels where the elevation or inclination differs compared to the original DEM. Both elevation rasters must have the same spatial definition. This DEM will be experted in the last step if set here.\n\nDrain elements are raster cells that drain any surface runoff completely. Please select point or line feature layer that will be converted into raster layer with special category in the soil parameters table.",
         "Here you can check the values before the export. The values can be manually adjusted if desired.",
         "Data for export is complete. Please select the input files you want to export and set name and directory to store them to.",
         ""
@@ -169,10 +168,10 @@ class TextConstantsEN:
 
     label_soil_layer = "Soil properties definition layer:"
     label_landuse_layer = "Landuse definition layer:"
-    label_dtm = "DMT layer:"
+    label_dtm = "DEM layer:"
     label_date = "Event date:"
 
-    label_ka5_class ="KA5 class:"
+    label_ka5_class = "KA5 class:"
     label_soil_id = "Soil ID:"
 
     label_crop_field = "Crop field:"
@@ -194,9 +193,9 @@ class TextConstantsEN:
     label_surfacecover_layer = "Surface cover from layer: "
 
     label_pour_points = "Pour point feature layer:"
-    label_pour_points_identifier = "Pour points identifier field:" # TODO add to GUI
+    label_pour_points_identifier = "Pour points identifier field:"  # TODO add to GUI
     label_drain_elements = "Drain features points or lines:"
-    label_channel_elements = "DMT with channels:"
+    label_channel_elements = "DEM with channels:"
 
     label_data_status_confirm = "I understand and want to proceed anyway."
 
@@ -204,7 +203,7 @@ class TextConstantsEN:
     label_parameter_table = "Parameters table:"
     label_lookup_table = "Lookup table:"
 
-    label_created = "Developed by <a href=\"https://www.cahik.cz/o-mne/\">Jan Caha</a> for Department of Landscape Water Conservation, Faculty of Civil Engineering, Czech Technical University in Prague in 2021."
+    label_created = "Developed by <a href=\"https://www.cahik.cz/o-mne/\">Jan Caha</a> for <a href=\"https://storm.fsv.cvut.cz\">Department of Landscape Water Conservation, Faculty of Civil Engineering</a>, Czech Technical University in Prague in 2021."
     label_project = "Development of this plug-in was financed by project No. QK1810341 „Creating a national database of parameters\nfor the mathematical simulation model EROSION-3D and its standardization for routine use in the Czech Republic“ of the National Agency of Agricultural Research of Czech Republic."
 
     # Tables with widgets
@@ -289,6 +288,8 @@ class TextConstantsEN:
     dialog_load_data_style = "Select style for data"
 
     dialog_load_data_opacity = "Opacity"
+
+    dialog_load_data_layer_name = "Layer name"
 
     dialog_load_data_7_cat_tha = "7 categories in [t/ha]"
     dialog_load_data_7_cat_kgm2 = "7 categories in [kg/m2]"

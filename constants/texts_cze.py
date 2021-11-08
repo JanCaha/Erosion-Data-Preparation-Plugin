@@ -53,8 +53,8 @@ class TextConstantsCZ:
     tw_lc_col_detail_level = "Úroveň detailu půd"
 
     menu_status_ka5 = "třída KA5"
-    menu_status_ka5_lv1 = "skupina KA5 úrovně"
-    menu_status_ka5_lv2 = "skupina KA5 úrovně 2"
+    menu_status_ka5_lv1 = "skupina KA5 1. úrovně"
+    menu_status_ka5_lv2 = "skupina KA5 2. úrovně"
     menu_status_ka5_nodifferentiate = "nerozlišovat půdní jednotky"
 
     # TableWidgetLanduseAssignedValues
@@ -204,7 +204,7 @@ class TextConstantsCZ:
     label_parameter_table = "Tabulka vstupních parametrů:"
     label_lookup_table = "Tabulka propojení:"
 
-    label_created = "Vytvořil <a href=\"https://www.cahik.cz/o-mne/\">Jan Caha</a> pro Katedru hydromeliorací a krajinného inženýrství, Fakulta stavební, ČVUT v Praze v roce 2021."
+    label_created = "Vytvořil <a href=\"https://www.cahik.cz/o-mne/\">Jan Caha</a> pro <a href=\"https://storm.fsv.cvut.cz\">Katedru hydromeliorací a krajinného inženýrství, Fakulta stavební</a>, ČVUT v Praze v roce 2021."
     label_project = "Vývoj byl financován projektem QK1810341 „Vytvoření národní databáze parametrů matematického simulačního modelu Erosion3D a jeho standardizace pro rutinní využití v podmínkách ČR“\nNárodní agentury zemědělského výzkumu České republiky."
 
     # Tables with widgets
@@ -264,7 +264,7 @@ class TextConstantsCZ:
 
     dialog_export_label_not_exported = "Data nebyla nastavena k exportu."
 
-    dialog_export_label_not_valid_path = "Cesta pro tento soubor není validní. Data se nexportují."
+    dialog_export_label_not_valid_path = "Cesta pro tento soubor není validní. Data se neexportují."
 
     dialog_info_label_data_sources = "Zdroje hodnot:"
 
@@ -282,13 +282,15 @@ class TextConstantsCZ:
 
     information_emptied = "Hodnoty průvodce nastaveny na výchozí stav."
 
-    dialog_load_data_title = "Nahrát data z Erosion 3D"
+    dialog_load_data_title = "Nahrát data z Erosion-3D"
 
     dialog_load_data_layer = "Vyberte soubor"
 
     dialog_load_data_style = "Vyberte styl kategorií"
 
     dialog_load_data_opacity = "Průhlednost"
+
+    dialog_load_data_layer_name = "Název vrstvy"
 
     dialog_load_data_7_cat_tha = "7 kategorií v [t/ha]"
     dialog_load_data_7_cat_kgm2 = "7 kategorií v [kg/m2]"
