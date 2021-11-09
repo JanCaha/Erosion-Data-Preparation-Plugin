@@ -2,6 +2,7 @@ from pathlib import Path
 
 from qgis.PyQt import uic
 from qgis.PyQt.QtWidgets import QDialog, QLabel, QComboBox, QLineEdit
+from qgis.PyQt.QtCore import pyqtSlot
 
 from qgis.gui import QgsFileWidget, QgsOpacityWidget
 from qgis.core import QgsRasterLayer
@@ -46,13 +47,21 @@ class DialogLoadResult(QDialog):
         self.label_opacity.setText(TextConstants.dialog_load_data_opacity)
         self.label_layer_name.setText(TextConstants.dialog_load_data_layer_name)
 
-        self.lineEdit_layer_name.setText("sedbudget")
+        self.lineEdit_layer_name.setText("")
+
+        self.mQgsFileWidget.fileChanged.connect(self.set_folder_name_as_layer_name)
 
         self.mQgsFileWidget.setFilter("Sedbudget Arc/Info ASCII Grid (sedbudget.asc);;Arc/Info ASCII Grid (*.asc);;")
         # self.mQgsFileWidget.setFilter("GeoTiff files (*.tif);;All files (*.*)")
 
         self.comboBox_style.addItems(list(self.styles.keys()))
         self.comboBox_style.setCurrentIndex(0)
+
+    def set_folder_name_as_layer_name(self, path: str) -> None:
+
+        path = Path(path)
+
+        self.lineEdit_layer_name.setText(path.parent.name)
 
     def get_qml_path(self) -> str:
 
