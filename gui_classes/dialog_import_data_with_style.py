@@ -61,7 +61,7 @@ class DialogLoadResult(QDialog):
 
         path = Path(path)
 
-        self.lineEdit_layer_name.setText(path.parent.name)
+        self.lineEdit_layer_name.setText("sedbudget {}".format(path.parent.name))
 
     def get_qml_path(self) -> str:
 
