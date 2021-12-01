@@ -16,6 +16,9 @@ class TextConstantsEN:
     plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 
+    plugin_action_id_process_pour_points = "ProcessPourPoints"
+    plugin_action_name_process_pour_points = "Process Pour Points"
+    
     plugin_action_name_empty_wizard = "Empty data in wizard"
 
     plugin_action_name_load_data = "Load Erosion-3D data"
