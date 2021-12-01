@@ -3,6 +3,7 @@ from qgis.core import QgsProcessingProvider
 from qgis.PyQt.QtGui import QIcon
 
 from .tools.tool_garbrecht_roughness import GarbrechtRougnessProcessingAlgorithm
+from .tools.tool_process_pour_points import ProcessPourPointsAlgorithm
 from .constants import TextConstants
 
 
@@ -13,6 +14,7 @@ class ErosionDataPluginProvider(QgsProcessingProvider):
 
     def loadAlgorithms(self):
         self.addAlgorithm(GarbrechtRougnessProcessingAlgorithm())
+        self.addAlgorithm(ProcessPourPointsAlgorithm())
 
     def icon(self):
         icon_path = Path(__file__).parent / "icons" / "main.png"

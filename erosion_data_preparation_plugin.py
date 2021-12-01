@@ -141,7 +141,7 @@ class ErosionDataPreparationPlugin:
                         add_to_menu=TextConstants.plugin_name,
                         add_to_specific_toolbar=self.toolbar)
 
-        self.add_action(icon_path=str(self.path_plugin / "icons" / "empty_main.png"),
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "reset_wizard.png"),
                         text=TextConstants.plugin_action_name_empty_wizard,
                         callback=self.reset_progress,
                         add_to_toolbar=False,
@@ -157,6 +157,12 @@ class ErosionDataPreparationPlugin:
                                            action_name=TextConstants.plugin_action_name_garbrech_roughness,
                                            action_id=TextConstants.plugin_action_id_garbrech_roughness,
                                            callback=self.GarbrechRoughnessTool,
+                                           plugin_menu_name=TextConstants.plugin_name)
+
+        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "convert_pourpoint_data.png"),
+                                           action_name=TextConstants.plugin_action_name_process_pour_points,
+                                           action_id=TextConstants.plugin_action_id_process_pour_points,
+                                           callback=self.ProcessPourPoint,
                                            plugin_menu_name=TextConstants.plugin_name)
 
     def add_to_pluginmenu_and_toolbar(self,
@@ -175,6 +181,10 @@ class ErosionDataPreparationPlugin:
         self.iface.addPluginToMenu(plugin_menu_name, action)
 
         self.actions_menu_toolbar.append(action)
+
+    def ProcessPourPoint(self):
+        tool_call = f"{TextConstants.tool_group_id}:{TextConstants.plugin_action_id_process_pour_points}"
+        processing.execAlgorithmDialog(tool_call, {})
 
     def GarbrechRoughnessTool(self):
         tool_call = f"{TextConstants.tool_group_id}:{TextConstants.plugin_action_id_garbrech_roughness}"
