@@ -28,6 +28,25 @@ class TextConstantsEN:
     tool_group_name = "Erosion-3D Data Plugin"
     tool_group_id = "erosiondataplugin"
 
+    tool_gb_name = "Calculate Garbrecht roughness from structural subclasses content"
+    tool_gb_help = "Calculate Garbrech roughness based on D90 diameter"
+    tool_gb_input_layer = "Input feature class"
+    tool_gb_add_d90 = "Add D90 field into the input table and write the values."
+    tool_gb_field_d90 = "D90 field name"
+    tool_gb_field_gr = "Garbrech roughness field name"
+    tool_gb_output = "Output layer"
+
+    tool_ppp_name = "Process pour points data outputs"
+    tool_ppp_help = "Process pour points data outputs"
+    tool_ppp_input_data = "Input Pour Points CSV file"
+    tool_ppp_timestep = "Timestep [s]"
+    tool_ppp_cellsize = "Raster cell size [m]"
+    tool_ppp_aggregate_surface_runoff = "Sečíst plošný a soustředěný povrchový odtok"
+    tool_ppp_output_aggregated = "Output aggregated"
+    tool_ppp_output_update = "Output updated"
+
+    tool_ppp_error = "Header of csv file does not match requirements."
+
     # Layer names
 
     layer_soil = "soils"

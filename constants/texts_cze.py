@@ -29,6 +29,25 @@ class TextConstantsCZ:
     tool_group_name = "Erosion-3D Data Plugin"
     tool_group_id = "erosiondataplugin"
 
+    tool_gb_name = "Vypočíst Garbrechtovu drsnost z obsahu zrnitostních tříd"
+    tool_gb_help = "Vypočíst Garbrechtovu drsnost z obsahu zrnitostních tříd"
+    tool_gb_input_layer = "Vstupní vrstva"
+    tool_gb_add_d90 = "Přidat do výstupu pole D90 a zapsat hodnoty."
+    tool_gb_field_d90 = "Název sloupce pro zapsání D90"
+    tool_gb_field_gr = "Název sloupce pro zapsání drsnosti"
+    tool_gb_output = "Výstupní vrstva"
+
+    tool_ppp_name = "Zpracovat data ze záznamových bodů"
+    tool_ppp_help = "Zpracovat data ze záznamových bodů"
+    tool_ppp_input_data = "Vstupní .csv soubor výsledků"
+    tool_ppp_timestep = "Časový krok [s]"
+    tool_ppp_cellsize = "Velikost buňky rastru [m]"
+    tool_ppp_aggregate_surface_runoff = "Sečíst plošný a soustředěný povrchový odtok"
+    tool_ppp_output_aggregated = "Výsledek akumulovaný"
+    tool_ppp_output_update = "Výsledek doplněný"
+
+    tool_ppp_error = "Názvy sloupců ve vstupním csv neodpovídají požadavkům."
+
     # Layer names
 
     layer_soil = "soils"
