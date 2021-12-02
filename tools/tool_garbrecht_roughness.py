@@ -43,7 +43,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         return TextConstants.plugin_action_id_garbrech_roughness
 
     def displayName(self):
-        return "Calculate Garbrecht roughness from structural subclasses content"
+        return TextConstants.tool_gb_name
 
     def group(self):
         return TextConstants.tool_group_name
@@ -52,7 +52,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         return TextConstants.tool_group_id
 
     def shortHelpString(self):
-        return "Calculate Garbrech roughness based on D90 diameter"
+        return TextConstants.tool_gb_help
 
     def icon(self) -> QIcon:
         path = Path(__file__).parent.parent / "icons" / "roughness.png"
@@ -62,20 +62,21 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterVectorLayer(
                 self.INPUT,
-                "Input feature layer:")
+                TextConstants.tool_gb_input_layer
+            )
         )
 
         self.addParameter(
             QgsProcessingParameterBoolean(
                 self.D90,
-                "Add D90 field into the input table and write the values?"
+                TextConstants.tool_gb_add_d90
             )
         )
 
         self.addParameter(
             QgsProcessingParameterString(
                 self.D90NAME,
-                "Set D90 field name:",
+                TextConstants.tool_gb_field_d90,
                 "d90"
             )
         )
@@ -83,7 +84,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterString(
                 self.NNAME,
-                "Set Garbrech roughness field name:",
+                TextConstants.tool_gb_field_gr,
                 "N_garbr"
             )
         )
@@ -181,7 +182,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSink(
                 self.OUTPUT,
-                "Output layer"
+                TextConstants.tool_gb_output
             )
         )
 

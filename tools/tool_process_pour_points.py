@@ -71,7 +71,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         return TextConstants.plugin_action_id_process_pour_points
 
     def displayName(self):
-        return "Process Pour Points"
+        return TextConstants.tool_ppp_name
 
     def group(self):
         return TextConstants.tool_group_name
@@ -80,7 +80,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         return TextConstants.tool_group_id
 
     def shortHelpString(self):
-        return "Process Pour Points"
+        return TextConstants.tool_ppp_help
 
     def icon(self) -> QIcon:
         path = Path(__file__).parent.parent / "icons" / "convert_pourpoint_data.png"
@@ -91,14 +91,14 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFile(
                 self.INPUT,
-                "Input Pour Points CSV file",
+                TextConstants.tool_ppp_input_data,
                 extension="csv")
         )
 
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.TIME,
-                "Timestep [s]",
+                TextConstants.tool_ppp_timestep,
                 defaultValue=300
             )
         )
@@ -106,7 +106,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.CELLSIZE,
-                "Raster cell size [m]",
+                TextConstants.tool_ppp_cellsize,
                 defaultValue=1
             )
         )
@@ -114,7 +114,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterBoolean(
                 self.CALCULATE_RUNOFF,
-                "Sečíst plošný a soustředěný povrchový odtok",
+                TextConstants.tool_ppp_aggregate_surface_runoff,
                 defaultValue=1
             )
         )
@@ -122,7 +122,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFileDestination(
                 self.OUTPUT_AGG,
-                "Output aggregated",
+                TextConstants.tool_ppp_output_aggregated,
                 fileFilter="CSV file (*.csv)"
             )
         )
@@ -130,8 +130,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFileDestination(
                 self.OUTPUT_UPDATE,
-                "Output updated",
-                defaultValue="file.csv",
+                TextConstants.tool_ppp_output_update,
                 fileFilter="CSV file (*.csv)"
             )
         )
@@ -202,7 +201,7 @@ class ProcessPourPointsAlgorithm(QgsProcessingAlgorithm):
         layer_input: QgsVectorLayer = self.parameterAsVectorLayer(parameters, self.INPUT, context)
 
         if not self.validate_headers(layer_input):
-            return False, "Header of csv file does not match requirements."
+            return False, TextConstants.tool_ppp_error
 
         return super().checkParameterValues(parameters, context)
 
