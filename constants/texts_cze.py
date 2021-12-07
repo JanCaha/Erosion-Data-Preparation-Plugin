@@ -14,7 +14,7 @@ class TextConstantsCZ:
 
     plugin_main_tool_name = "E3D+GIS nástroj pro přípravu vstupních parametrů"
 
-    plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
+    plugin_action_name_garbrech_roughness = "Vypočítat Garbrechtovu hydraulickou drsnost"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 
     plugin_action_id_process_pour_points = "ProcessPourPoints"
@@ -22,29 +22,38 @@ class TextConstantsCZ:
 
     plugin_action_name_empty_wizard = "Vyprázdnit data v hlavním nástroji"
 
-    plugin_action_name_load_data = "Načíst data z Erosion 3D"
+    plugin_action_name_load_data = "Vložit bilanci odnosu půdy do mapy"
 
     ## Tools
 
     tool_group_name = "Erosion-3D Data Plugin"
     tool_group_id = "erosiondataplugin"
 
-    tool_gb_name = "Vypočíst Garbrechtovu drsnost z obsahu zrnitostních tříd"
-    tool_gb_help = "Vypočíst Garbrechtovu drsnost z obsahu zrnitostních tříd"
-    tool_gb_input_layer = "Vstupní vrstva"
-    tool_gb_add_d90 = "Přidat do výstupu pole D90 a zapsat hodnoty."
-    tool_gb_field_d90 = "Název sloupce pro zapsání D90"
-    tool_gb_field_gr = "Název sloupce pro zapsání drsnosti"
-    tool_gb_output = "Výstupní vrstva"
+    tool_gb_name = "Vypočítat Garbrechtovu hydraulickou drsnost ze zrnitostního složení"
+    tool_gb_help = "Nástroj vypočítá Garbrechtovu hydraulickou drsnost na základě zrnitostního složení půdy. Průměr zrn D90 je odvozen pro všechny prvky vrstvy z obsahu částic v jednotlivých zrnitostních třídách podle normy KA5."
+    tool_gb_input_layer = "Vstupní vrstva se zrnitostním složením:"
+    tool_gb_add_d90 = "Zapsat do výstupu hodnoty D90?"
+    tool_gb_field_d90 = "Název sloupce pro zapsání D90:"
+    tool_gb_field_gr = "Název sloupce pro zapsání drsnosti:"
+    tool_gb_output = "Výstupní dataset:"
+    tool_gb_ft = "Fine clay (FT): < 0.0002mm"
+    tool_gb_mt = "Medium clay (MT): 0.0002 – 0.00063mm"
+    tool_gb_gt = "Course clay (GT): 0.00063 – 0.002mm"
+    tool_gb_fu = "Fine silt (FT): 0.002 – 0.0063mm"
+    tool_gb_mu = "Medium silt (MT): 0.0063 – 0.02mm"
+    tool_gb_gu = "Course silt (GT): 0.02 – 0.063mm"
+    tool_gb_fs = "Fine sand (FT): 0.063 – 0.2mm"
+    tool_gb_ms = "Medium sand (MT): 0.2 – 0.63mm"
+    tool_gb_gs = "Course sand (GT): 0.63 – 2.0mm"
 
     tool_ppp_name = "Zpracovat data ze záznamových bodů"
-    tool_ppp_help = "Zpracovat data ze záznamových bodů"
-    tool_ppp_input_data = "Vstupní .csv soubor výsledků"
-    tool_ppp_timestep = "Časový krok [s]"
-    tool_ppp_cellsize = "Velikost buňky rastru [m]"
-    tool_ppp_aggregate_surface_runoff = "Sečíst plošný a soustředěný povrchový odtok"
-    tool_ppp_output_aggregated = "Výsledek akumulovaný"
-    tool_ppp_output_update = "Výsledek doplněný"
+    tool_ppp_help = "Nástroj převede data ze záznamových bodů (pp_data.csv) do nové struktury pro snazší vytváření hydrogramů a sedimentogramů a přepočte hodnoty výstupů do běžně používaných jednotek (l/s, m3, kg) = Výsledky upravené.\n\}Zároveň je možné uložit agregované hodnoty pro celou simulovanou událost (maximální průtok, celkový odtok, celkové množství transportovaného sedimentu) = Výsledky sumarizované.\n\nDo výsledků může být započten pouze plošný povrchový odtok („Runoff“, „Sedvol“ atd.), nebo součet plošného a soustředěného odtoku („ChRunoff“, „ChSedvol“ atd.)"
+    tool_ppp_input_data = "Vstupní soubor pp_data.csv:"
+    tool_ppp_timestep = "Časový krok simulace [s]:"
+    tool_ppp_cellsize = "Velikost buňky rastru [m]:"
+    tool_ppp_aggregate_surface_runoff = "Sečíst plošný a soustředěný povrchový odtok?"
+    tool_ppp_output_aggregated = "Uložit sumarizované výsledky jako:"
+    tool_ppp_output_update = "Uložit upravené výsledky jako:"
 
     tool_ppp_error = "Názvy sloupců ve vstupním csv neodpovídají požadavkům."
 
@@ -304,17 +313,27 @@ class TextConstantsCZ:
 
     information_emptied = "Hodnoty průvodce nastaveny na výchozí stav."
 
-    dialog_load_data_title = "Nahrát data z Erosion-3D"
+    dialog_load_data_title = "Načíst sedbudget.asc do mapového projektu"
 
-    dialog_load_data_layer = "Vyberte soubor"
+    dialog_load_data_layer = "Vyberte soubor „sedbudget.asc“"
 
-    dialog_load_data_style = "Vyberte styl kategorií"
+    dialog_load_data_style = "Zvolte symbologii a jednotky"
 
-    dialog_load_data_opacity = "Průhlednost"
+    dialog_load_data_opacity = "Nastavení průhlednosti"
 
     dialog_load_data_layer_name = "Název vrstvy"
+
+    dialog_load_data_help = "Nástroj slouží pro načtení výstupního souboru Erosion-3D s hodnotami bilance odnosu půdy („sedbudget.asc“) do mapového projektu s vhodnou symbologií a zvolenou průhledností. Jméno vytvořené vrstvy je odvozeno od jména adresáře, ve které je uložen zdrojový soubor.\n\nHodnoty vrstvy mohou být klasifikovány do 7 nebo 9 tříd a zobrazeny v tunách na hektar nebo kilogramech na metr čtvereční. Zdrojový dataset nebude upraven – jedná se pouze o zobrazení v legendě."
 
     dialog_load_data_7_cat_tha = "7 kategorií v [t/ha]"
     dialog_load_data_7_cat_kgm2 = "7 kategorií v [kg/m2]"
     dialog_load_data_9_cat_tha = "9 kategorií v [t/ha]"
     dialog_load_data_9_cat_kgm2 = "9 kategorií v [kg/m2]"
+
+    dialog_about_id = "DialogAboutId"
+
+    dialog_about_header = "O tomto plug-inu"
+
+    dialog_about_info = "Verze pluginu {version}, vydaná {day}. {month}. {year}.\n\nVerze katalogu {catalog_version}."
+
+    dialog_about_footer = "Více informací naleznete na <a href=“https://runoffdb.fsv.cvut.cz“>runoffdb.fsv.cvut.cz</a>."

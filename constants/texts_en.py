@@ -13,37 +13,46 @@ class TextConstantsEN:
 
     plugin_main_tool_name = "E3D+GIS input parameters preparation Wizard"
 
-    plugin_action_name_garbrech_roughness = "Garbrecht Roughness"
+    plugin_action_name_garbrech_roughness = "Calculate Garbrecht roughness"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 
     plugin_action_id_process_pour_points = "ProcessPourPoints"
-    plugin_action_name_process_pour_points = "Process Pour Points"
+    plugin_action_name_process_pour_points = "Process Pour Point data"
     
     plugin_action_name_empty_wizard = "Empty data in wizard"
 
-    plugin_action_name_load_data = "Load Erosion-3D data"
+    plugin_action_name_load_data = "Load sediment budget into current map"
 
     ## Tools
 
     tool_group_name = "Erosion-3D Data Plugin"
     tool_group_id = "erosiondataplugin"
 
-    tool_gb_name = "Calculate Garbrecht roughness from structural subclasses content"
-    tool_gb_help = "Calculate Garbrech roughness based on D90 diameter"
-    tool_gb_input_layer = "Input feature class"
-    tool_gb_add_d90 = "Add D90 field into the input table and write the values."
-    tool_gb_field_d90 = "D90 field name"
-    tool_gb_field_gr = "Garbrech roughness field name"
-    tool_gb_output = "Output layer"
+    tool_gb_name = "Calculate Garbrecht hydraulic roughness from particle size distribution"
+    tool_gb_help = "The tool calculates Garbrecht’s hydraulic rougness from the particle size distribution. The D90 particle diameter is derived for all features in the input layer from provided soil particle size classes content according to KA5 standard."
+    tool_gb_input_layer = "Input layer containing the particle size class contents:"
+    tool_gb_add_d90 = "Write the D90 values to output?"
+    tool_gb_field_d90 = "Attribute field to store the D90 values:"
+    tool_gb_field_gr = "Attribute field to store the roughness values:"
+    tool_gb_output = "Output feature class:"
+    tool_gb_ft = "Fine clay (FT): < 0.0002mm"
+    tool_gb_mt = "Medium clay (MT): 0.0002 – 0.00063mm"
+    tool_gb_gt = "Course clay (GT): 0.00063 – 0.002mm"
+    tool_gb_fu = "Fine silt (FT): 0.002 – 0.0063mm"
+    tool_gb_mu = "Medium silt (MT): 0.0063 – 0.02mm"
+    tool_gb_gu = "Course silt (GT): 0.02 – 0.063mm"
+    tool_gb_fs = "Fine sand (FT): 0.063 – 0.2mm"
+    tool_gb_ms = "Medium sand (MT): 0.2 – 0.63mm"
+    tool_gb_gs = "Course sand (GT): 0.63 – 2.0mm"
 
-    tool_ppp_name = "Process pour points data outputs"
-    tool_ppp_help = "Process pour points data outputs"
-    tool_ppp_input_data = "Input Pour Points CSV file"
-    tool_ppp_timestep = "Timestep [s]"
-    tool_ppp_cellsize = "Raster cell size [m]"
-    tool_ppp_aggregate_surface_runoff = "Sečíst plošný a soustředěný povrchový odtok"
-    tool_ppp_output_aggregated = "Output aggregated"
-    tool_ppp_output_update = "Output updated"
+    tool_ppp_name = "Process Pour Point data"
+    tool_ppp_help = "The tool transforms the pour point record (pp_data.csv) to an alternative structure more suitable for hydrographs and sedigraphs ploting. The results are recalculated to commonly used units (l/s, m3, kg) = Results converted\n\nSumarized values for the whole simulated event may saved as well (maximum discharge rate, total runoff volume, total sediment mass) = Sumarized results\n\nOnly sheet flow values may be saved („Runoff“, „Sedvol“ etc.) or combined values of channel and sheet flow („ChRunoff“, „ChSedvol“ etc.)"
+    tool_ppp_input_data = "Input pp_data.csv file:"
+    tool_ppp_timestep = "Simulation timestep [s]:"
+    tool_ppp_cellsize = "DEM raster cell size [m]:"
+    tool_ppp_aggregate_surface_runoff = "Sumarize sheet and channel flow?"
+    tool_ppp_output_aggregated = "Save sumarized results as:"
+    tool_ppp_output_update = "Save transformed results as:"
 
     tool_ppp_error = "Header of csv file does not match requirements."
 
@@ -303,17 +312,27 @@ class TextConstantsEN:
 
     information_emptied = "Wizard values emptied."
 
-    dialog_load_data_title = "Load data from Erosion 3D"
+    dialog_load_data_title = "Load sedbudget.asc into map project"
 
-    dialog_load_data_layer = "Select file to load"
+    dialog_load_data_layer = "Select file"
 
-    dialog_load_data_style = "Select style for data"
+    dialog_load_data_style = "Select symbology"
 
-    dialog_load_data_opacity = "Opacity"
+    dialog_load_data_opacity = "Transparency"
 
     dialog_load_data_layer_name = "Layer name"
+
+    dialog_load_data_help = "The tool loads the Erosion-3D output raster „sedbudget.asc“ into current map project with suitable symbology and desired transparency.\n\nDefault name of the created map layer is composed from parent directory name of selected sedbudget.asc file.\n\nThe values can by classified into 7 or 9 classes and displayed in tonnes per hactare or kilograms per square meter. The values of the layer are not recalculated only the legend description is adjusted according to selected item."
 
     dialog_load_data_7_cat_tha = "7 categories in [t/ha]"
     dialog_load_data_7_cat_kgm2 = "7 categories in [kg/m2]"
     dialog_load_data_9_cat_tha = "9 categories in [t/ha]"
     dialog_load_data_9_cat_kgm2 = "9 categories in [kg/m2]"
+
+    dialog_about_id = "DialogAboutId"
+
+    dialog_about_header = "About this plug-in"
+
+    dialog_about_info = "Plugin version {version}, released on {day}. {month}. {year}.\n\nCatalogue version {catalog_version}."
+
+    dialog_about_footer = "More information at <a href=“https:// runoffdb.fsv.cvut.cz “>runoffdb.fsv.cvut.cz</a>."
