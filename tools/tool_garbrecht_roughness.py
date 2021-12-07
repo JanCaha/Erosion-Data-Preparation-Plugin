@@ -92,7 +92,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.FT,
-                TextConstants.label_FT,
+                TextConstants.tool_gb_ft,
                 defaultValue="FT",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -102,7 +102,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.MT,
-                TextConstants.label_MT,
+                TextConstants.tool_gb_mt,
                 defaultValue="MT",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -112,7 +112,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.GT,
-                TextConstants.label_GT,
+                TextConstants.tool_gb_gt,
                 defaultValue="GT",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -122,7 +122,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.FU,
-                TextConstants.label_FU,
+                TextConstants.tool_gb_fu,
                 defaultValue="FU",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -132,7 +132,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.MU,
-                TextConstants.label_MU,
+                TextConstants.tool_gb_mu,
                 defaultValue="MU",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -142,7 +142,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.GU,
-                TextConstants.label_GU,
+                TextConstants.tool_gb_gu,
                 defaultValue="GU",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -152,7 +152,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.FS,
-                TextConstants.label_FS,
+                TextConstants.tool_gb_fs,
                 defaultValue="FS",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -162,7 +162,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.MS,
-                TextConstants.label_MS,
+                TextConstants.tool_gb_ms,
                 defaultValue="MS",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
@@ -172,7 +172,7 @@ class GarbrechtRougnessProcessingAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterField(
                 self.GS,
-                TextConstants.label_GS,
+                TextConstants.tool_gb_gs,
                 defaultValue="GS",
                 parentLayerParameterName=self.INPUT,
                 type=QgsProcessingParameterField.Numeric
