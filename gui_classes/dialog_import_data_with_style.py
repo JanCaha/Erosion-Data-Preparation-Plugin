@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtWidgets import QDialog, QLabel, QComboBox, QLineEdit
+from qgis.PyQt.QtWidgets import QDialog, QLabel, QComboBox, QLineEdit, QTextBrowser
 from qgis.PyQt.QtCore import pyqtSlot
 
 from qgis.gui import QgsFileWidget, QgsOpacityWidget
@@ -20,6 +20,8 @@ class DialogLoadResult(QDialog):
     label_input_data: QLabel
     label_opacity: QLabel
     label_layer_name: QLabel
+
+    helpText: QTextBrowser
 
     lineEdit_layer_name: QLineEdit
 
@@ -46,6 +48,21 @@ class DialogLoadResult(QDialog):
         self.label_style.setText(TextConstants.dialog_load_data_style)
         self.label_opacity.setText(TextConstants.dialog_load_data_opacity)
         self.label_layer_name.setText(TextConstants.dialog_load_data_layer_name)
+
+        help_text = TextConstants.dialog_load_data_help
+
+        help_text = help_text.split("\n\n")
+        help_text = [f"<p>{x}</p>" for x in help_text]
+        help_text = "".join(help_text)
+
+        self.helpText.document().setDefaultStyleSheet(".summary { margin-left: 10px; margin-right: 10px; }\n"
+                                                      "h2 { color: #555555; padding-bottom: 15px; }\n"
+                                                      "a { text - decoration: none; color: #3498db; font-weight: bold; }\n"
+                                                      "p { color: #666666; }\n"
+                                                      "b { color: #333333; }\n"
+                                                      "dl dd { margin - bottom: 5px; }")
+
+        self.helpText.setText(f"<h2>{TextConstants.dialog_load_data_title}</h2>{help_text}")
 
         self.lineEdit_layer_name.setText("")
 
