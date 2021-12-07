@@ -26,6 +26,7 @@ from .main_plugin_window import MainPluginDialog
 from .gui_classes.dialog_result import DialogResult
 from .gui_classes.dialog_empty_data import DialogEmptyData
 from .gui_classes.dialog_import_data_with_style import DialogLoadResult
+from .gui_classes.dialog_about import DialogAbout
 import os.path
 import sys
 
@@ -165,6 +166,12 @@ class ErosionDataPreparationPlugin:
                                            callback=self.ProcessPourPoint,
                                            plugin_menu_name=TextConstants.plugin_name)
 
+        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "info.png"),
+                                           action_name=TextConstants.dialog_about_header,
+                                           action_id=TextConstants.dialog_about_id,
+                                           callback=self.show_about,
+                                           plugin_menu_name=TextConstants.plugin_name)
+
     def add_to_pluginmenu_and_toolbar(self,
                                       icon: str,
                                       action_name: str,
@@ -212,6 +219,20 @@ class ErosionDataPreparationPlugin:
                 self.iface.messageBar().pushMessage(TextConstants.information_emptied, Qgis.Success)
 
                 return
+
+    def show_about(self):
+
+        dialog_about = DialogAbout(self.iface.mainWindow())
+
+        dialog_about.show()
+
+        result = dialog_about.exec_()
+
+        if result == QFileDialog.Rejected:
+            return
+
+        if result:
+            return
 
     def load_result(self):
 
