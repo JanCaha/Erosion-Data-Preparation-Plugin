@@ -991,3 +991,11 @@ class E3dCatalog(metaclass=Singleton):
 
         else:
             return self.default_stat_tuple
+
+    def get_catalog_version(self) -> float:
+
+        self.db_cursor.execute("SELECT version FROM info ORDER BY date DESC LIMIT 1")
+
+        row = self.db_cursor.fetchall()
+
+        return row[0][0]
