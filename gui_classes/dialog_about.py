@@ -52,3 +52,4 @@ class DialogAbout(QDialog):
         self.label_info.setText(info)
 
         self.label_footer.setText(TextConstants.dialog_about_footer)
+        self.label_footer.setOpenExternalLinks(True)
