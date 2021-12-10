@@ -335,4 +335,4 @@ class TextConstantsEN:
 
     dialog_about_info = "Plugin version {version}, released on {day}. {month}. {year}.\n\nCatalogue version {catalog_version}."
 
-    dialog_about_footer = "More information at <a href=“https:// runoffdb.fsv.cvut.cz “>runoffdb.fsv.cvut.cz</a>."
+    dialog_about_footer = "More information at <a href=\"https://runoffdb.fsv.cvut.cz\">runoffdb.fsv.cvut.cz</a>."
