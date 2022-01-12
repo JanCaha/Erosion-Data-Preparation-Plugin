@@ -13,6 +13,8 @@ class TextConstantsEN:
 
     plugin_main_tool_name = "E3D+GIS input parameters preparation Wizard"
 
+    plugin_main_window_name = "Erosion-3D data preparation wizard"
+    
     plugin_action_name_garbrech_roughness = "Calculate Garbrecht roughness"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 

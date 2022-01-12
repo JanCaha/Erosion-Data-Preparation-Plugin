@@ -14,13 +14,15 @@ class TextConstantsCZ:
 
     plugin_main_tool_name = "E3D+GIS nástroj pro přípravu vstupních parametrů"
 
+    plugin_main_window_name = "Průvodce přípravou vstupních datasetů Erosion-3D"
+
     plugin_action_name_garbrech_roughness = "Vypočítat Garbrechtovu hydraulickou drsnost"
     plugin_action_id_garbrech_roughness = "GarbrechtRoughness"
 
     plugin_action_id_process_pour_points = "ProcessPourPoints"
-    plugin_action_name_process_pour_points = "Process Pour Points"
+    plugin_action_name_process_pour_points = "Zpracovat data ze záznamových bodů"
 
-    plugin_action_name_empty_wizard = "Vyprázdnit data v hlavním nástroji"
+    plugin_action_name_empty_wizard = "Vyprázdnit data průvodce"
 
     plugin_action_name_load_data = "Vložit bilanci odnosu půdy do mapy"
 
