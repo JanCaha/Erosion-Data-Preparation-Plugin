@@ -8,6 +8,8 @@ from .class_KA5 import KA5Class
 from ..constants import TextConstants
 from ..algorithms.utils import log
 
+LOG_SQL = False
+
 
 class E3dCatalog(metaclass=Singleton):
 
@@ -90,6 +92,17 @@ class E3dCatalog(metaclass=Singleton):
 
         return self._data_sources_values
 
+    def run_sql(self, sql: str, query_type: str = None):
+
+        if LOG_SQL:
+
+            if query_type:
+                log(f"{query_type}: {sql}")
+            else:
+                log(f"{sql}")
+
+        self.db_cursor.execute(sql)
+
     def get_values(self, table: str, landuse_lv1_id: str, landuse_lv2_id: str, crop_id: str):
 
         wheres = []
@@ -97,24 +110,24 @@ class E3dCatalog(metaclass=Singleton):
         if landuse_lv1_id:
             wheres.append(f"landuse_lv1_id = {landuse_lv1_id}")
         else:
-            wheres.append(f"landuse_lv1_id IS NULL")
+            wheres.append("landuse_lv1_id IS NULL")
 
         if landuse_lv2_id:
             wheres.append(f"landuse_lv2_id = {landuse_lv2_id}")
         else:
-            wheres.append(f"landuse_lv2_id IS NULL")
+            wheres.append("landuse_lv2_id IS NULL")
 
         if crop_id:
             wheres.append(f"crop_id = {crop_id}")
         else:
-            wheres.append(f"crop_id IS NULL")
+            wheres.append("crop_id IS NULL")
 
         where = F"WHERE {' AND '.join(wheres)}"
 
         # TODO FIX query - corg and run_id are placeholders
         sql = f"SELECT bulkdensity, initmoisture, erodibility, corg, run_id, skinfactor FROM {table} {where}"
 
-        self.db_cursor.execute(sql)
+        self.run_sql(sql)
 
         return self.db_cursor.fetchone()
 
@@ -122,7 +135,9 @@ class E3dCatalog(metaclass=Singleton):
 
         ka5_classes = []
 
-        self.db_cursor.execute("SELECT code FROM ka5_class")
+        sql = "SELECT code FROM ka5_class"
+
+        self.run_sql(sql, "Get KA5 classes")
 
         rows = self.db_cursor.fetchall()
 
@@ -133,7 +148,9 @@ class E3dCatalog(metaclass=Singleton):
 
     def get_surface_condition(self) -> Dict[str, int]:
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM surface_condition")
+        sql = f"SELECT name_{TextConstants.language}, id FROM surface_condition"
+
+        self.run_sql(sql, "Get surface condition")
 
         rows = self.db_cursor.fetchall()
 
@@ -147,7 +164,9 @@ class E3dCatalog(metaclass=Singleton):
 
     def get_protection_measure(self) -> Dict[str, int]:
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM protection_measure")
+        sql = f"SELECT name_{TextConstants.language}, id FROM protection_measure"
+
+        self.run_sql(sql, "Get protection measure")
 
         rows = self.db_cursor.fetchall()
 
@@ -161,7 +180,9 @@ class E3dCatalog(metaclass=Singleton):
 
     def get_vegetation_condition(self) -> Dict[str, int]:
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM vegetation_condition")
+        sql = f"SELECT name_{TextConstants.language}, id FROM vegetation_condition"
+
+        self.run_sql(sql, "Get vegetation condition")
 
         rows = self.db_cursor.fetchall()
 
@@ -175,7 +196,9 @@ class E3dCatalog(metaclass=Singleton):
 
     def get_agrotechnology(self) -> Dict[str, int]:
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM agrotechnology")
+        sql = f"SELECT name_{TextConstants.language}, id FROM agrotechnology"
+
+        self.run_sql(sql, "Get agrotechnology")
 
         rows = self.db_cursor.fetchall()
 
@@ -195,7 +218,9 @@ class E3dCatalog(metaclass=Singleton):
 
         data = {}
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id FROM landuse_lv1")
+        sql = f"SELECT name_{TextConstants.language}, id FROM landuse_lv1"
+
+        self.run_sql(sql, "Get landuse crop")
 
         rows = self.db_cursor.fetchall()
 
@@ -209,8 +234,10 @@ class E3dCatalog(metaclass=Singleton):
                                              id_landuse_lv2=None,
                                              id_crop=None)})
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv1_id FROM landuse_lv2 "
-                               f"ORDER BY name_{TextConstants.language}")
+        sql = f"SELECT name_{TextConstants.language}, id, landuse_lv1_id FROM landuse_lv2 " \
+            f"ORDER BY name_{TextConstants.language}"
+
+        self.run_sql(sql, "Get landuse crop")
 
         rows = self.db_cursor.fetchall()
 
@@ -224,8 +251,10 @@ class E3dCatalog(metaclass=Singleton):
                                              id_landuse_lv2=row[1],
                                              id_crop=None)})
 
-        self.db_cursor.execute(f"SELECT name_{TextConstants.language}, id, landuse_lv2_id FROM crop "
-                               f"ORDER BY name_{TextConstants.language}")
+        sql = f"SELECT name_{TextConstants.language}, id, landuse_lv2_id FROM crop " \
+            f"ORDER BY name_{TextConstants.language}"
+
+        self.run_sql(sql, "Get landuse crop")
 
         rows = self.db_cursor.fetchall()
 
@@ -248,8 +277,10 @@ class E3dCatalog(metaclass=Singleton):
 
         classes = []
 
-        self.db_cursor.execute(f"SELECT id, code, name_{TextConstants.language}, ka5_group_lv1_id, ka5_group_lv2_id,"
-                               f"ft, mt, gt, fu, mu, gu, fs, ms, gs FROM ka5_class")
+        sql = f"SELECT id, code, name_{TextConstants.language}, ka5_group_lv1_id, ka5_group_lv2_id," \
+            f"ft, mt, gt, fu, mu, gu, fs, ms, gs FROM ka5_class"
+
+        self.run_sql(sql, "Get KA5 table")
 
         rows = self.db_cursor.fetchall()
 
@@ -346,9 +377,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT bulk_density, source_id, quality_index_id "
-                                   F" FROM bulk_density "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT bulk_density, source_id, quality_index_id "
+                   F" FROM bulk_density "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Bulk density data")
 
             data = self.db_cursor.fetchall()
 
@@ -379,9 +412,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT MIN(bulk_density) AS min, MAX(bulk_density) AS max, "
-                                   F"AVG(bulk_density) AS mean, COUNT() AS count FROM bulk_density "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT MIN(bulk_density) AS min, MAX(bulk_density) AS max, "
+                   F"AVG(bulk_density) AS mean, COUNT() AS count FROM bulk_density "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Bulk density range")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -443,8 +478,10 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT MIN(corg) AS min, MAX(corg) AS max, AVG(corg) as mean, COUNT() as count FROM corg "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT MIN(corg) AS min, MAX(corg) AS max, AVG(corg) as mean, COUNT() as count FROM corg "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Corg range")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -472,9 +509,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT corg, source_id, quality_index_id "
-                                   F" FROM corg "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT corg, source_id, quality_index_id "
+                   F" FROM corg "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Corg data")
 
             data = self.db_cursor.fetchall()
 
@@ -521,13 +560,15 @@ class E3dCatalog(metaclass=Singleton):
 
             variable_name = "canopy_cover"
 
-            self.db_cursor.execute(
+            sql = (
                 F"SELECT "
                 F"MIN({variable_name}) AS min, "
                 F"MAX({variable_name}) AS max, "
                 F"AVG({variable_name}) as mean, "
                 F"COUNT() as count FROM canopy_cover "
                 F"WHERE {conds}")
+
+            self.run_sql(sql, "Canopy cover range data")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -549,9 +590,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT canopy_cover, source_id, quality_index_id "
-                                   F" FROM canopy_cover "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT canopy_cover, source_id, quality_index_id "
+                   F" FROM canopy_cover "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Canopy cover data")
 
             data = self.db_cursor.fetchall()
 
@@ -622,13 +665,15 @@ class E3dCatalog(metaclass=Singleton):
 
             variable_name = "roughness"
 
-            self.db_cursor.execute(
+            sql = (
                 F"SELECT "
                 F"MIN({variable_name}) AS min, "
                 F"MAX({variable_name}) AS max, "
                 F"AVG({variable_name}) as mean, "
                 F"COUNT() as count FROM roughness "
                 F"WHERE {conds}")
+
+            self.run_sql(sql, "Roughness range")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -658,9 +703,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT roughness, source_id, quality_index_id "
-                                   F" FROM roughness "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT roughness, source_id, quality_index_id "
+                   F" FROM roughness "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Roughness data")
 
             data = self.db_cursor.fetchall()
 
@@ -743,13 +790,15 @@ class E3dCatalog(metaclass=Singleton):
 
             variable_name = "erodibility"
 
-            self.db_cursor.execute(
+            sql = (
                 F"SELECT "
                 F"MIN({variable_name}) AS min, "
                 F"MAX({variable_name}) AS max, "
                 F"AVG({variable_name}) as mean, "
                 F"COUNT() as count FROM calibration "
                 F"WHERE {conds}")
+
+            self.run_sql(sql, "Erodibility range")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -783,9 +832,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT erodibility, source_id, quality_index_id "
-                                   F" FROM calibration "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT erodibility, source_id, quality_index_id "
+                   F" FROM calibration "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Erodibility data")
 
             data = self.db_cursor.fetchall()
 
@@ -839,7 +890,6 @@ class E3dCatalog(metaclass=Singleton):
 
         return conds
 
-
     def get_skinfactor_range(self,
                              crop: Optional[str] = None,
                              landuse_lv1: Optional[str] = None,
@@ -869,13 +919,15 @@ class E3dCatalog(metaclass=Singleton):
 
             variable_name = "skinfactor"
 
-            self.db_cursor.execute(
+            sql = (
                 F"SELECT "
                 F"MIN({variable_name}) AS min, "
                 F"MAX({variable_name}) AS max, "
                 F"AVG({variable_name}) as mean, "
                 F"COUNT() as count FROM calibration "
                 F"WHERE {conds}")
+
+            self.run_sql(sql, "Skin factor range")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -909,9 +961,11 @@ class E3dCatalog(metaclass=Singleton):
 
             conds = " AND ".join(conds)
 
-            self.db_cursor.execute(F"SELECT skinfactor, source_id, quality_index_id "
-                                   F" FROM calibration "
-                                   F"WHERE {conds}")
+            sql = (F"SELECT skinfactor, source_id, quality_index_id "
+                   F" FROM calibration "
+                   F"WHERE {conds}")
+
+            self.run_sql(sql, "Erodibility data")
 
             data = self.db_cursor.fetchall()
 
@@ -960,13 +1014,15 @@ class E3dCatalog(metaclass=Singleton):
 
             variable_name = "initmoisture"
 
-            self.db_cursor.execute(
+            sql = (
                 F"SELECT "
                 F"MIN({variable_name}) AS min, "
                 F"MAX({variable_name}) AS max, "
                 F"AVG({variable_name}) as mean, "
                 F"COUNT() as count FROM calibration "
                 F"WHERE {conds}")
+   
+            self.run_sql(sql, "Init moisture range")
 
             return self.check_stat_row(self.db_cursor.fetchall())
 
@@ -994,7 +1050,9 @@ class E3dCatalog(metaclass=Singleton):
 
     def get_catalog_version(self) -> float:
 
-        self.db_cursor.execute("SELECT version FROM info ORDER BY date DESC LIMIT 1")
+        sql = ("SELECT version FROM info ORDER BY date DESC LIMIT 1")
+
+        self.run_sql(sql)
 
         row = self.db_cursor.fetchall()
 
