@@ -433,7 +433,8 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
                 TextConstants.field_name_agrotechnology,
                 TextConstants.field_name_landuse_crops,
                 TextConstants.field_name_ka5_group_lv1_id,
-                TextConstants.field_name_ka5_group_lv2_id]
+                TextConstants.field_name_ka5_group_lv2_id,
+                TextConstants.field_name_ka5_code]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -459,7 +460,7 @@ class TableWidgetBulkDensity(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[8], row[3], f"{row[6]} ({row[5]})"]
+            return [row[8], row[3], f"{row[6]} ({row[11]})"]
         else:
             return None
 
@@ -735,7 +736,8 @@ class TableWidgetErodibility(TableWidgetWithSlider):
                 TextConstants.field_name_surface_conditions,
                 TextConstants.field_name_landuse_crops,
                 TextConstants.field_name_ka5_group_lv1_id,
-                TextConstants.field_name_ka5_group_lv2_id]
+                TextConstants.field_name_ka5_group_lv2_id,
+                TextConstants.field_name_ka5_code]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -753,7 +755,7 @@ class TableWidgetErodibility(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[10], row[3], f"{row[6]} ({row[5]})"]
+            return [row[10], row[3], f"{row[6]} ({row[13]})"]
         else:
             return None
 
@@ -825,7 +827,8 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
                 TextConstants.field_name_surface_conditions,
                 TextConstants.field_name_landuse_crops,
                 TextConstants.field_name_ka5_group_lv1_id,
-                TextConstants.field_name_ka5_group_lv2_id]
+                TextConstants.field_name_ka5_group_lv2_id,
+                TextConstants.field_name_ka5_code]
 
     def field_list_for_join(self) -> List[str]:
         return [TextConstants.field_name_crop_id,
@@ -844,7 +847,7 @@ class TableWidgetSkinFactor(TableWidgetWithSlider):
 
     def row_to_string(self, row: List[Any]) -> Optional[List[str]]:
         if row[3] and row[5]:
-            return [row[11], row[3], f"{row[6]} ({row[5]})"]
+            return [row[11], row[3], f"{row[6]} ({row[14]})"]
         else:
             return None
 
