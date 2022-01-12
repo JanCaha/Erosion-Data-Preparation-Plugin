@@ -199,6 +199,9 @@ class MainPluginDialog(QDialog, FORM_CLASS):
         self.ok_result_layer = False
 
         self.setupUi(self)
+
+        self.setWindowTitle(TextConstants.plugin_main_window_name)
+
         self.stackedWidget.setCurrentIndex(0)
 
         self.button_box.button(QDialogButtonBox.Ok).setEnabled(False)
