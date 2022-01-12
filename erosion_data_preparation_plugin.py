@@ -136,7 +136,7 @@ class ErosionDataPreparationPlugin:
         QgsApplication.processingRegistry().addProvider(self.provider)
 
         self.add_action(icon_path=str(self.path_plugin / "icons" / "main.png"),
-                        text=TextConstants.plugin_main_tool_name,
+                        text=TextConstants.plugin_main_window_name,
                         callback=self.run,
                         add_to_toolbar=True,
                         add_to_menu=TextConstants.plugin_name,
