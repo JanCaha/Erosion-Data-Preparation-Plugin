@@ -154,40 +154,23 @@ class ErosionDataPreparationPlugin:
                         add_to_toolbar=False,
                         add_to_specific_toolbar=self.toolbar)
 
-        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "roughness.png"),
-                                           action_name=TextConstants.plugin_action_name_garbrech_roughness,
-                                           action_id=TextConstants.plugin_action_id_garbrech_roughness,
-                                           callback=self.GarbrechRoughnessTool,
-                                           plugin_menu_name=TextConstants.plugin_name)
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "roughness.png"),
+                        text=TextConstants.plugin_action_name_garbrech_roughness,
+                        callback=self.GarbrechRoughnessTool,
+                        add_to_toolbar=False,
+                        add_to_specific_toolbar=self.toolbar)
 
-        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "convert_pourpoint_data.png"),
-                                           action_name=TextConstants.plugin_action_name_process_pour_points,
-                                           action_id=TextConstants.plugin_action_id_process_pour_points,
-                                           callback=self.ProcessPourPoint,
-                                           plugin_menu_name=TextConstants.plugin_name)
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "convert_pourpoint_data.png"),
+                        text=TextConstants.plugin_action_name_process_pour_points,
+                        callback=self.ProcessPourPoint,
+                        add_to_toolbar=False,
+                        add_to_specific_toolbar=self.toolbar)
 
-        self.add_to_pluginmenu_and_toolbar(icon=str(self.path_plugin / "icons" / "info.png"),
-                                           action_name=TextConstants.dialog_about_header,
-                                           action_id=TextConstants.dialog_about_id,
-                                           callback=self.show_about,
-                                           plugin_menu_name=TextConstants.plugin_name)
-
-    def add_to_pluginmenu_and_toolbar(self,
-                                      icon: str,
-                                      action_name: str,
-                                      action_id: str,
-                                      callback,
-                                      plugin_menu_name: str):
-
-        icon = QIcon(icon)
-        action = QAction(icon, action_name, self.iface.mainWindow())
-        action.setObjectName(action_id)
-        action.triggered.connect(callback)
-
-        self.toolbar.addAction(action)
-        self.iface.addPluginToMenu(plugin_menu_name, action)
-
-        self.actions_menu_toolbar.append(action)
+        self.add_action(icon_path=str(self.path_plugin / "icons" / "info.png"),
+                        text=TextConstants.dialog_about_header,
+                        callback=self.show_about,
+                        add_to_toolbar=False,
+                        add_to_specific_toolbar=self.toolbar)
 
     def ProcessPourPoint(self):
         tool_call = f"{TextConstants.tool_group_id}:{TextConstants.plugin_action_id_process_pour_points}"
