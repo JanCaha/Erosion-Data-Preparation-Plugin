@@ -63,7 +63,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
                  fieldname_ka5_code: str,
                  fieldname_ka5_name: str,
                  fieldname_ka5_id: str,
-                 progress_bar: QtWidgets.QProgressBar) -> [bool, str]:
+                 progress_bar: QtWidgets.QProgressBar) -> Tuple[bool, str]:
 
     total = layer_input.dataProvider().featureCount() if layer_input.dataProvider().featureCount() else 0
 
@@ -72,6 +72,18 @@ def classify_KA5(layer_input: QgsVectorLayer,
     layer_input.startEditing()
 
     dp_input: QgsVectorDataProvider = layer_input.dataProvider()
+
+    fields_to_delete = [fieldname_ka5_code, fieldname_ka5_name, fieldname_ka5_id, TextConstants.field_name_ka5_group_lv2_id, TextConstants.field_name_ka5_group_lv1_id]
+
+    for field_to_delete in fields_to_delete:
+
+        index = layer_input.fields().lookupField(field_to_delete)
+
+        if index != -1:
+
+            layer_input.deleteAttribute(index)
+
+    layer_input.updatedFields()
 
     add_fields = QgsFields()
     add_fields.append(QgsField(fieldname_ka5_code, QVariant.String))
