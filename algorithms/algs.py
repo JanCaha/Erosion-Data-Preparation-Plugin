@@ -83,7 +83,7 @@ def classify_KA5(layer_input: QgsVectorLayer,
 
             layer_input.deleteAttribute(index)
 
-    layer_input.updatedFields()
+    layer_input.updateFields()
 
     add_fields = QgsFields()
     add_fields.append(QgsField(fieldname_ka5_code, QVariant.String))
