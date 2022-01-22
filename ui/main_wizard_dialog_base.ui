@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>14</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="page_0">
     <widget class="QWidget" name="layoutWidget">
@@ -99,13 +99,6 @@
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout">
-      <item row="1" column="1">
-       <widget class="QgsFieldComboBox" name="field_ka5_cb">
-        <property name="allowEmptyFieldName">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="1">
        <widget class="QgsFieldComboBox" name="field_soilid_cb">
         <property name="allowEmptyFieldName">
@@ -113,17 +106,24 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_ka5_class">
-        <property name="text">
-         <string>KA5 class:</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
        <widget class="QLabel" name="label_soil_id">
         <property name="text">
          <string>Soil ID:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QgsFieldComboBox" name="field_ka5_cb">
+        <property name="allowEmptyFieldName">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_ka5_class">
+        <property name="text">
+         <string>KA5 class:</string>
         </property>
        </widget>
       </item>
@@ -294,7 +294,7 @@
        <x>21</x>
        <y>20</y>
        <width>1021</width>
-       <height>172</height>
+       <height>182</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3" columnstretch="5,7,2,5,7">
@@ -722,7 +722,7 @@
        <x>20</x>
        <y>180</y>
        <width>671</width>
-       <height>165</height>
+       <height>166</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout" columnstretch="40,75,0">
